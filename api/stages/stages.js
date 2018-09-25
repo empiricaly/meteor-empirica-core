@@ -57,9 +57,7 @@ Stages.schema = new SimpleSchema({
 
 Stages.schema.extend(TimestampSchema);
 Stages.schema.extend(UserDataSchema);
-Meteor.startup(function() {
-  Stages.schema.extend(BelongsTo(Rounds));
-  Stages.schema.extend(BelongsTo(Games));
-  Stages.schema.extend(HasManyByRef(PlayerStages));
-  Stages.attachSchema(Stages.schema);
-});
+Stages.schema.extend(BelongsTo("Rounds"));
+Stages.schema.extend(BelongsTo("Games"));
+Stages.schema.extend(HasManyByRef("PlayerStages"));
+Stages.attachSchema(Stages.schema);

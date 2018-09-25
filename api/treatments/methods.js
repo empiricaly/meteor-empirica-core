@@ -13,11 +13,11 @@ export const createTreatment = new ValidatedMethod({
       max: 256,
       optional: true
     },
-    conditionIds: {
+    factorIds: {
       type: Array,
-      label: "Conditions"
+      label: "Factors"
     },
-    "conditionIds.$": {
+    "factorIds.$": {
       type: String
     }
   }).validator(),

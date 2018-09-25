@@ -66,7 +66,7 @@ const withGameInfo = withTracker(
       return loadingObj;
     }
 
-    game.treatment = treatment.conditionsObject();
+    game.treatment = treatment.factorsObject();
     game.players = Players.find({ gameId }).fetch();
     game.rounds = Rounds.find({ gameId }).fetch();
     game.rounds.forEach(round => {

@@ -82,7 +82,7 @@ export const callOnChange = params => {
   const players = Players.find({ gameId }).fetch();
   const treatment = Treatments.findOne(game.treatmentId);
 
-  game.treatment = treatment.conditionsObject();
+  game.treatment = treatment.factorsObject();
   game.players = players;
   game.rounds = Rounds.find({ gameId }).fetch();
   game.rounds.forEach(round => {

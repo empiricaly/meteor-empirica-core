@@ -2,21 +2,21 @@ import { EditableText } from "@blueprintjs/core";
 import React from "react";
 import { AlertToaster } from "../Toasters.jsx";
 
-import { updateCondition } from "../../../api/conditions/methods.js";
+import { updateFactor } from "../../../api/factors/methods.js";
 
-export default class AdminCondition extends React.Component {
+export default class AdminFactor extends React.Component {
   constructor(props) {
     super(props);
-    this.initialName = props.condition.name;
+    this.initialName = props.factor.name;
     this.state = {
-      name: props.condition.name
+      name: props.factor.name
     };
   }
 
   componentWillUpdate(props) {
-    if (props.condition.name !== this.props.condition.name) {
-      this.initialName = props.condition.name;
-      this.setState({ name: props.condition.name });
+    if (props.factor.name !== this.props.factor.name) {
+      this.initialName = props.factor.name;
+      this.setState({ name: props.factor.name });
     }
   }
 
@@ -25,13 +25,13 @@ export default class AdminCondition extends React.Component {
   };
 
   handleNameConfirm = () => {
-    const { _id } = this.props.condition;
+    const { _id } = this.props.factor;
     const { name } = this.state;
     if (!name || name.trim() === "") {
       this.setState({ name: this.initialName });
       return;
     }
-    updateCondition.call({ _id, name }, err => {
+    updateFactor.call({ _id, name }, err => {
       if (err) {
         AlertToaster.show({ message: String(err) });
         this.handleNameChange(this.initialName);
@@ -42,10 +42,10 @@ export default class AdminCondition extends React.Component {
   };
 
   render() {
-    const { condition } = this.props;
+    const { factor } = this.props;
     const { name } = this.state;
     return (
-      <tr key={condition._id}>
+      <tr key={factor._id}>
         <td>
           <EditableText
             onChange={this.handleNameChange}
@@ -53,7 +53,7 @@ export default class AdminCondition extends React.Component {
             value={name}
           />
         </td>
-        <td>{String(condition.value)}</td>
+        <td>{String(factor.value)}</td>
       </tr>
     );
   }

@@ -24,11 +24,11 @@ export default class AdminNewTreatment extends React.Component {
     this.setState({ name });
   };
 
-  handleConditionChange = (type, event) => {
-    const conditionId = event.currentTarget.value;
+  handleFactorChange = (type, event) => {
+    const factorId = event.currentTarget.value;
     const selected = {
       ...this.state.selected,
-      [type]: conditionId
+      [type]: factorId
     };
     this.setState({ selected });
   };
@@ -39,16 +39,16 @@ export default class AdminNewTreatment extends React.Component {
     event.preventDefault();
 
     const keys = _.compact(_.keys(selected));
-    const conditionIds = _.compact(_.values(selected));
+    const factorIds = _.compact(_.values(selected));
 
-    if (keys.length !== conditionIds.length) {
+    if (keys.length !== factorIds.length) {
       const missing = keys.join(", ");
-      const msg = `A value for each condition must be selected. (missing: ${missing})`;
+      const msg = `A value for each factor must be selected. (missing: ${missing})`;
       AlertToaster.show({ message: msg });
       return;
     }
 
-    const params = { name, conditionIds };
+    const params = { name, factorIds };
     createTreatment.call(params, err => {
       if (err) {
         if (err.details) {
@@ -83,7 +83,7 @@ export default class AdminNewTreatment extends React.Component {
   };
 
   render() {
-    const { isOpen, conditions, conditionTypes, onClose } = this.props;
+    const { isOpen, factors, factorTypes, onClose } = this.props;
     const { name, selected } = this.state;
 
     return (
@@ -110,31 +110,32 @@ export default class AdminNewTreatment extends React.Component {
               />
             </FormGroup>
 
-            {_.map(conditionTypes, type => {
+            {_.map(factorTypes, type => {
               const conds = _.filter(
-                conditions,
-                cond => cond.type === type._id
+                factors,
+                factor => factor.factorTypeId === type._id
               );
-              const required = !type.optional;
-              const requiredClass = required ? "required" : "";
+              const requiredClass = type.required ? "required" : "";
               if (conds.length === 0) {
                 return (
                   <FormGroup
-                    label={type._id}
+                    label={type.name}
                     labelFor="name"
                     className={requiredClass}
                     key={type._id}
                   >
                     <Callout
                       icon={
-                        required ? IconNames.WARNING_SIGN : IconNames.INFO_SIGN
+                        type.required
+                          ? IconNames.WARNING_SIGN
+                          : IconNames.INFO_SIGN
                       }
-                      intent={required ? Intent.DANGER : null}
+                      intent={type.required ? Intent.DANGER : null}
                     >
-                      There are no condition values for the
-                      {required ? <strong> required </strong> : " "}
-                      {type._id} condition type yet.{" "}
-                      <Link to="/admin/conditions">Add condition values</Link>.
+                      There are no factor values for the
+                      {type.required ? <strong> required </strong> : " "}
+                      {type.name} factor type yet.{" "}
+                      <Link to="/admin/factors">Add factor values</Link>.
                     </Callout>
                   </FormGroup>
                 );
@@ -142,8 +143,8 @@ export default class AdminNewTreatment extends React.Component {
               return (
                 <RadioGroup
                   key={type._id}
-                  label={type._id}
-                  onChange={this.handleConditionChange.bind(this, type._id)}
+                  label={type.name}
+                  onChange={this.handleFactorChange.bind(this, type._id)}
                   selectedValue={selected[type._id]}
                   inline={true}
                   className={requiredClass}

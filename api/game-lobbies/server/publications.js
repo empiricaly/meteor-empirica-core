@@ -1,6 +1,6 @@
 import { publishComposite } from "meteor/reywood:publish-composite";
 
-import { Conditions } from "../../conditions/conditions.js";
+import { Factors } from "../../factors/factors.js";
 import { GameLobbies } from "../game-lobbies";
 import { Players } from "../../players/players";
 import { Treatments } from "../../treatments/treatments";
@@ -27,8 +27,8 @@ publishComposite("gameLobby", function({ playerId }) {
             },
             children: [
               {
-                find({ conditionIds }) {
-                  return Conditions.find({ _id: { $in: conditionIds } });
+                find({ factorIds }) {
+                  return Factors.find({ _id: { $in: factorIds } });
                 }
               }
             ]

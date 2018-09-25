@@ -4,6 +4,15 @@ import PropTypes from "prop-types";
 import { NavLink, Route, Switch } from "react-router-dom";
 import { Helmet } from "react-helmet";
 
+const configurationPaths = [
+  "/admin/treatments",
+  "/admin/treatments/archived",
+  "/admin/factors",
+  "/admin/factors/archived",
+  "/admin/lobby-configurations",
+  "/admin/lobby-configurations/archived"
+];
+
 import {
   Button,
   ButtonGroup,
@@ -19,16 +28,16 @@ import {
 import { IconNames } from "@blueprintjs/icons";
 
 import AdminBatchesContainer from "../containers/admin/AdminBatchesContainer.jsx";
-import AdminConditionsContainer from "../containers/admin/AdminConditionsContainer.jsx";
+import AdminFactorsContainer from "../containers/admin/AdminFactorsContainer.jsx";
 import AdminGames from "./admin/AdminGames.jsx";
 import AdminLobbyConfigsContainer from "../containers/admin/AdminLobbyConfigsContainer.jsx";
 import AdminPlayers from "./admin/AdminPlayers.jsx";
 import AdminTreatmentsContainer from "../containers/admin/AdminTreatmentsContainer.jsx";
 import { withStaticProps } from "./Helpers.jsx";
 
-const NavBarLink = ({ path, name }) => (
+const NavBarLink = ({ path, name, exact = false }) => (
   <NavLink
-    exact
+    exact={exact}
     to={path}
     activeClassName={Classes.ACTIVE}
     className={[Classes.BUTTON, Classes.MINIMAL].join(" ")}
@@ -38,7 +47,14 @@ const NavBarLink = ({ path, name }) => (
 );
 
 export default class Admin extends React.Component {
-  state = { mode: "monitoring" };
+  constructor(props) {
+    super(props);
+
+    const mode = configurationPaths.includes(props.location.pathname)
+      ? "configuration"
+      : "monitoring";
+    this.state = { mode };
+  }
 
   componentDidMount() {
     this.redirectLoggedOut(this.props);
@@ -46,6 +62,15 @@ export default class Admin extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.redirectLoggedOut(nextProps);
+
+    if (this.props.location.pathname !== nextProps.location.pathname) {
+      const mode = configurationPaths.includes(nextProps.location.pathname)
+        ? "configuration"
+        : "monitoring";
+      if (mode !== this.state.mode) {
+        this.setState({ mode });
+      }
+    }
   }
 
   setMode = mode => {
@@ -135,7 +160,7 @@ export default class Admin extends React.Component {
             {isConfigMode ? (
               <>
                 <NavBarLink path="/admin/treatments" name="Treatments" />
-                <NavBarLink path="/admin/conditions" name="Conditions" />
+                <NavBarLink path="/admin/factors" name="Factors" />
                 <NavBarLink
                   path="/admin/lobby-configurations"
                   name="Lobby Configurations"
@@ -143,7 +168,7 @@ export default class Admin extends React.Component {
               </>
             ) : (
               <>
-                <NavBarLink path="/admin" name="Batches" />
+                <NavBarLink exact path="/admin" name="Batches" />
                 <NavBarLink path="/admin/games" name="Games" />
                 <NavBarLink path="/admin/players" name="Players" />
               </>
@@ -162,7 +187,7 @@ export default class Admin extends React.Component {
           {this.resetDatabaseIsActived() ? (
             <NavbarGroup align="right">
               <Tooltip
-                content="This will remove batches/games/players and keep treatments/conditions"
+                content="This will remove batches/games/players and keep treatments/factors"
                 position={Position.BOTTOM}
               >
                 <Button
@@ -241,9 +266,12 @@ export default class Admin extends React.Component {
               })}
             />
             <Route
-              path="/admin/conditions"
-              component={AdminConditionsContainer}
+              path="/admin/factors/archived"
+              component={withStaticProps(AdminFactorsContainer, {
+                archived: true
+              })}
             />
+            <Route path="/admin/factors" component={AdminFactorsContainer} />
           </Switch>
         </main>
       </div>

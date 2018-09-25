@@ -1,10 +1,9 @@
 import SimpleSchema from "simpl-schema";
 
+import { statusSchema } from "../batches/status-schema";
 import { Batches } from "../batches/batches";
 import { BelongsTo, HasManyByRef, TimestampSchema } from "../default-schemas";
 import { DebugModeSchema } from "../default-schemas.js";
-import { Games } from "../games/games.js";
-import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
 import { Players } from "../players/players";
 import { Treatments } from "../treatments/treatments";
 
@@ -75,18 +74,15 @@ if (Meteor.isDevelopment || Meteor.settings.public.debug_gameDebugMode) {
 }
 
 GameLobbies.schema.extend(TimestampSchema);
-Meteor.startup(() => {
-  // playerIds tells us how many players are ready to start (finished intro)
-  // Once playerIds.length == availableCount, the game starts. Player that are
-  // queued but haven't made it past the intro in time will be led to the outro
-  // directly.
-  GameLobbies.schema.extend(HasManyByRef(Players));
-
-  GameLobbies.schema.extend(BelongsTo(Games, false, false));
-  GameLobbies.schema.extend(BelongsTo(Treatments));
-  GameLobbies.schema.extend(BelongsTo(Batches));
-  GameLobbies.schema.extend(BelongsTo(LobbyConfigs));
-  // We are denormalizing the parent batch status in order to make clean queries
-  GameLobbies.schema.extend(Batches.statusSchema);
-  GameLobbies.attachSchema(GameLobbies.schema);
-});
+// playerIds tells us how many players are ready to start (finished intro)
+// Once playerIds.length == availableCount, the game starts. Player that are
+// queued but haven't made it past the intro in time will be led to the outro
+// directly.
+GameLobbies.schema.extend(HasManyByRef("Players"));
+GameLobbies.schema.extend(BelongsTo("Games", false));
+GameLobbies.schema.extend(BelongsTo("Treatments"));
+GameLobbies.schema.extend(BelongsTo("Batches"));
+GameLobbies.schema.extend(BelongsTo("LobbyConfigs"));
+// We are denormalizing the parent batch status in order to make clean queries
+GameLobbies.schema.extend(statusSchema);
+GameLobbies.attachSchema(GameLobbies.schema);

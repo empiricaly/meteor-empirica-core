@@ -1,4 +1,4 @@
-import { Conditions } from "../../conditions/conditions.js";
+import { Factors } from "../../factors/factors.js";
 import { Treatments } from "../treatments";
 
 Meteor.publish("admin-treatments", function({ archived }) {
@@ -26,9 +26,9 @@ Meteor.publish("treatment", function(treatmentId) {
 
   return [
     Treatments.find(treatmentId),
-    Conditions.find({
+    Factors.find({
       _id: {
-        $in: treatment.conditionIds
+        $in: treatment.factorIds
       }
     })
   ];

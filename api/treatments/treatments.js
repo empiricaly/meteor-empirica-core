@@ -1,28 +1,28 @@
 import SimpleSchema from "simpl-schema";
 
-import { Conditions } from "../conditions/conditions.js";
+import { Factors } from "../factors/factors.js";
 import { TimestampSchema, ArchivedSchema } from "../default-schemas";
 
 export const Treatments = new Mongo.Collection("treatments");
 
-// requiredConditions hold a list of conditions keys that are required by
+// requiredFactors hold a list of factors keys that are required by
 // Empirica core to be able to run a game.
-// Required conditions are:
+// Required factors are:
 // -`playerCount` determines how many players participate in a game and is
 //   therefore critical to run a game.
 // NOTE(np) I am still not sure this is the right way to decide how many players
-// should be in a game. The other potential required condition is botsCount.
+// should be in a game. The other potential required factor is botsCount.
 // Both of these are fundamental to any game. The information about the number
 // of players, whether it's human or computer players, determines many aspects
 // of the game. The fact they will influence the game run similarly to other
-// conditions and are decided while deciding of a batch does not mean they
+// factors and are decided while deciding of a batch does not mean they
 // cannot be seperatly configured. I think there might be more flexibility and
-// clarity if we move these 2 conditions into the UI as configuration values for
+// clarity if we move these 2 factors into the UI as configuration values for
 // game runs, independently of the treatment. More thought needed here.
-const requiredConditions = ["playerCount"];
+const requiredFactors = ["playerCount"];
 
 //
-// Add playerCount to conditions if missing
+// Add playerCount to factors if missing
 //
 
 // This is the default playerCount definition
@@ -33,66 +33,27 @@ const defaultPlayerCount = {
   max: 100
 };
 
-// We have a string version since SimpleSchema.Integer would be transformed
-// to "SimpleSchema.Integer" by JSON.stringify. Better have the example output
-// be something people can simply copy and paste
-const defaultPlayerCountString = `{
-  description: "The Number of players participating in the given game",
-  type: SimpleSchema.Integer,
-  min: 1,
-  max: 100
-};`;
-
-// // The actual conditions insert, server only
-// let conditionsSchema;
-// Meteor.startup(() => {
-//   if (!Meteor.isServer) {
-//     return;
-//   }
-
-//   import("../../server").then(server => {
-//     const { config } = server;
-//     if (!config.conditions) {
-//       throw new Error(
-//         "config.conditions in game/server/index.js are required!"
-//       );
-//     }
-
-//     if (!config.conditions.playerCount) {
-//       console.warn(
-//         "no playerCount conditions defined, adding default defintion: \n" +
-//           defaultPlayerCountString
-//       );
-//       config.conditions.playerCount = defaultPlayerCount;
-//     }
-
-//     const schema = {};
-//     _.each(config.conditions, (condition, key) => {
-//       schema[key] = _.omit(condition, "description", "stringType");
-//     });
-//     conditionsSchema = new SimpleSchema(schema);
-//   });
-// });
-
 Treatments.helpers({
   displayName() {
-    return (
-      this.name || _.map(this.conditions(), c => c.fullLabel()).join(" - ")
-    );
+    return this.name || _.map(this.factors(), c => c.fullLabel()).join(" - ");
   },
 
-  condition(type) {
-    return this.conditions().find(c => c.type === type);
+  factor(name) {
+    const type = FactorTypes.findOne({ name });
+    return this.factors().find(c => c.factorTypeId === type._id);
   },
 
-  conditions() {
-    const query = { _id: { $in: this.conditionIds } };
-    return Conditions.find(query).fetch();
+  factors() {
+    const query = { _id: { $in: this.factorIds } };
+    return Factors.find(query).fetch();
   },
 
-  conditionsObject() {
+  factorsObject() {
     const doc = {};
-    this.conditions().forEach(c => (doc[c.type] = c.value));
+    this.factors().forEach(c => {
+      const type = FactorTypes.findOne(c.factorTypeId);
+      doc[type.name] = c.value;
+    });
     return doc;
   }
 });
@@ -112,30 +73,30 @@ Treatments.schema = new SimpleSchema({
     // regEx: /^[a-zA-Z0-9_]+$/
   },
 
-  // Array of conditionIds
-  conditionIds: {
+  // Array of factorIds
+  factorIds: {
     type: Array,
-    minCount: requiredConditions.length,
-    label: "Conditions",
+    minCount: requiredFactors.length,
+    label: "Factors",
     index: true,
     denyUpdate: true
-    // // Custom validation verifies required conditions are present and that
-    // // there are no duplicate conditions with the same key. We cannot easily
-    // // verify one of each conditions is present.
+    // // Custom validation verifies required factors are present and that
+    // // there are no duplicate factors with the same key. We cannot easily
+    // // verify one of each factors is present.
     // custom() {
     //   if (!Meteor.isServer || !this.isInsert) {
     //     return;
     //   }
 
-    //   const conditions = Conditions.find({ _id: { $in: this.value } }).fetch();
+    //   const factors = Factors.find({ _id: { $in: this.value } }).fetch();
     //   const doc = {};
-    //   conditions.forEach(c => (doc[c.type] = c.value));
+    //   factors.forEach(c => (doc[c.type] = c.value));
 
-    //   const context = conditionsSchema.newContext();
+    //   const context = factorsSchema.newContext();
     //   context.validate(doc);
     //   if (!context.isValid()) {
     //     const error = {
-    //       name: "conditionIds",
+    //       name: "factorIds",
     //       type: "invalid",
     //       details: context.validationErrors()
     //     };
@@ -145,28 +106,27 @@ Treatments.schema = new SimpleSchema({
     // }
   },
 
-  "conditionIds.$": {
+  "factorIds.$": {
     type: String,
     regEx: SimpleSchema.RegEx.Id,
-    label: `Condition Item`
-    // associatedMustExist: Conditions
+    label: `Factor Item`
   }
 });
 
-Treatments.schema.addDocValidator(({ conditionIds }) => {
+Treatments.schema.addDocValidator(({ factorIds }) => {
   if (!this.isInsert) {
     return [];
   }
   const query = {
-    conditionIds: {
-      $size: conditionIds.length,
-      $all: conditionIds
+    factorIds: {
+      $size: factorIds.length,
+      $all: factorIds
     }
   };
   if (Boolean(Treatments.findOne(query))) {
     return [
       {
-        name: "conditionIds",
+        name: "factorIds",
         type: "notUnique"
       }
     ];

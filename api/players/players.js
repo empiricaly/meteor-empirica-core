@@ -1,8 +1,5 @@
 import SimpleSchema from "simpl-schema";
 
-import { Batches } from "../batches/batches";
-import { GameLobbies } from "../game-lobbies/game-lobbies";
-import { Games } from "../games/games";
 import { TimestampSchema, UserDataSchema, BelongsTo } from "../default-schemas";
 
 export const Players = new Mongo.Collection("players");
@@ -91,8 +88,6 @@ Players.schema = new SimpleSchema({
 
 Players.schema.extend(TimestampSchema);
 Players.schema.extend(UserDataSchema);
-Meteor.startup(function() {
-  Players.schema.extend(BelongsTo(Games, false, false));
-  Players.schema.extend(BelongsTo(GameLobbies, false, false));
-  Players.attachSchema(Players.schema);
-});
+Players.schema.extend(BelongsTo("Games", false));
+Players.schema.extend(BelongsTo("GameLobbies", false));
+Players.attachSchema(Players.schema);

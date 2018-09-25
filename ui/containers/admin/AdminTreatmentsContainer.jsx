@@ -1,7 +1,7 @@
 import { withTracker } from "meteor/react-meteor-data";
 
-import { ConditionTypes } from "./AdminConditionsContainer.jsx";
-import { Conditions } from "../../../api/conditions/conditions.js";
+import { FactorTypes } from "../../../api/factor-types/factor-types.js";
+import { Factors } from "../../../api/factors/factors.js";
 import { Treatments } from "../../../api/treatments/treatments";
 import AdminTreatments from "../../components/admin/AdminTreatments";
 
@@ -10,17 +10,17 @@ export default withTracker(props => {
   const treatmentsLoading = !Meteor.subscribe("admin-treatments", {
     archived
   }).ready();
-  const conditionsLoading = !Meteor.subscribe("admin-conditions").ready();
-  const typesLoading = !Meteor.subscribe("admin-condition-types").ready();
+  const factorsLoading = !Meteor.subscribe("admin-factors").ready();
+  const typesLoading = !Meteor.subscribe("admin-factor-types").ready();
 
   return {
-    loading: treatmentsLoading || conditionsLoading,
+    loading: treatmentsLoading || factorsLoading,
     typesLoading,
     treatments: Treatments.find().fetch({
       archivedAt: { $exists: Boolean(archived) }
     }),
-    conditions: Conditions.find({}, { sort: { value: 1 } }).fetch(),
-    conditionTypes: ConditionTypes.find().fetch(),
+    factors: Factors.find({}, { sort: { value: 1 } }).fetch(),
+    factorTypes: FactorTypes.find().fetch(),
     ...props
   };
 })(AdminTreatments);

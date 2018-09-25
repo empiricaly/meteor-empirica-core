@@ -1,5 +1,3 @@
-import { Conditions } from "../../api/conditions/conditions.js";
-import { config } from "../../server";
 import log from "../../lib/log.js";
 
 const admins = [];
@@ -38,7 +36,7 @@ if (admins.length === 0) {
   );
 }
 
-const bootstrapFunctions = [];
+export const bootstrapFunctions = [];
 export const bootstrap = () => {
   bootstrapFunctions.forEach(f => f());
 };
@@ -58,21 +56,21 @@ bootstrapFunctions.push(() => {
   });
 });
 
-const insertMissingValue = key => value => {
-  const attributes = { type: key, value };
-  if (!Boolean(Conditions.findOne(attributes))) {
-    Conditions.insert(_.extend({ name: String(value) }, attributes), {
-      autoConvert: false
-    });
-  }
-};
-bootstrapFunctions.push(() => {
-  _.each(config.conditions, (definition, key) => {
-    if (definition.allowedValues) {
-      definition.allowedValues.forEach(insertMissingValue(key));
-    }
-    if (definition.type === Boolean) {
-      [true, false].forEach(insertMissingValue(key));
-    }
-  });
-});
+// const insertMissingValue = key => value => {
+//   const attributes = { type: key, value };
+//   if (!Boolean(Factors.findOne(attributes))) {
+//     Factors.insert(_.extend({ name: String(value) }, attributes), {
+//       autoConvert: false
+//     });
+//   }
+// };
+// bootstrapFunctions.push(() => {
+//   _.each(config.factors, (definition, key) => {
+//     if (definition.allowedValues) {
+//       definition.allowedValues.forEach(insertMissingValue(key));
+//     }
+//     if (definition.type === Boolean) {
+//       [true, false].forEach(insertMissingValue(key));
+//     }
+//   });
+// });

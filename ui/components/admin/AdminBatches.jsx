@@ -49,7 +49,7 @@ export default class AdminBatches extends React.Component {
       loading,
       batches,
       treatments,
-      conditions,
+      factors,
       lobbyConfigs
     } = this.props;
 
@@ -221,7 +221,7 @@ export default class AdminBatches extends React.Component {
 
         <AdminNewBatch
           treatments={treatments}
-          conditions={conditions}
+          factors={factors}
           lobbyConfigs={lobbyConfigs}
           isOpen={newIsOpen}
           onClose={() => this.setState({ newIsOpen: false })}

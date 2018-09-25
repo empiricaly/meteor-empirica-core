@@ -1,7 +1,6 @@
 import SimpleSchema from "simpl-schema";
 
-import { GameLobbies } from "../game-lobbies/game-lobbies";
-import { Games } from "../games/games";
+import { statusSchema } from "./status-schema";
 import {
   TimestampSchema,
   HasManyByRef,
@@ -43,26 +42,6 @@ export const assignmentTypes = {
   simple: "Simple",
   complete: "Complete"
 };
-
-Batches.statusSchema = new SimpleSchema({
-  status: {
-    type: String,
-    allowedValues: [
-      "init", // Batch created, not running yet
-      "running", // Batch is running
-
-      // NOTE(np): paused: for now, we don't support paused because we need to do something about timers
-      // "paused", // Batch has been pause, ongoing games keep on going but no more new players are accepted. Can be restarted.
-
-      "finished", // Batch has finished and cannot be restarted
-
-      // NOTE(np): cancelled might break a game if it's running at the moment, gotta be careful
-      "cancelled" // Batch was cancelled and cannot be restarted
-    ],
-    defaultValue: "init",
-    index: 1
-  }
-});
 
 Batches.schema = new SimpleSchema({
   assignment: {
@@ -162,10 +141,10 @@ if (Meteor.isDevelopment || Meteor.settings.public.debug_gameDebugMode) {
   Batches.schema.extend(DebugModeSchema);
 }
 
-Batches.schema.extend(Batches.statusSchema);
+Batches.schema.extend(statusSchema);
 Batches.schema.extend(TimestampSchema);
 Meteor.startup(function() {
-  Batches.schema.extend(HasManyByRef(Games));
-  Batches.schema.extend(HasManyByRef(GameLobbies));
+  Batches.schema.extend(HasManyByRef("Games"));
+  Batches.schema.extend(HasManyByRef("GameLobbies"));
   Batches.attachSchema(Batches.schema);
 });

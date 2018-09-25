@@ -5,7 +5,7 @@ import { bootstrap } from "../../startup/server/bootstrap.js";
 
 const userColls = ["meteor_accounts_loginServiceConfiguration", "users"];
 const keep = [].concat(userColls);
-const keepPartial = ["treatments", "conditions", "lobby_configs"];
+const keepPartial = ["treatments", "factors", "lobby_configs"];
 
 if (Meteor.isDevelopment || Meteor.settings.public.debug_resetDatabase) {
   Meteor.methods({

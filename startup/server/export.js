@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { Conditions } from "../../api/conditions/conditions.js";
+import { Factors } from "../../api/factors/factors.js";
 import { Games } from "../../api/games/games.js";
 import { PlayerInputs } from "../../api/player-inputs/player-inputs.js";
 import { PlayerRounds } from "../../api/player-rounds/player-rounds.js";
@@ -116,18 +116,18 @@ const exportStages = format => (req, res, next) => {
       break;
   }
 
-  const condRaw = Conditions.rawCollection();
+  const condRaw = Factors.rawCollection();
   const condDistinct = Meteor.wrapAsync(condRaw.distinct, condRaw);
-  const conditionTypes = condDistinct("type");
-  const allConditions = Conditions.find().fetch();
-  const getCond = id => allConditions.find(c => c._id === id);
+  const factorTypes = condDistinct("type");
+  const allFactors = Factors.find().fetch();
+  const getCond = id => allFactors.find(c => c._id === id);
   const playerKeys = getDataKeys(Players);
   const playerRoundKeys = getDataKeys(PlayerRounds);
   const playerStageKeys = getDataKeys(PlayerStages);
   const roundKeys = getDataKeys(Rounds);
   const stageKeys = getDataKeys(Stages);
 
-  for (const type of conditionTypes) {
+  for (const type of factorTypes) {
     csvHeaders.push(`treatment.${type}`);
   }
 
@@ -253,9 +253,9 @@ const exportStages = format => (req, res, next) => {
       out.set(`stage.name`, stage.name);
       out.set(`stage.duration`, stage.durationInSeconds);
 
-      const conditions = treatment.conditionIds.map(getCond);
-      for (const type of conditionTypes) {
-        const cond = conditions.find(c => c.type === type);
+      const factors = treatment.factorIds.map(getCond);
+      for (const type of factorTypes) {
+        const cond = factors.find(c => c.type === type);
         out.set(`treatment.${type}`, cond && cond.value);
       }
 

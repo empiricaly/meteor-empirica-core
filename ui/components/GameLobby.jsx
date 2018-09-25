@@ -25,7 +25,7 @@ export default class GameLobby extends React.Component {
   render() {
     const { gameLobby, treatment, timedOut, lobbyConfig, player } = this.props;
 
-    const total = treatment.condition("playerCount").value;
+    const total = treatment.factor("playerCount").value;
     const exisiting = gameLobby.playerIds.length;
 
     if (exisiting >= total) {

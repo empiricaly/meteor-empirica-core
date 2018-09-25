@@ -1,10 +1,12 @@
 import "./startup/server/index.js";
-import { playerIdForConn } from "./startup/server/connections.js";
-import { callOnChange } from "./api/server/onchange.js";
-import shared from "./shared";
 
 import SimpleSchema from "simpl-schema";
 SimpleSchema.debug = true;
+
+import { playerIdForConn } from "./startup/server/connections.js";
+import { callOnChange } from "./api/server/onchange.js";
+import shared from "./shared";
+import log from "./lib/log";
 
 // Maybe could do better...
 const config = {};
@@ -16,7 +18,8 @@ const Empirica = {
 
   Client() {
     log.error(
-      "You are trying to access the Client part of Empirica on the server. Empirica.Client() is only accessible from the client."
+      `You are trying to access the Client part of Empirica on the server.
+Empirica.Client() is only accessible from the client.`
     );
   }
 };

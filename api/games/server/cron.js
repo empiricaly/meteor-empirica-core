@@ -42,7 +42,7 @@ Cron.add({
         const players = Players.find({ gameId }).fetch();
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
-        game.treatment = treatment.conditionsObject();
+        game.treatment = treatment.factorsObject();
         game.players = players;
         game.rounds = Rounds.find({ gameId }).fetch();
         game.stages = Stages.find({ gameId }).fetch();

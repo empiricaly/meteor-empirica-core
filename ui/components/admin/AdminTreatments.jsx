@@ -61,9 +61,9 @@ class AdminTreatment extends React.Component {
   };
 
   render() {
-    const { treatment, conditionTypes, archived } = this.props;
+    const { treatment, factorTypes, archived } = this.props;
     const { name } = this.state;
-    const conds = treatment.conditions();
+    const conds = treatment.factors();
 
     const archiveIntent = archived ? Intent.SUCCESS : Intent.DANGER;
     return (
@@ -76,8 +76,8 @@ class AdminTreatment extends React.Component {
           />
         </td>
 
-        {conditionTypes.map(type => {
-          const cond = conds.find(c => c.type === type._id);
+        {factorTypes.map(type => {
+          const cond = conds.find(c => c.factorTypeId === type._id);
           return <td key={type._id}>{cond ? cond.label() : "-"}</td>;
         })}
 
@@ -100,13 +100,7 @@ export default class AdminTreatments extends React.Component {
   state = { newTreatmentIsOpen: false };
 
   render() {
-    const {
-      loading,
-      treatments,
-      conditions,
-      conditionTypes,
-      archived
-    } = this.props;
+    const { loading, treatments, factors, factorTypes, archived } = this.props;
 
     if (loading) {
       return <Loading />;
@@ -129,9 +123,9 @@ export default class AdminTreatments extends React.Component {
             <thead>
               <tr>
                 <th>Name</th>
-                {conditionTypes.map(type => (
+                {factorTypes.map(type => (
                   <th key={type._id}>
-                    <em label={type.description}>{type._id}</em>
+                    <em label={type.description}>{type.name}</em>
                   </th>
                 ))}
                 <th />
@@ -142,7 +136,7 @@ export default class AdminTreatments extends React.Component {
                 <AdminTreatment
                   key={treatment._id}
                   treatment={treatment}
-                  conditionTypes={conditionTypes}
+                  factorTypes={factorTypes}
                   archived={archived}
                 />
               ))}
@@ -165,8 +159,8 @@ export default class AdminTreatments extends React.Component {
             />
 
             <AdminNewTreatment
-              conditions={conditions}
-              conditionTypes={conditionTypes}
+              factors={factors}
+              factorTypes={factorTypes}
               onClose={() => this.setState({ newTreatmentIsOpen: false })}
               isOpen={this.state.newTreatmentIsOpen}
             />

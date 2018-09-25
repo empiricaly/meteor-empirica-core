@@ -10,11 +10,11 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
+import { Factors } from "../../../api/factors/factors.js";
 import { AlertToaster } from "../Toasters.jsx";
-import { Conditions } from "../../../api/conditions/conditions.js";
-import { createCondition } from "../../../api/conditions/methods.js";
+import { createFactor } from "../../../api/factors/methods.js";
 
-export default class AdminNewCondition extends React.Component {
+export default class AdminNewFactor extends React.Component {
   state = { value: "" };
 
   handleIntUpdate = value => {
@@ -27,24 +27,24 @@ export default class AdminNewCondition extends React.Component {
     this.setState({ [name]: value });
   };
 
-  handleNewCondition = event => {
+  handleNewFactor = event => {
     event.preventDefault();
     let { name, value } = this.state;
     const {
-      type: { _id: type, stringType },
+      type: { _id: factorTypeId, type },
       onClose
     } = this.props;
 
-    const params = Conditions.schema.clean(
-      { type, name, value },
+    const params = Factors.schema.clean(
+      { factorTypeId, name, value },
       { autoConvert: false }
     );
 
-    if (stringType === "Number") {
+    if (type === "Number") {
       params.value = parseFloat(params.value);
     }
 
-    createCondition.call(params, err => {
+    createFactor.call(params, err => {
       if (err) {
         AlertToaster.show({ message: String(err) });
         return;
@@ -58,9 +58,8 @@ export default class AdminNewCondition extends React.Component {
     const { isOpen, onClose, type } = this.props;
     const { name, value } = this.state;
 
-    let input,
-      isFloat = false;
-    switch (type.stringType) {
+    let input;
+    switch (type.type) {
       case "Number":
         input = (
           <input
@@ -101,13 +100,13 @@ export default class AdminNewCondition extends React.Component {
             id="value"
             value={value}
             onChange={this.handleUpdate}
-            pattern={type.regEx && type.regEx.source}
+            // pattern={type.regEx && type.regEx.source}
             required
           />
         );
         break;
       default:
-        console.error("New Condition unsupported type:", type.stringType);
+        console.error("New factor unsupported type:", type.type);
         break;
     }
 
@@ -118,18 +117,18 @@ export default class AdminNewCondition extends React.Component {
     if (!_.isUndefined(type.max)) {
       properties.push(`Max: ${type.max}`);
     }
-    if (!_.isUndefined(type.regEx)) {
-      properties.push(`Pattern: ${type.regEx.source}`);
-    }
+    // if (!_.isUndefined(type.regEx)) {
+    //   properties.push(`Pattern: ${type.regEx.source}`);
+    // }
 
     return (
       <Dialog
         icon={IconNames.PROPERTY}
         isOpen={isOpen}
         onClose={onClose}
-        title={`New ${type._id} Condition`}
+        title={`New ${type.name} Factor`}
       >
-        <form className="new-condition" onSubmit={this.handleNewCondition}>
+        <form className="new-factor" onSubmit={this.handleNewFactor}>
           <div className={Classes.DIALOG_BODY}>
             <FormGroup
               label="Name"
@@ -161,7 +160,7 @@ export default class AdminNewCondition extends React.Component {
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
               <Button
                 type="submit"
-                text="Create Condition"
+                text="Create Factor"
                 intent={Intent.PRIMARY}
               />
             </div>

@@ -1,8 +1,6 @@
 import SimpleSchema from "simpl-schema";
 import inflection from "inflection";
 
-import { Batches } from "../batches/batches";
-import { GameLobbies } from "../game-lobbies/game-lobbies.js";
 import {
   HasManyByRef,
   TimestampSchema,
@@ -139,7 +137,7 @@ LobbyConfigs.schema = new SimpleSchema({
 LobbyConfigs.schema.extend(TimestampSchema);
 LobbyConfigs.schema.extend(ArchivedSchema);
 Meteor.startup(() => {
-  LobbyConfigs.schema.extend(HasManyByRef(Batches));
-  LobbyConfigs.schema.extend(HasManyByRef(GameLobbies));
+  LobbyConfigs.schema.extend(HasManyByRef("Batches"));
+  LobbyConfigs.schema.extend(HasManyByRef("GameLobbies"));
   LobbyConfigs.attachSchema(LobbyConfigs.schema);
 });

@@ -1,5 +1,5 @@
 import { Batches } from "./batches/batches.js";
-import { Conditions } from "./conditions/conditions.js";
+import { Factors } from "./factors/factors.js";
 import { GameLobbies } from "./game-lobbies/game-lobbies.js";
 import { Games } from "./games/games.js";
 import { LobbyConfigs } from "./lobby-configs/lobby-configs.js";
@@ -13,7 +13,7 @@ import { Treatments } from "./treatments/treatments.js";
 
 export const collections = [
   Batches,
-  Conditions,
+  Factors,
   GameLobbies,
   Games,
   LobbyConfigs,

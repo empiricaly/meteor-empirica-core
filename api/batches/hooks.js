@@ -45,8 +45,8 @@ Batches.after.insert(function(userId, batch) {
     l.batchId = batch._id;
 
     const treatment = Treatments.findOne(l.treatmentId);
-    l.availableCount = treatment.condition("playerCount").value;
-    const botsCountCond = treatment.condition("botsCount");
+    l.availableCount = treatment.factor("playerCount").value;
+    const botsCountCond = treatment.factor("botsCount");
     if (botsCountCond) {
       const botsCount = botsCountCond.value;
       if (botsCount > l.availableCount) {

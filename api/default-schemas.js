@@ -126,8 +126,8 @@ export const PolymorphicSchema = function(collTypes) {
 };
 
 export const HasManyByRef = function(coll) {
-  const camel = inflection.camelize(inflection.singularize(coll._name), true);
-  const label = inflection.titleize(coll._name);
+  const camel = inflection.camelize(inflection.singularize(coll), true);
+  const label = inflection.titleize(coll);
   const fieldName = `${camel}Ids`;
   return new SimpleSchema({
     [fieldName]: {
@@ -140,13 +140,12 @@ export const HasManyByRef = function(coll) {
       type: String,
       regEx: SimpleSchema.RegEx.Id,
       label: `${label} Item`
-      // associatedMustExist: coll
     }
   });
 };
 
-export const BelongsTo = function(coll, denyUpdate = true, required = true) {
-  const singular = inflection.singularize(coll._name);
+export const BelongsTo = function(coll, required = true) {
+  const singular = inflection.singularize(coll);
   const camel = inflection.camelize(singular, true);
   const label = inflection.titleize(singular);
   const fieldName = `${camel}Id`;
@@ -156,7 +155,6 @@ export const BelongsTo = function(coll, denyUpdate = true, required = true) {
       regEx: SimpleSchema.RegEx.Id,
       label,
       // denyUpdate,
-      // associatedMustExist: coll,
       index: true,
       optional: !required
     }

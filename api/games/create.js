@@ -24,7 +24,7 @@ export const createGameFromLobby = gameLobby => {
 
   const batch = gameLobby.batch();
   const treatment = gameLobby.treatment();
-  const conditions = treatment.conditionsObject();
+  const factors = treatment.factorsObject();
   const { batchId, treatmentId, status, debugMode } = gameLobby;
 
   players.forEach(player => {
@@ -38,8 +38,8 @@ export const createGameFromLobby = gameLobby => {
   });
 
   // Ask (experimenter designer) init function to configure this game
-  // given the conditions and players given.
-  const params = config.init(conditions, players);
+  // given the factors and players given.
+  const params = config.init(factors, players);
 
   // Extract top level data fields into the the data subfield
   params.data = _.omit(params, "players", "rounds");
@@ -239,7 +239,7 @@ export const createGameFromLobby = gameLobby => {
     const players = Players.find({
       _id: { $in: params.playerIds }
     }).fetch();
-    game.treatment = treatment.conditionsObject();
+    game.treatment = treatment.factorsObject();
     game.players = players;
     game.rounds = Rounds.find({ gameId }).fetch();
     game.rounds.forEach(round => {
