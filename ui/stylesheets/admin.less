@@ -1,0 +1,73 @@
+.admin {
+  height: 100%;
+  width: 100%;
+
+  h2 {
+    color: @admin-header-text-color;
+
+    .admin-header-icon {
+      color: @admin-header-icon-color;
+      margin-right: 0.6rem;
+      position: relative;
+      // top: -0.1em;
+    }
+  }
+
+  main {
+    overflow: auto;
+    padding: 0 1.5rem 7rem;
+  }
+
+  .games,
+  .players {
+    height: calc(~"100vh - 14rem");
+  }
+
+  .inner-table tbody tr td {
+    box-shadow: none !important;
+  }
+
+  .button-group {
+    display: flex;
+  }
+
+  .add-treatment-popover {
+    padding: 1rem;
+  }
+
+  .conditions {
+    .conditions-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
+      grid-gap: 3rem;
+    }
+  }
+
+  .condition {
+    h4 {
+      margin-top: 0;
+    }
+
+    [type="button"] {
+      float: right;
+    }
+  }
+
+  .required {
+    label:not(.bp3-radio)::after {
+      content: "*";
+      position: relative;
+      left: 0.2em;
+      color: red;
+    }
+  }
+
+  .bp3-html-select,
+  .bp3-html-select select {
+    max-width: 100%;
+  }
+
+  table tr td.numeric {
+    text-align: right;
+  }
+}
