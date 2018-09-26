@@ -48,18 +48,15 @@ export default class AdminFactors extends React.Component {
             icon={IconNames.PROPERTY}
             iconSize={Icon.SIZE_LARGE}
           />{" "}
-          {archived ? "Archived Factor Types" : "Factors"}
+          {archived ? "Archived Factors" : "Factors"}
         </h2>
 
         <div className="factors-list">
           {archived && factorTypes.length === 0 ? (
-            <p>No archived Factor Types</p>
+            <p>No archived Factors</p>
           ) : null}
           {factorTypes.map(t => {
-            const hasNewForm = !(
-              t.type === "Boolean" ||
-              (t.allowedValues && t.allowedValues.length > 0)
-            );
+            const hasNewForm = t.type !== "Boolean";
 
             const requiredType = FactorTypes.requiredTypes.includes(t.name);
 
@@ -95,7 +92,7 @@ export default class AdminFactors extends React.Component {
                       <Tooltip
                         content={
                           <>
-                            New <code>{t.name}</code> Factor
+                            New <code>{t.name}</code> Factor Value
                           </>
                         }
                         position={Position.TOP}
@@ -165,7 +162,7 @@ export default class AdminFactors extends React.Component {
             <br />
 
             <Button
-              text="New Factor Type"
+              text="New Factor"
               onClick={() => this.setState({ newFactorIsOpen: true })}
             />
 
@@ -179,7 +176,7 @@ export default class AdminFactors extends React.Component {
             <p>
               <br />
               <Link to="/admin/factors/archived">
-                View Archived Factor Types
+                View Archived Factors
               </Link>
             </p>
           </>

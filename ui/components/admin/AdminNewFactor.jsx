@@ -15,7 +15,33 @@ import { AlertToaster } from "../Toasters.jsx";
 import { createFactor } from "../../../api/factors/methods.js";
 
 export default class AdminNewFactor extends React.Component {
-  state = { value: "" };
+  state = { value: "", loading: false };
+
+  constructor(props) {
+    super(props);
+    this.valueInputRef = React.createRef();
+  }
+
+  componentDidMount() {
+    if (this.props.isOpen) {
+      this.focus();
+    }
+  }
+
+  componentDidUpdate(prevProp) {
+    if (this.props.isOpen && !prevProp.isOpen) {
+      this.focus();
+    }
+  }
+
+  focus() {
+    setTimeout(() => {
+      const node = this.valueInputRef.current;
+      if (node) {
+        node.focus();
+      }
+    }, 100);
+  }
 
   handleIntUpdate = value => {
     this.setState({ value });
@@ -29,7 +55,13 @@ export default class AdminNewFactor extends React.Component {
 
   handleNewFactor = event => {
     event.preventDefault();
-    let { name, value } = this.state;
+
+    const { name, value, loading } = this.state;
+    if (loading) {
+      return;
+    }
+    this.setState({ loading: true });
+
     const {
       type: { _id: factorTypeId, type },
       onClose
@@ -46,17 +78,20 @@ export default class AdminNewFactor extends React.Component {
 
     createFactor.call(params, err => {
       if (err) {
-        AlertToaster.show({ message: String(err) });
+        AlertToaster.show({
+          message: err.reason || err.message || err.toString()
+        });
+        this.setState({ loading: false });
         return;
       }
       onClose();
-      this.setState({});
+      this.setState({ loading: false, name: "", value: undefined });
     });
   };
 
   render() {
     const { isOpen, onClose, type } = this.props;
-    const { name, value } = this.state;
+    const { name, value, loading } = this.state;
 
     let input;
     switch (type.type) {
@@ -74,6 +109,7 @@ export default class AdminNewFactor extends React.Component {
             value={value}
             onChange={this.handleUpdate}
             required
+            ref={this.valueInputRef}
           />
         );
         break;
@@ -87,6 +123,7 @@ export default class AdminNewFactor extends React.Component {
             value={value}
             required
             onValueChange={this.handleIntUpdate}
+            inputRef={this.valueInputRef}
           />
         );
         break;
@@ -102,6 +139,7 @@ export default class AdminNewFactor extends React.Component {
             onChange={this.handleUpdate}
             // pattern={type.regEx && type.regEx.source}
             required
+            ref={this.valueInputRef}
           />
         );
         break;
@@ -126,7 +164,7 @@ export default class AdminNewFactor extends React.Component {
         icon={IconNames.PROPERTY}
         isOpen={isOpen}
         onClose={onClose}
-        title={`New ${type.name} Factor`}
+        title={`New ${type.name} Factor Value`}
       >
         <form className="new-factor" onSubmit={this.handleNewFactor}>
           <div className={Classes.DIALOG_BODY}>
@@ -159,8 +197,9 @@ export default class AdminNewFactor extends React.Component {
           <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
               <Button
+                loading={loading}
                 type="submit"
-                text="Create Factor"
+                text="Create Factor Value"
                 intent={Intent.PRIMARY}
               />
             </div>

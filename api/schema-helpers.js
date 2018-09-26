@@ -14,7 +14,7 @@ SimpleSchema.extendOptions(["scopedUnique"]);
 Collection2.on("schema.attached", (collection, ss) => {
   if (ss.version >= 2) {
     ss.messageBox.messages({
-      uniqueScoped: "Already exists"
+      scopedUnique: "Already exists"
     });
   }
 

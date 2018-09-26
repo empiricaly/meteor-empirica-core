@@ -1,6 +1,7 @@
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
 import { Factors } from "./factors.js";
+import { FactorTypes } from "../factor-types/factor-types.js";
 import { IdSchema } from "../default-schemas.js";
 
 export const createFactor = new ValidatedMethod({
@@ -12,6 +13,15 @@ export const createFactor = new ValidatedMethod({
     if (!this.userId) {
       throw new Error("unauthorized");
     }
+
+    const factorType = FactorTypes.findOne(factor.factorTypeId);
+    if (!factorType) {
+      throw new Error("not found");
+    }
+    // const errors = Factors.valueValidation(factorType, factor.value);
+    // if (errors) {
+    //   throw new Error(errors.map(e => e.type).join(", "));
+    // }
 
     Factors.insert(factor, { autoConvert: false });
   }

@@ -33,30 +33,45 @@ export const typeConversion = {
   Boolean: Boolean
 };
 
-const valueValidation = function() {
-  const factorTypeId = this.field("factorTypeId").value;
-  const factorType = FactorTypes.findOne(factorTypeId);
+Factors.valueValidation = function(factorType, value, simpleSchmemaType) {
   const type = typeConversion[factorType.type];
+
+  if (simpleSchmemaType && simpleSchmemaType !== type) {
+    return;
+  }
+
   const fieldSchema = { type };
-  if (factorType.allowedValues && factorType.allowedValues.length > 0) {
-    fieldSchema.allowedValues = factorType.allowedValues;
-  } else {
-    if (factorType.min) {
-      fieldSchema.min = factorType.min;
-    }
-    if (factorType.max) {
-      fieldSchema.max = factorType.max;
-    }
+  if (factorType.min) {
+    fieldSchema.min = factorType.min;
+  }
+  if (factorType.max) {
+    fieldSchema.max = factorType.max;
   }
   const schema = { value: fieldSchema };
   const val = new SimpleSchema(schema).newContext();
-  console.log(schema, { value: this.value });
 
-  val.validate({ value: this.value });
-  console.log("val.isValid()", val.isValid());
+  val.validate({ value });
 
   if (!val.isValid()) {
-    this.addValidationErrors(val.validationErrors());
+    return val.validationErrors();
+  }
+
+  if (Factors.find({ factorTypeId: factorType._id, value }).count() > 0) {
+    return [{ name: "value", type: "scopedUnique" }];
+  }
+};
+
+const valueValidation = function() {
+  if (this.key !== "value") {
+    return;
+  }
+  const factorTypeId = this.field("factorTypeId").value;
+  const factorType = FactorTypes.findOne(factorTypeId);
+  const value = this.value;
+  const errors = Factors.valueValidation(factorType, value);
+
+  if (errors) {
+    this.addValidationErrors(errors);
     return false;
   }
 };
@@ -76,29 +91,22 @@ Factors.schema = new SimpleSchema({
   value: {
     type: SimpleSchema.oneOf(
       {
-        type: String,
-        custom: valueValidation,
-        scopedUnique: "type"
+        type: String
       },
       {
-        type: SimpleSchema.Integer,
-        custom: valueValidation,
-        scopedUnique: "type"
+        type: SimpleSchema.Integer
       },
       {
-        type: Number,
-        custom: valueValidation,
-        scopedUnique: "type"
+        type: Number
       },
       {
-        type: Boolean,
-        custom: valueValidation,
-        scopedUnique: "type"
+        type: Boolean
       }
     )
   }
 });
 
+Factors.schema.addValidator(valueValidation);
 Factors.schema.extend(BelongsTo("FactorTypes"));
 Factors.schema.extend(TimestampSchema);
 Factors.attachSchema(Factors.schema);

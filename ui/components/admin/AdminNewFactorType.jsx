@@ -20,7 +20,22 @@ import { AlertToaster } from "../Toasters.jsx";
 import HelpTooltip from "../HelpTooltip.jsx";
 
 export default class AdminNewFactorType extends React.Component {
-  state = { type: "String", name: "", allowedValues: [], required: false };
+  state = { type: "String", name: "", initialValues: [], required: false };
+  constructor(props) {
+    super(props);
+    this.firstInputRef = React.createRef();
+  }
+
+  componentDidUpdate(prevProp) {
+    if (this.props.isOpen && !prevProp.isOpen) {
+      setTimeout(() => {
+        const node = this.firstInputRef.current;
+        if (node) {
+          node.focus();
+        }
+      }, 100);
+    }
+  }
 
   handleNumberUpdate = (name, value, valueAsString) => {
     this.setState({ [name]: valueAsString });
@@ -47,14 +62,22 @@ export default class AdminNewFactorType extends React.Component {
       type,
       min,
       max,
-      allowedValues,
+      initialValues,
       required
     } = this.state;
     const { onClose } = this.props;
 
-    const params = FactorTypes.schema.clean(
-      { name, description, type, min, max, allowedValues, required },
-      { autoConvert: false }
+    const params = {
+      name,
+      description,
+      type,
+      min,
+      max,
+      required
+    };
+
+    params.initialValues = initialValues.filter(
+      v => !Factors.valueValidation(params, v)
     );
 
     if (params.min !== undefined) {
@@ -65,13 +88,11 @@ export default class AdminNewFactorType extends React.Component {
       params.max = parseFloat(params.max);
     }
 
-    if (params.allowedValues && params.allowedValues.length === 0) {
-      delete params.allowedValues;
-    }
-
     createFactorType.call(params, err => {
       if (err) {
-        AlertToaster.show({ message: String(err) });
+        AlertToaster.show({
+          message: err.reason || err.message || err.toString()
+        });
         return;
       }
       onClose();
@@ -81,7 +102,7 @@ export default class AdminNewFactorType extends React.Component {
         type: "String",
         min: undefined,
         max: undefined,
-        allowedValues: [],
+        initialValues: [],
         required: false
       });
     });
@@ -95,7 +116,7 @@ export default class AdminNewFactorType extends React.Component {
       type,
       min,
       max,
-      allowedValues,
+      initialValues,
       required
     } = this.state;
 
@@ -164,29 +185,6 @@ export default class AdminNewFactorType extends React.Component {
           </FormGroup>
         );
 
-        extraInputs.push(
-          <FormGroup
-            key="allowedValues"
-            label="Allowed Values"
-            labelFor="allowedValues"
-            helperText="List of specific values accepted. If filled, min and max are ignored."
-          >
-            <TagInput
-              inputProps={{
-                onFocus: () => {
-                  this.stopsubmit = true;
-                },
-                onBlur: () => {
-                  this.stopsubmit = false;
-                }
-              }}
-              addOnBlur
-              onChange={value => this.setState({ allowedValues: value })}
-              values={allowedValues}
-            />
-          </FormGroup>
-        );
-
         break;
       case "Boolean":
         break;
@@ -200,7 +198,7 @@ export default class AdminNewFactorType extends React.Component {
         icon={IconNames.PROPERTY}
         isOpen={isOpen}
         onClose={onClose}
-        title="New Factor Type"
+        title="New Factor"
       >
         <form
           className="new-factor-type"
@@ -277,6 +275,7 @@ export default class AdminNewFactorType extends React.Component {
                 pattern={/^[a-zA-Z0-9_]+$/.source}
                 onChange={this.handleChange}
                 required
+                ref={this.firstInputRef}
               />
             </FormGroup>
 
@@ -297,12 +296,35 @@ export default class AdminNewFactorType extends React.Component {
             </FormGroup>
 
             {extraInputs}
+
+            {/* {type === "Boolean" ? null : (
+              <FormGroup
+                key="initialValues"
+                label="Initial Values"
+                labelFor="initialValues"
+                helperText="List of initial values to create with the new Factor."
+              >
+                <TagInput
+                  inputProps={{
+                    onFocus: () => {
+                      this.stopsubmit = true;
+                    },
+                    onBlur: () => {
+                      this.stopsubmit = false;
+                    }
+                  }}
+                  addOnBlur
+                  onChange={value => this.setState({ initialValues: value })}
+                  values={initialValues}
+                />
+              </FormGroup>
+            )} */}
           </div>
           <div className={Classes.DIALOG_FOOTER}>
             <div className={Classes.DIALOG_FOOTER_ACTIONS}>
               <Button
                 type="submit"
-                text="Create Factor Type"
+                text="Create Factor"
                 intent={Intent.PRIMARY}
                 // onClick={this.handleNewFactorType}
               />

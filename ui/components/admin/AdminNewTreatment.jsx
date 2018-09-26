@@ -86,6 +86,8 @@ export default class AdminNewTreatment extends React.Component {
     const { isOpen, factors, factorTypes, onClose } = this.props;
     const { name, selected } = this.state;
 
+    const types = factorTypes.filter(t => !t.archivedAt);
+
     return (
       <Dialog
         className="admin"
@@ -110,7 +112,7 @@ export default class AdminNewTreatment extends React.Component {
               />
             </FormGroup>
 
-            {_.map(factorTypes, type => {
+            {_.map(types, type => {
               const conds = _.filter(
                 factors,
                 factor => factor.factorTypeId === type._id

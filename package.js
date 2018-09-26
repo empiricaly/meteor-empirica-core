@@ -61,11 +61,12 @@ Npm.depends({
   jdenticon: "2.1.0",
   loglevel: "1.6.1",
   "meteor-node-stubs": "0.4.1",
+  "message-box": "0.2.0",
   moment: "2.22.2",
   "prop-types": "15.6.1",
   "react-addons-css-transition-group": "15.6.2",
   "react-helmet": "5.2.0",
-  "simpl-schema": "1.5.0",
+  "simpl-schema": "1.5.3",
   react: "16.5.2",
   "react-dom": "16.5.2",
   "react-router-dom": "4.3.1"

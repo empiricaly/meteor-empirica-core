@@ -1268,9 +1268,9 @@
       "integrity": "sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ=="
     },
     "simpl-schema": {
-      "version": "1.5.0",
-      "resolved": "https://registry.npmjs.org/simpl-schema/-/simpl-schema-1.5.0.tgz",
-      "integrity": "sha512-lv9n+1R7Oe3fpm3cWVyrs3mG1C9+DCc8QTCRn6cfLIsPkLfuMhBPLDwpnIsdA8Ch0fRO7BSxKvpVPcYvcYeSxg=="
+      "version": "1.5.3",
+      "resolved": "https://registry.npmjs.org/simpl-schema/-/simpl-schema-1.5.3.tgz",
+      "integrity": "sha512-J24gSh39gBc3TYRFgaWx81bRf9unNML9u3dTAgxL1KI3F9JOv+Z29yEbosJFqmHfuuZ3K7ET/tTQKX4r4+f8/w=="
     },
     "tslib": {
       "version": "1.9.3",

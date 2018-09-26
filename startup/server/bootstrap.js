@@ -55,22 +55,3 @@ bootstrapFunctions.push(() => {
     }
   });
 });
-
-// const insertMissingValue = key => value => {
-//   const attributes = { type: key, value };
-//   if (!Boolean(Factors.findOne(attributes))) {
-//     Factors.insert(_.extend({ name: String(value) }, attributes), {
-//       autoConvert: false
-//     });
-//   }
-// };
-// bootstrapFunctions.push(() => {
-//   _.each(config.factors, (definition, key) => {
-//     if (definition.allowedValues) {
-//       definition.allowedValues.forEach(insertMissingValue(key));
-//     }
-//     if (definition.type === Boolean) {
-//       [true, false].forEach(insertMissingValue(key));
-//     }
-//   });
-// });

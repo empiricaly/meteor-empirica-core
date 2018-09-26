@@ -1,20 +1,58 @@
 import SimpleSchema from "simpl-schema";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
+import { Factors } from "../factors/factors.js";
 import { FactorTypes } from "./factor-types.js";
 import { IdSchema } from "../default-schemas.js";
 
 export const createFactorType = new ValidatedMethod({
   name: "FactorTypes.methods.create",
 
-  validate: FactorTypes.schema.omit("createdAt", "updatedAt").validator(),
+  validate: FactorTypes.schema
+    .omit("createdAt", "updatedAt")
+    .extend(
+      new SimpleSchema({
+        initialValues: {
+          type: Array,
+          optional: true
+        },
+
+        "initialValues.$": {
+          type: SimpleSchema.oneOf(
+            {
+              type: String,
+              scopedUnique: "type"
+            },
+            {
+              type: SimpleSchema.Integer,
+              scopedUnique: "type"
+            },
+            {
+              type: Number,
+              scopedUnique: "type"
+            },
+            {
+              type: Boolean,
+              scopedUnique: "type"
+            }
+          )
+        }
+      })
+    )
+    .validator(),
 
   run(factorType) {
     if (!this.userId) {
       throw new Error("unauthorized");
     }
 
-    FactorTypes.insert(factorType, { autoConvert: false });
+    const { initialValues } = factorType;
+    const factorTypeId = FactorTypes.insert(
+      _.omit(factorType, "initialValues"),
+      { autoConvert: false }
+    );
+
+    initialValues.forEach(value => Factors.insert({ factorTypeId, value }));
   }
 });
 

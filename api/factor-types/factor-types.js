@@ -1,5 +1,4 @@
 import SimpleSchema from "simpl-schema";
-
 import { ArchivedSchema, TimestampSchema } from "../default-schemas.js";
 
 export const FactorTypes = new Mongo.Collection("factor_types");
@@ -16,7 +15,14 @@ FactorTypes.schema = new SimpleSchema({
   name: {
     type: String,
     max: 256,
-    regEx: /^[a-z]+[a-zA-Z0-9]*$/
+    regEx: /^[a-z]+[a-zA-Z0-9]*$/,
+    index: true,
+    unique: true,
+    custom() {
+      if (this.isSet && FactorTypes.find({ name: this.value }).count() > 0) {
+        return "notUnique";
+      }
+    }
   },
 
   description: {
@@ -38,32 +44,12 @@ FactorTypes.schema = new SimpleSchema({
   max: {
     type: Number,
     optional: true
-  },
+  }
+});
 
-  allowedValues: {
-    type: Array,
-    optional: true
-  },
-
-  "allowedValues.$": {
-    type: SimpleSchema.oneOf(
-      {
-        type: String,
-        scopedUnique: "type"
-      },
-      {
-        type: SimpleSchema.Integer,
-        scopedUnique: "type"
-      },
-      {
-        type: Number,
-        scopedUnique: "type"
-      },
-      {
-        type: Boolean,
-        scopedUnique: "type"
-      }
-    )
+FactorTypes.schema.messageBox.messages({
+  en: {
+    notUnique: "{{label}} already exists."
   }
 });
 
