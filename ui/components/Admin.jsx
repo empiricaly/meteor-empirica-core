@@ -219,14 +219,14 @@ export default class Admin extends React.Component {
             <ButtonGroup>
               <Button
                 active={!isConfigMode}
-                icon="play"
+                icon={IconNames.PLAY}
                 onClick={this.setMode.bind(this, "monitoring")}
               >
                 Monitoring
               </Button>
               <Button
                 active={isConfigMode}
-                icon="cog"
+                icon={IconNames.COG}
                 onClick={this.setMode.bind(this, "configuration")}
               >
                 Configuration
@@ -239,6 +239,12 @@ export default class Admin extends React.Component {
         <main>
           <Switch>
             <Route path="/admin" exact component={AdminBatchesContainer} />
+            <Route
+              path="/admin/batches/archived"
+              component={withStaticProps(AdminBatchesContainer, {
+                archived: true
+              })}
+            />
             <Route path="/admin/games" component={AdminGames} />
             <Route path="/admin/players" component={AdminPlayers} />
             <Route

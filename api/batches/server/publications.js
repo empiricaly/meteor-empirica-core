@@ -1,14 +1,15 @@
 import { Batches } from "../batches";
-import { GameLobbies } from "../../game-lobbies/game-lobbies";
-import { Games } from "../../games/games";
-import { Players } from "../../players/players";
 
-Meteor.publish("admin-batches", function() {
+Meteor.publish("admin-batches", function(props) {
   if (!this.userId) {
     return null;
   }
 
-  return [Batches.find()];
+  if (!props || props.archived === undefined) {
+    return Batches.find();
+  }
+
+  return Batches.find({ archivedAt: { $exists: Boolean(props.archived) } });
 });
 
 Meteor.publish("runningBatches", function({ playerId }) {

@@ -2,6 +2,7 @@ import SimpleSchema from "simpl-schema";
 
 import { statusSchema } from "./status-schema";
 import {
+  ArchivedSchema,
   TimestampSchema,
   HasManyByRef,
   DebugModeSchema
@@ -143,8 +144,7 @@ if (Meteor.isDevelopment || Meteor.settings.public.debug_gameDebugMode) {
 
 Batches.schema.extend(statusSchema);
 Batches.schema.extend(TimestampSchema);
-Meteor.startup(function() {
-  Batches.schema.extend(HasManyByRef("Games"));
-  Batches.schema.extend(HasManyByRef("GameLobbies"));
-  Batches.attachSchema(Batches.schema);
-});
+Batches.schema.extend(ArchivedSchema);
+Batches.schema.extend(HasManyByRef("Games"));
+Batches.schema.extend(HasManyByRef("GameLobbies"));
+Batches.attachSchema(Batches.schema);

@@ -1,37 +1,10 @@
 import SimpleSchema from "simpl-schema";
 
 import { Factors } from "../factors/factors.js";
+import { FactorTypes } from "../factor-types/factor-types.js";
 import { TimestampSchema, ArchivedSchema } from "../default-schemas";
 
 export const Treatments = new Mongo.Collection("treatments");
-
-// requiredFactors hold a list of factors keys that are required by
-// Empirica core to be able to run a game.
-// Required factors are:
-// -`playerCount` determines how many players participate in a game and is
-//   therefore critical to run a game.
-// NOTE(np) I am still not sure this is the right way to decide how many players
-// should be in a game. The other potential required factor is botsCount.
-// Both of these are fundamental to any game. The information about the number
-// of players, whether it's human or computer players, determines many aspects
-// of the game. The fact they will influence the game run similarly to other
-// factors and are decided while deciding of a batch does not mean they
-// cannot be seperatly configured. I think there might be more flexibility and
-// clarity if we move these 2 factors into the UI as configuration values for
-// game runs, independently of the treatment. More thought needed here.
-const requiredFactors = ["playerCount"];
-
-//
-// Add playerCount to factors if missing
-//
-
-// This is the default playerCount definition
-const defaultPlayerCount = {
-  description: "The Number of players participating in the given game",
-  type: SimpleSchema.Integer,
-  min: 1,
-  max: 100
-};
 
 Treatments.helpers({
   displayName() {
@@ -40,6 +13,9 @@ Treatments.helpers({
 
   factor(name) {
     const type = FactorTypes.findOne({ name });
+    if (!type) {
+      return;
+    }
     return this.factors().find(c => c.factorTypeId === type._id);
   },
 
@@ -76,7 +52,7 @@ Treatments.schema = new SimpleSchema({
   // Array of factorIds
   factorIds: {
     type: Array,
-    minCount: requiredFactors.length,
+    minCount: FactorTypes.requiredTypes,
     label: "Factors",
     index: true,
     denyUpdate: true

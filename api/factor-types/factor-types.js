@@ -5,8 +5,15 @@ export const FactorTypes = new Mongo.Collection("factor_types");
 
 FactorTypes.helpers({});
 
+// requiredFactors hold a list of factors keys that are required by
+// Empirica core to be able to run a game.
+// Required factors are:
+// -`playerCount` determines how many players participate in a game and is
+//   therefore critical to run a game.
 FactorTypes.requiredTypes = ["playerCount"];
+
 FactorTypes.types = ["String", "Integer", "Number", "Boolean"];
+
 FactorTypes.schema = new SimpleSchema({
   required: {
     type: Boolean

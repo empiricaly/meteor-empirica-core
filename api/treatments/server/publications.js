@@ -1,5 +1,6 @@
-import { Factors } from "../../factors/factors.js";
 import { Treatments } from "../treatments";
+import { Factors } from "../../factors/factors.js";
+import { FactorTypes } from "../../factor-types/factor-types.js";
 
 Meteor.publish("admin-treatments", function({ archived }) {
   if (!this.userId) {
@@ -30,6 +31,7 @@ Meteor.publish("treatment", function(treatmentId) {
       _id: {
         $in: treatment.factorIds
       }
-    })
+    }),
+    FactorTypes.find()
   ];
 });

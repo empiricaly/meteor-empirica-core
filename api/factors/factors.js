@@ -14,13 +14,16 @@ Factors.helpers({
     }
     return label;
   },
+
   factorType() {
     return FactorTypes.findOne(this.factorTypeId);
   },
+
   factorTypeName() {
     const t = this.factorType();
     return t && t.name;
   },
+
   fullLabel() {
     return `${this.factorTypeName()}: ${this.label()}`;
   }

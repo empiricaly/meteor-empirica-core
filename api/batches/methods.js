@@ -1,3 +1,4 @@
+import SimpleSchema from "simpl-schema";
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 
 import { Batches } from "./batches";
@@ -33,6 +34,65 @@ export const duplicateBatch = new ValidatedMethod({
 
     const batch = Batches.findOne(_id);
     batch.duplicate();
+  }
+});
+
+export const updateBatch = new ValidatedMethod({
+  name: "Batches.methods.updateBatch",
+
+  validate: new SimpleSchema({
+    archived: {
+      type: Boolean,
+      optional: true
+    }
+  })
+    .extend(IdSchema)
+    .validator(),
+
+  run({ _id, archived }) {
+    if (!this.userId) {
+      throw new Error("unauthorized");
+    }
+
+    const batch = Batches.findOne(_id);
+    if (!batch) {
+      throw new Error("not found");
+    }
+
+    const $set = {},
+      $unset = {};
+
+    if (archived !== undefined) {
+      if (archived) {
+        if (batch.archivedAt) {
+          throw new Error("not found");
+        }
+
+        $set.archivedAt = new Date();
+        $set.archivedById = this.userId;
+      }
+      if (!archived) {
+        if (!batch.archivedAt) {
+          throw new Error("not found");
+        }
+
+        $unset.archivedAt = true;
+        $unset.archivedById = true;
+      }
+    }
+
+    const modifier = {};
+    if (Object.keys($set).length > 0) {
+      modifier.$set = $set;
+    }
+    if (Object.keys($unset).length > 0) {
+      modifier.$unset = $unset;
+    }
+    if (Object.keys(modifier).length === 0) {
+      return;
+    }
+
+    Batches.update(_id, modifier);
   }
 });
 

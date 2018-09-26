@@ -155,7 +155,7 @@ export default class AdminFactors extends React.Component {
         {archived ? (
           <p>
             <br />
-            <Link to="/admin/factors">Back to Factors</Link>
+            <Link to="/admin/factors">Back to Active Factors</Link>
           </p>
         ) : (
           <>
@@ -175,9 +175,7 @@ export default class AdminFactors extends React.Component {
 
             <p>
               <br />
-              <Link to="/admin/factors/archived">
-                View Archived Factors
-              </Link>
+              <Link to="/admin/factors/archived">View Archived Factors</Link>
             </p>
           </>
         )}

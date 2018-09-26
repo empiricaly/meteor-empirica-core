@@ -8,7 +8,10 @@ import { Treatments } from "../../../api/treatments/treatments";
 import AdminBatches from "../../components/admin/AdminBatches";
 
 export default withTracker(props => {
-  const batchesLoading = !Meteor.subscribe("admin-batches").ready();
+  const { archived } = props;
+  const batchesLoading = !Meteor.subscribe("admin-batches", {
+    archived
+  }).ready();
   const treatmentsLoading = !Meteor.subscribe("admin-treatments", {}).ready();
   const factorsLoading = !Meteor.subscribe("admin-factors").ready();
   const factorTypesLoading = !Meteor.subscribe("admin-factor-types").ready();
@@ -24,10 +27,13 @@ export default withTracker(props => {
       factorsLoading ||
       lobbyConfigsLoading ||
       factorTypesLoading,
-    batches: Batches.find().fetch(),
+    batches: Batches.find({
+      archivedAt: { $exists: Boolean(archived) }
+    }).fetch(),
     treatments: Treatments.find().fetch(),
     factors: Factors.find().fetch(),
     factorTypes: FactorTypes.find().fetch(),
-    lobbyConfigs: LobbyConfigs.find().fetch()
+    lobbyConfigs: LobbyConfigs.find().fetch(),
+    ...props
   };
 })(AdminBatches);

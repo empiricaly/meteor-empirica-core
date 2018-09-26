@@ -11,7 +11,7 @@ export default class AdminGames extends React.Component {
           <Icon className="admin-header-icon" icon={IconNames.FLOWS} /> Games
         </h2>
 
-        <NonIdealState icon={"build"} title="Under construction" />
+        <NonIdealState icon={IconNames.BUILD} title="Under construction" />
       </div>
     );
   }

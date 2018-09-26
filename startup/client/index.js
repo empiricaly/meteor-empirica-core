@@ -4,4 +4,3 @@ TimeSync.loggingEnabled = false;
 
 import "../both/index.js";
 import "./style.js";
-// import "./routes.js";
