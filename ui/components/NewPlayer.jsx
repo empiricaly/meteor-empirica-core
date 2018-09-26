@@ -28,6 +28,12 @@ export default class NewPlayer extends React.Component {
     }
   }
 
+  componentWillMount() {
+    if (!this.props.Consent) {
+      this.playerFromIdParam();
+    }
+  }
+
   componentWillUnmount() {
     if (this.timeout) {
       clearTimeout(this.timeout);
@@ -56,6 +62,11 @@ export default class NewPlayer extends React.Component {
 
   handleConsent = () => {
     this.setState({ consented: true });
+    this.playerFromIdParam();
+  };
+
+  playerFromIdParam() {
+    const { playerIdParam } = Meteor.settings.public;
 
     if (playerIdParam) {
       const id = new URL(document.location).searchParams.get(playerIdParam);
@@ -73,8 +84,7 @@ export default class NewPlayer extends React.Component {
         });
       }
     }
-  };
-
+  }
   render() {
     const { Consent } = this.props;
     const { id, consented, attemptingAutoLogin } = this.state;

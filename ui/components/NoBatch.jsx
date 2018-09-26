@@ -15,7 +15,7 @@ export default class NoBatch extends React.Component {
       <NonIdealState
         icon={IconNames.ISSUE}
         title="No experiments available"
-        description="There are currently no available experiement. Please wait until an experiment becomes available or come back at a later date."
+        description="There are currently no available experiments. Please wait until an experiment becomes available or come back at a later date."
       />
     );
   }

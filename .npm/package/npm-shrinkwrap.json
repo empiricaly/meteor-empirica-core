@@ -23,6 +23,11 @@
       "resolved": "https://registry.npmjs.org/@types/dom4/-/dom4-2.0.1.tgz",
       "integrity": "sha512-kSkVAvWmMZiCYtvqjqQEwOmvKwcH+V4uiv3qPQ8pAh1Xl39xggGEo8gHUqV4waYGHezdFw0rKBR8Jt0CrQSDZA=="
     },
+    "argparse": {
+      "version": "1.0.10",
+      "resolved": "https://registry.npmjs.org/argparse/-/argparse-1.0.10.tgz",
+      "integrity": "sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg=="
+    },
     "asap": {
       "version": "2.0.6",
       "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz",
@@ -446,6 +451,11 @@
       "resolved": "https://registry.npmjs.org/encoding/-/encoding-0.1.12.tgz",
       "integrity": "sha1-U4tm8+5izRq1HsMjgp0flIDHS+s="
     },
+    "esprima": {
+      "version": "4.0.1",
+      "resolved": "https://registry.npmjs.org/esprima/-/esprima-4.0.1.tgz",
+      "integrity": "sha512-eGuFFw7Upda+g4p+QHvnW0RyTX/SVeJBDM/gCtMARO0cLuT2HcEKnTPvhjV6aGeqrCB/sbNop0Kszm0jsaWU4A=="
+    },
     "exenv": {
       "version": "1.2.2",
       "resolved": "https://registry.npmjs.org/exenv/-/exenv-1.2.2.tgz",
@@ -532,6 +542,11 @@
       "version": "4.0.0",
       "resolved": "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz",
       "integrity": "sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ=="
+    },
+    "js-yaml": {
+      "version": "3.12.0",
+      "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.12.0.tgz",
+      "integrity": "sha512-PIt2cnwmPfL4hKNwqeiuz4bKfnzHTBv6HyVgjahA6mPLwPDzjDWrplJBMjHUFxku/N3FlmrbyPclad+I+4mJ3A=="
     },
     "lodash._basecallback": {
       "version": "3.3.1",
@@ -1221,9 +1236,9 @@
       "integrity": "sha512-Z2ZJE4p/jIfvUpiUMRydEVpQRf2f8GMHczT6qLcARmX7QRb28JDBTpnM2g/i5y/p7ZDEXYGHWg0RbhikE+hJRw=="
     },
     "react-transition-group": {
-      "version": "2.4.0",
-      "resolved": "https://registry.npmjs.org/react-transition-group/-/react-transition-group-2.4.0.tgz",
-      "integrity": "sha512-Xv5d55NkJUxUzLCImGSanK8Cl/30sgpOEMGc5m86t8+kZwrPxPCPcFqyx83kkr+5Lz5gs6djuvE5By+gce+VjA==",
+      "version": "2.5.0",
+      "resolved": "https://registry.npmjs.org/react-transition-group/-/react-transition-group-2.5.0.tgz",
+      "integrity": "sha512-qYB3JBF+9Y4sE4/Mg/9O6WFpdoYjeeYqx0AFb64PTazVy8RPMiE3A47CG9QmM4WJ/mzDiZYslV+Uly6O1Erlgw==",
       "dependencies": {
         "prop-types": {
           "version": "15.6.2",
@@ -1271,6 +1286,11 @@
       "version": "1.5.3",
       "resolved": "https://registry.npmjs.org/simpl-schema/-/simpl-schema-1.5.3.tgz",
       "integrity": "sha512-J24gSh39gBc3TYRFgaWx81bRf9unNML9u3dTAgxL1KI3F9JOv+Z29yEbosJFqmHfuuZ3K7ET/tTQKX4r4+f8/w=="
+    },
+    "sprintf-js": {
+      "version": "1.0.3",
+      "resolved": "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.0.3.tgz",
+      "integrity": "sha1-BOaSb2YolTVPPdAVIDYzuFcpfiw="
     },
     "tslib": {
       "version": "1.9.3",

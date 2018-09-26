@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 import { NavLink, Route, Switch } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -33,6 +34,7 @@ import AdminGames from "./admin/AdminGames.jsx";
 import AdminLobbyConfigsContainer from "../containers/admin/AdminLobbyConfigsContainer.jsx";
 import AdminPlayers from "./admin/AdminPlayers.jsx";
 import AdminTreatmentsContainer from "../containers/admin/AdminTreatmentsContainer.jsx";
+import { AlertToaster, SuccessToaster } from "./Toasters.jsx";
 import { withStaticProps } from "./Helpers.jsx";
 
 const NavBarLink = ({ path, name, exact = false }) => (
@@ -54,6 +56,7 @@ export default class Admin extends React.Component {
       ? "configuration"
       : "monitoring";
     this.state = { mode };
+    this.uploadRef = React.createRef();
   }
 
   componentDidMount() {
@@ -72,6 +75,76 @@ export default class Admin extends React.Component {
       }
     }
   }
+
+  handleImport = () => {
+    this.uploadRef.current.click();
+  };
+
+  onImportFileSelected = event => {
+    const file = event.currentTarget.files[0];
+    event.currentTarget.value = null;
+    if (!file) {
+      AlertToaster.show({ message: "No file selected" });
+      return;
+    }
+
+    this.setState({ importing: true });
+
+    var r = new FileReader();
+    r.onload = e => {
+      var text = e.target.result;
+      console.log(
+        "Got the file: " +
+          "name: " +
+          file.name +
+          "type: " +
+          file.type +
+          "size: " +
+          file.size +
+          " bytes:"
+      );
+
+      Meteor.call("adminImportConfiguration", { text }, err => {
+        this.setState({ importing: false });
+        if (err) {
+          AlertToaster.show({ message: `Failed to import: ${err}` });
+          return;
+        } else {
+          SuccessToaster.show({
+            // message: `Import Successful "${file.name}"!`
+            message: "Import Successful!"
+          });
+        }
+      });
+    };
+    r.readAsText(file);
+  };
+
+  handleExport = () => {
+    this.setState({ exporting: true });
+    Meteor.call("adminExportConfiguration", (err, yaml) => {
+      this.setState({ exporting: false });
+      if (err) {
+        AlertToaster.show({
+          message: `Failed to export configuration: ${err}`
+        });
+      } else {
+        console.log(yaml);
+        const ts = moment().format("YYYY-MM-DD HH:mm:ss");
+        const filename = `Empirica Configuration - ${ts}.yaml`;
+        const a = document.createElement("a");
+        a.setAttribute(
+          "href",
+          "data:text/plain;charset=utf-8," + encodeURIComponent(yaml)
+        );
+        a.setAttribute("download", filename);
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    });
+  };
 
   setMode = mode => {
     const { router } = this.context;
@@ -136,7 +209,7 @@ export default class Admin extends React.Component {
 
   render() {
     const { user, loggingIn } = this.props;
-    const { mode } = this.state;
+    const { mode, importing, exporting } = this.state;
 
     if (loggingIn || !user) {
       return null;
@@ -164,6 +237,28 @@ export default class Admin extends React.Component {
                 <NavBarLink
                   path="/admin/lobby-configurations"
                   name="Lobby Configurations"
+                />
+                <NavbarDivider />
+                <Button
+                  text="Import"
+                  minimal
+                  icon={IconNames.IMPORT}
+                  onClick={this.handleImport}
+                  loading={importing}
+                />
+                <input
+                  // accept="text/yaml, text/x-yaml, application/yaml, application/x-yaml"
+                  ref={this.uploadRef}
+                  onChange={this.onImportFileSelected}
+                  type="file"
+                  style={{ visibility: "hidden", width: 0 }}
+                />
+                <Button
+                  text="Export"
+                  minimal
+                  icon={IconNames.EXPORT}
+                  onClick={this.handleExport}
+                  loading={exporting}
                 />
               </>
             ) : (

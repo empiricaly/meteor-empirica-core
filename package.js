@@ -69,7 +69,8 @@ Npm.depends({
   "simpl-schema": "1.5.3",
   react: "16.5.2",
   "react-dom": "16.5.2",
-  "react-router-dom": "4.3.1"
+  "react-router-dom": "4.3.1",
+  "js-yaml": "3.12.0"
 });
 
 Package.onTest(function(api) {
