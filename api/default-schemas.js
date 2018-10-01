@@ -24,8 +24,7 @@ export const ArchivedSchema = new SimpleSchema({
   archivedAt: {
     type: Date,
     label: "Archived at",
-    optional: true,
-    denyInsert: true
+    optional: true
   }
 });
 
