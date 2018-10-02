@@ -93,6 +93,7 @@ export default class AdminNewLobbyConfig extends React.Component {
                 dir="auto"
                 name="name"
                 id="name"
+                autoComplete="off"
                 value={name}
                 onChange={this.handleChange}
                 pattern={/^[a-zA-Z0-9_]+$/.source}

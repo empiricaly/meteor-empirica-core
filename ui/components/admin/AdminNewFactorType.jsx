@@ -271,6 +271,7 @@ export default class AdminNewFactorType extends React.Component {
                 type="text"
                 name="name"
                 id="name"
+                autoComplete="off"
                 value={name}
                 pattern={/^[a-zA-Z0-9_]+$/.source}
                 onChange={this.handleChange}

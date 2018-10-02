@@ -10,6 +10,7 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
+import { AdminPageHeader } from "./AdminHeading.jsx";
 import { AlertToaster, SuccessToaster } from "../Toasters.jsx";
 import { retireGameFullPlayers } from "../../../api/players/methods";
 import { exitStatuses } from "../../../api/players/players.js";
@@ -40,9 +41,7 @@ export default class AdminPlayers extends React.Component {
     const { retiredReason } = this.state;
     return (
       <div className="players">
-        <h2>
-          <Icon className="admin-header-icon" icon={IconNames.PERSON} /> Players
-        </h2>
+        <AdminPageHeader icon={IconNames.PERSON}>Players</AdminPageHeader>
 
         <FormGroup label="Exit Status" labelFor="retire">
           <HTMLSelect

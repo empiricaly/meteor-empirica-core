@@ -4,9 +4,10 @@ import { Link } from "react-router-dom";
 import { Button, HTMLTable, Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
-import Loading from "../Loading.jsx";
 import AdminNewLobbyConfig from "./AdminNewLobbyConfig.jsx";
 import AdminLobbyConfig from "./AdminLobbyConfig.jsx";
+import Loading from "../Loading.jsx";
+import { AdminPageHeader } from "./AdminHeading.jsx";
 
 export default class AdminLobbyConfigs extends React.Component {
   state = { newLobbyIsOpen: false };
@@ -20,10 +21,10 @@ export default class AdminLobbyConfigs extends React.Component {
 
     return (
       <div className="lobbies">
-        <h2>
-          <Icon className="admin-header-icon" icon={IconNames.TIME} />
+        <AdminPageHeader icon={IconNames.TIME}>
           {archived ? "Archived Lobby Configurations" : "Lobby Configurations"}
-        </h2>
+        </AdminPageHeader>
+
         {lobbyConfigs.length === 0 ? (
           <p>
             {archived

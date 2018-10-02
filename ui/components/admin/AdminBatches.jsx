@@ -9,9 +9,11 @@ import {
   duplicateBatch,
   setBatchInDebugMode
 } from "../../../api/batches/methods";
-import Loading from "../Loading.jsx";
+
 import AdminNewBatch from "./AdminNewBatch.jsx";
 import AdminBatch from "./AdminBatch.jsx";
+import Loading from "../Loading.jsx";
+import { AdminPageHeader } from "./AdminHeading.jsx";
 
 export default class AdminBatches extends React.Component {
   state = {
@@ -54,14 +56,9 @@ export default class AdminBatches extends React.Component {
 
     return (
       <div className="batches">
-        <h2>
-          <Icon
-            className="admin-header-icon"
-            icon={IconNames.LAYERS}
-            iconSize={Icon.SIZE_LARGE}
-          />{" "}
-          Batches
-        </h2>
+        <AdminPageHeader icon={IconNames.LAYERS}>
+          {archived ? "Archived Batches" : "Batches"}
+        </AdminPageHeader>
 
         {batches.length === 0 ? (
           <p>No batches yet, create one bellow.</p>

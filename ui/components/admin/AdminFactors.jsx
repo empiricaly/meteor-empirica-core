@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   Card,
   Classes,
+  Elevation,
   HTMLTable,
   Icon,
   Position,
@@ -16,10 +17,12 @@ import { IconNames } from "@blueprintjs/icons";
 
 import { FactorTypes } from "../../../api/factor-types/factor-types.js";
 import { updateFactorType } from "../../../api/factor-types/methods.js";
+
 import AdminFactor from "./AdminFactor.jsx";
 import AdminNewFactor from "./AdminNewFactor.jsx";
 import AdminNewFactorType from "./AdminNewFactorType.jsx";
 import Loading from "../Loading.jsx";
+import { AdminPageHeader } from "./AdminHeading.jsx";
 
 export default class AdminFactors extends React.Component {
   state = {};
@@ -42,14 +45,9 @@ export default class AdminFactors extends React.Component {
 
     return (
       <div className="factors">
-        <h2>
-          <Icon
-            className="admin-header-icon"
-            icon={IconNames.PROPERTY}
-            iconSize={Icon.SIZE_LARGE}
-          />{" "}
+        <AdminPageHeader icon={IconNames.PROPERTY}>
           {archived ? "Archived Factors" : "Factors"}
-        </h2>
+        </AdminPageHeader>
 
         <div className="factors-list">
           {archived && factorTypes.length === 0 ? (
@@ -61,7 +59,7 @@ export default class AdminFactors extends React.Component {
             const requiredType = FactorTypes.requiredTypes.includes(t.name);
 
             return (
-              <Card className="factor" key={t._id}>
+              <Card className="factor" key={t._id} elevation={Elevation.TWO}>
                 <div className="factor-actions">
                   <ButtonGroup>
                     {requiredType ? null : (

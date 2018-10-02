@@ -15,6 +15,7 @@ const configurationPaths = [
 ];
 
 import {
+  Alert,
   Button,
   ButtonGroup,
   Classes,
@@ -22,6 +23,9 @@ import {
   NavbarGroup,
   NavbarHeading,
   NavbarDivider,
+  Menu,
+  MenuItem,
+  Popover,
   Tooltip,
   Position,
   Intent
@@ -55,7 +59,7 @@ export default class Admin extends React.Component {
     const mode = configurationPaths.includes(props.location.pathname)
       ? "configuration"
       : "monitoring";
-    this.state = { mode };
+    this.state = { mode, isOpenResetGames: false, isOpenResetApp: false };
     this.uploadRef = React.createRef();
   }
 
@@ -174,28 +178,38 @@ export default class Admin extends React.Component {
     Meteor.logout();
   };
 
-  handleClear = () => {
+  handleResetGames = () => {
+    this.setState({ isOpenResetGames: false });
     if (!this.resetDatabaseIsActived()) {
       return;
     }
-    Meteor.call("adminResetDB", true);
+    Meteor.call("adminResetDB", true, err => {
+      if (err) {
+        AlertToaster.show({ message: `Failed to reset games: ${err}` });
+        return;
+      } else {
+        SuccessToaster.show({
+          message: "Games reset!"
+        });
+      }
+    });
   };
 
-  handleReset = () => {
-    const confirmed = confirm(
-      "You are about to delete all data in the DB, are you sure you want to do that?"
-    );
-    if (!confirmed) {
-      return;
-    }
-    const confirmed2 = confirm("Are you really sure?");
-    if (!confirmed2) {
-      return;
-    }
+  handleResetApp = () => {
+    this.setState({ isOpenResetApp: false });
     if (!this.resetDatabaseIsActived()) {
       return;
     }
-    Meteor.call("adminResetDB");
+    Meteor.call("adminResetDB", err => {
+      if (err) {
+        AlertToaster.show({ message: `Failed to reset app: ${err}` });
+        return;
+      } else {
+        SuccessToaster.show({
+          message: "App reset!"
+        });
+      }
+    });
   };
 
   redirectLoggedOut(props) {
@@ -209,13 +223,20 @@ export default class Admin extends React.Component {
 
   render() {
     const { user, loggingIn } = this.props;
-    const { mode, importing, exporting } = this.state;
+    const {
+      mode,
+      importing,
+      exporting,
+      isOpenResetGames,
+      isOpenResetApp
+    } = this.state;
 
     if (loggingIn || !user) {
       return null;
     }
 
-    const navbarClasses = ["header"];
+    // const navbarClasses = ["header"];
+    const navbarClasses = ["admin"];
 
     const isConfigMode = mode === "configuration";
     if (isConfigMode) {
@@ -223,11 +244,13 @@ export default class Admin extends React.Component {
     }
 
     return (
-      <div className="admin">
+      // <div className="admin">
+      <div className={navbarClasses.join(" ")}>
         <Helmet>
-          <title>Empirica Admin</title>
+          <title>Empirica Adminlah</title>
         </Helmet>
-        <Navbar className={navbarClasses.join(" ")}>
+        {/* <Navbar className={navbarClasses.join(" ")}> */}
+        <Navbar className="header">
           <NavbarGroup align="left">
             <NavbarHeading>Empirica Admin</NavbarHeading>
             {isConfigMode ? (
@@ -281,7 +304,68 @@ export default class Admin extends React.Component {
 
           {this.resetDatabaseIsActived() ? (
             <NavbarGroup align="right">
-              <Tooltip
+              <Popover
+                content={
+                  <Menu>
+                    <MenuItem
+                      intent={Intent.WARNING}
+                      icon={IconNames.ERASER}
+                      text="Reset Games"
+                      onClick={() => this.setState({ isOpenResetGames: true })}
+                    />
+
+                    <MenuItem
+                      intent={Intent.DANGER}
+                      icon={IconNames.TRASH}
+                      text="Reset Entire App"
+                      onClick={() => this.setState({ isOpenResetApp: true })}
+                    />
+                  </Menu>
+                }
+              >
+                <Button
+                  className={Classes.MINIMAL}
+                  icon={IconNames.ERASER}
+                  text="Reset"
+                />
+              </Popover>
+
+              <Alert
+                className={isConfigMode ? Classes.DARK : ""}
+                canOutsideClickCancel
+                canEscapeKeyCancel
+                confirmButtonText="Reset Games"
+                cancelButtonText="Cancel"
+                intent={Intent.WARNING}
+                icon={IconNames.ERASER}
+                isOpen={isOpenResetGames}
+                onCancel={() => this.setState({ isOpenResetGames: false })}
+                onConfirm={this.handleResetGames}
+              >
+                <p>
+                  This will remove batches/games/players and keep
+                  treatments/factors.
+                </p>
+                <p>Do you wish to continue?</p>
+              </Alert>
+
+              <Alert
+                className={isConfigMode ? Classes.DARK : ""}
+                canOutsideClickCancel
+                canEscapeKeyCancel
+                confirmButtonText="Reset Entire App"
+                cancelButtonText="Cancel"
+                intent={Intent.DANGER}
+                icon={IconNames.TRASH}
+                isOpen={isOpenResetApp}
+                onCancel={() => this.setState({ isOpenResetApp: false })}
+                onConfirm={this.handleResetApp}
+              >
+                <p>You are about to delete all data in the DB!</p>
+                <p>Are you sure you want to do that?</p>
+              </Alert>
+
+              {/* <Tooltip
                 content="This will remove batches/games/players and keep treatments/factors"
                 position={Position.BOTTOM}
               >
@@ -303,7 +387,7 @@ export default class Admin extends React.Component {
                   text="Reset App"
                   onClick={this.handleReset}
                 />
-              </Tooltip>
+              </Tooltip> */}
               <NavbarDivider />
             </NavbarGroup>
           ) : (
@@ -311,22 +395,25 @@ export default class Admin extends React.Component {
           )}
 
           <NavbarGroup align="right">
-            <ButtonGroup>
+            {/* <ButtonGroup> */}
+            {isConfigMode ? (
               <Button
-                active={!isConfigMode}
+                // active={!isConfigMode}
                 icon={IconNames.PLAY}
                 onClick={this.setMode.bind(this, "monitoring")}
               >
                 Monitoring
               </Button>
+            ) : (
               <Button
-                active={isConfigMode}
+                // active={isConfigMode}
                 icon={IconNames.COG}
                 onClick={this.setMode.bind(this, "configuration")}
               >
                 Configuration
               </Button>
-            </ButtonGroup>
+            )}
+            {/* </ButtonGroup> */}
             <NavbarDivider />
           </NavbarGroup>
         </Navbar>

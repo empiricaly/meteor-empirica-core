@@ -39,6 +39,7 @@ if (admins.length === 0) {
 export const bootstrapFunctions = [];
 export const bootstrap = () => {
   bootstrapFunctions.forEach(f => f());
+  log.debug("Bootstrapped!");
 };
 
 Meteor.startup(() => {

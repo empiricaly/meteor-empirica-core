@@ -129,7 +129,7 @@ export default class NewPlayer extends React.Component {
                 onChange={this.handleUpdate}
                 placeholder="e.g. john@example.com"
                 required
-                autoComplete={"off"}
+                autoComplete="off"
               />
             </FormGroup>
 

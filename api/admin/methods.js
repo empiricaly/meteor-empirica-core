@@ -17,12 +17,12 @@ const localTypeForImported = data => {
   return factorTypeId => {
     const importedType = data.factorTypes.find(t => t._id === factorTypeId);
     if (!importedType) {
-      console.log("could not find corresponding factorTypeId", factorTypeId);
+      log.warn("could not find corresponding factorTypeId", factorTypeId);
       return;
     }
     const type = FactorTypes.findOne({ name: importedType.name });
     if (!type) {
-      console.log("could not import factor type, no correponding type");
+      log.warn("could not import factor type, no correponding type");
       return;
     }
 
@@ -34,19 +34,19 @@ const localFactorForImported = data => {
   return factorId => {
     const importedFactor = data.factors.find(t => t._id === factorId);
     if (!importedFactor) {
-      console.log("could not import factor, no correponding imported factor");
+      log.warn("could not import factor, no correponding imported factor");
       return;
     }
     const { value, factorTypeId: importedFactorTypeId } = importedFactor;
 
     const factorTypeId = localTypeForImported(data)(importedFactorTypeId);
     if (!factorTypeId) {
-      console.log("could not convert factor types");
+      log.warn("could not convert factor types");
       return;
     }
     const factor = Factors.findOne({ value, factorTypeId });
     if (!factor) {
-      console.log("could not import factor, no correponding factor");
+      log.warn("could not import factor, no correponding factor");
       return;
     }
 
@@ -247,18 +247,19 @@ if (Meteor.isDevelopment || Meteor.settings.public.debug_resetDatabase) {
                 console.error(err);
                 return;
               }
-              console.info("Keeping:");
+
+              log.debug("Keeping:");
               colls.forEach(collection => {
                 let extra = "";
                 if (userColls.includes(collection.name)) {
                   extra = "(used by admin login system)";
                 }
-                console.info(" - " + collection.name, extra);
+                log.debug(" - " + collection.name, extra);
               });
 
-              console.info("Cleared DB");
+              log.debug("Cleared DB");
+
               bootstrap();
-              console.info("Bootstrapped");
             })
           );
         })

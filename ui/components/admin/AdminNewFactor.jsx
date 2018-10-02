@@ -15,7 +15,7 @@ import { AlertToaster } from "../Toasters.jsx";
 import { createFactor } from "../../../api/factors/methods.js";
 
 export default class AdminNewFactor extends React.Component {
-  state = { value: "", loading: false };
+  state = { value: "", name: "", loading: false };
 
   constructor(props) {
     super(props);
@@ -135,6 +135,7 @@ export default class AdminNewFactor extends React.Component {
             type="text"
             name="value"
             id="value"
+            autoComplete="off"
             value={value}
             onChange={this.handleUpdate}
             // pattern={type.regEx && type.regEx.source}
@@ -179,6 +180,7 @@ export default class AdminNewFactor extends React.Component {
                 type="text"
                 name="name"
                 id="name"
+                autoComplete="off"
                 value={name}
                 pattern={/^[a-zA-Z0-9_]+$/.source}
                 onChange={this.handleUpdate}

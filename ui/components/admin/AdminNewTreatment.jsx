@@ -17,7 +17,7 @@ import { AlertToaster } from "../Toasters.jsx";
 import { createTreatment } from "../../../api/treatments/methods.js";
 
 export default class AdminNewTreatment extends React.Component {
-  state = { selected: {} };
+  state = { selected: {}, name: "" };
 
   handleNameChange = () => {
     const name = this.nameField.value;
@@ -105,6 +105,7 @@ export default class AdminNewTreatment extends React.Component {
                 dir="auto"
                 name="name"
                 id="name"
+                autoComplete="off"
                 value={name}
                 onChange={this.handleNameChange}
                 ref={e => (this.nameField = e)}

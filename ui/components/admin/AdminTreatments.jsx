@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Button, HTMLTable, Icon } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
+import { AdminPageHeader } from "./AdminHeading.jsx";
 import AdminNewTreatment from "./AdminNewTreatment.jsx";
 import AdminTreatment from "./AdminTreatment.jsx";
 import Loading from "../Loading.jsx";
@@ -20,10 +21,10 @@ export default class AdminTreatments extends React.Component {
 
     return (
       <div className="treatments">
-        <h2>
-          <Icon className="admin-header-icon" icon={IconNames.PROPERTIES} />
+        <AdminPageHeader icon={IconNames.PROPERTIES}>
           {archived ? "Archived Treatments" : "Treatments"}
-        </h2>
+        </AdminPageHeader>
+
         {treatments.length === 0 ? (
           <p>
             {archived
