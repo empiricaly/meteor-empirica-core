@@ -9,11 +9,23 @@ import shared from "./shared";
 import log from "./lib/log";
 
 // Maybe could do better...
-const config = {};
+const config = { bots: {} };
 
 const Empirica = {
   Server(conf) {
     _.extend(config, conf);
+  },
+
+  // New name for init: gameInit
+  gameInit(func) {
+    config.init = func;
+  },
+
+  bot(name, conf) {
+    if (config.bots[name]) {
+      throw `Bot "${name}" was declared twice!`;
+    }
+    config.bots[name] = func;
   },
 
   Client() {
@@ -23,6 +35,26 @@ Empirica.Client() is only accessible from the client.`
     );
   }
 };
+
+const configFields = [
+  "bots",
+  "init",
+  "onGameStart",
+  "onRoundStart",
+  "onStageStart",
+  "onStageEnd",
+  "onRoundEnd",
+  "onGameEnd",
+  "onSet",
+  "onAppend",
+  "onChange"
+];
+
+configFields.forEach(cb => {
+  Empirica[cb] = func => {
+    config[cb] = func;
+  };
+});
 
 export { config };
 export default Empirica;

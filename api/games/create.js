@@ -14,6 +14,20 @@ import {
 } from "../player-stages/augment.js";
 import { config } from "../../server";
 import { weightedRandom } from "../../lib/utils.js";
+import log from "../../lib/log.js";
+
+const addStageErrMsg = `"round.addStage()" requires an argument object with 3 properties:
+- name: internal name you'll use to write conditional logic in your experiment.
+- displayName: the name of the Stage the player will see in the UI.
+- durationInSeconds: the duration in seconds of the stage
+
+e.g.: round.addStage({
+  name: "response",
+  displayName: "Response",
+  durationInSeconds: 120
+});
+
+`;
 
 export const createGameFromLobby = gameLobby => {
   if (Games.find({ gameLobbyId: gameLobby._id }).count() > 0) {
@@ -39,10 +53,60 @@ export const createGameFromLobby = gameLobby => {
 
   // Ask (experimenter designer) init function to configure this game
   // given the factors and players given.
-  const params = config.init(factors, players);
+  const params = { data: [], rounds: [], players };
+  var gameCollector = {
+    treatment: factors,
 
-  // Extract top level data fields into the the data subfield
-  params.data = _.omit(params, "players", "rounds");
+    get(k) {
+      return params.data[k];
+    },
+
+    set(k, v) {
+      params.data[k] = v;
+    },
+
+    addRound(props) {
+      const data = props ? props.data : {} || {};
+      const round = { data, stages: [] };
+      params.rounds.push(round);
+      return {
+        get(k) {
+          return round.data[k];
+        },
+
+        set(k, v) {
+          round.data[k] = v;
+        },
+
+        addStage({ name, displayName, durationInSeconds, data = {} }) {
+          if (!name || !displayName || !durationInSeconds) {
+            log.error(addStageErrMsg);
+            log.error(
+              `Got: ${JSON.stringify(
+                { name, displayName, durationInSeconds },
+                null,
+                "  "
+              )}
+`
+            );
+            throw "gameInit error";
+            return;
+          }
+          const stage = { name, displayName, durationInSeconds, data };
+          round.stages.push(stage);
+          return {
+            get(k) {
+              return stage.data[k];
+            },
+            set(k, v) {
+              stage.data[k] = v;
+            }
+          };
+        }
+      };
+    }
+  };
+  config.init(gameCollector, factors, players);
 
   // Keep debug mode from lobby
   params.debugMode = debugMode;

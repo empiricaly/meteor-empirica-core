@@ -10,7 +10,15 @@ export const createBatch = new ValidatedMethod({
   name: "Batches.methods.create",
 
   validate: Batches.schema
-    .omit("status", "createdAt", "updatedAt", "debugMode", "full")
+    .omit(
+      "gameIds",
+      "gameLobbyIds",
+      "status",
+      "createdAt",
+      "updatedAt",
+      "debugMode",
+      "full"
+    )
     .validator(),
 
   run(batch) {

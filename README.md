@@ -1,13 +1,10 @@
 # Empirica Core
 
-The Core Empirica package contains everything you need to run a simple
-experiment with the Empirica platform. It is a required component for any other
-Empirica package.
+The Core Empirica package contains everything needed to run an experiment with
+the Empirica platform.
 
-## Setup a new Empirica Experiment
+Setting up an experiment requires more than just this package, so we've created
+a simple way to create a new Empirica app.
 
-Install Meteor and create new app.
-
-Run `meteor add empirica:core` to add Empirica Core.
-
-**Better documentation is comming soon!**
+Check out https://github.com/empiricaly/create-empirica-app for details on how
+to get started!
