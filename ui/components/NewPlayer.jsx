@@ -49,7 +49,13 @@ export default class NewPlayer extends React.Component {
     event.preventDefault();
     const { id } = this.state;
 
-    createPlayer.call({ id }, (err, _id) => {
+    const urlParams = {};
+    const searchParams = new URL(document.location).searchParams;
+    for (var pair of searchParams.entries()) {
+      urlParams[pair[0]] = pair[1];
+    }
+
+    createPlayer.call({ id, urlParams }, (err, _id) => {
       if (err) {
         console.error(err);
         AlertToaster.show({ message: String(err) });
@@ -69,10 +75,15 @@ export default class NewPlayer extends React.Component {
     const { playerIdParam } = Meteor.settings.public;
 
     if (playerIdParam) {
-      const id = new URL(document.location).searchParams.get(playerIdParam);
+      const searchParams = new URL(document.location).searchParams;
+      const id = searchParams.get(playerIdParam);
       if (id) {
+        const urlParams = {};
+        for (var pair of searchParams.entries()) {
+          urlParams[pair[0]] = pair[1];
+        }
         this.setState({ attemptingAutoLogin: true });
-        createPlayer.call({ id }, (err, _id) => {
+        createPlayer.call({ id, urlParams }, (err, _id) => {
           if (err) {
             this.setState({ attemptingAutoLogin: false });
             console.error(err);

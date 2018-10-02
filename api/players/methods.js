@@ -16,6 +16,11 @@ export const createPlayer = new ValidatedMethod({
   validate: new SimpleSchema({
     id: {
       type: String
+    },
+    urlParams: {
+      type: Object,
+      blackbox: true,
+      defaultValue: {}
     }
   }).validator(),
 
@@ -44,7 +49,7 @@ export const createPlayer = new ValidatedMethod({
     // there is no immediate reason or long-term motiviation for people to hack
     // each other's player account.
 
-    const existing = Players.findOne(player);
+    const existing = Players.findOne({ id: player.id });
 
     // If the player already has a game lobby assigned, no need to
     // re-initialize them
@@ -55,7 +60,12 @@ export const createPlayer = new ValidatedMethod({
     if (existing) {
       player = existing;
     } else {
-      player._id = Players.insert(player);
+      // Because of a bug in SimpleSchema around blackbox: true, skipping
+      // validation here. Validation did happen at the method level though.
+      player._id = Players.insert(player, {
+        filter: false,
+        validate: false
+      });
     }
 
     // Looking for all lobbies for batch (for which that game has not started yet)

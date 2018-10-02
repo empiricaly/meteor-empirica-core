@@ -23,6 +23,13 @@ Players.schema = new SimpleSchema({
     max: 256
   },
 
+  // params contains any URL passed parameters
+  urlParams: {
+    type: Object,
+    blackbox: true,
+    defaultValue: {}
+  },
+
   bot: {
     label: "Name of bot definition if player is a bot",
     type: String,
