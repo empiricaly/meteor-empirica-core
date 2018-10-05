@@ -49,7 +49,7 @@ export default class Game extends React.Component {
             const playerId = player._id;
             markPlayerExitStepDone.call({ playerId, stepName });
             if (data) {
-              addPlayerInput.call({ playerId, data: JSON.stringify(data) });
+              addPlayerInput.call({ playerId, data: JSON.stringify(data), gameId: game._id });
             }
           }}
         />

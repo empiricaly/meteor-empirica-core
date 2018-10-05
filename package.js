@@ -49,28 +49,31 @@ Package.onUse(function(api) {
 });
 
 Npm.depends({
+  archiver: "3.0.0",
   "@blueprintjs/core": "3.6.1",
   "@blueprintjs/icons": "3.1.0",
   "babel-runtime": "6.26.0",
   bcrypt: "3.0.1",
   colors: "1.3.0",
+  "content-disposition": "0.5.2",
   history: "4.7.2",
   hoek: "4.2.1",
   "identicon.js": "2.3.2",
   inflection: "1.12.0",
   jdenticon: "2.1.0",
+  "js-yaml": "3.12.0",
   loglevel: "1.6.1",
   "meteor-node-stubs": "0.4.1",
   "message-box": "0.2.0",
   moment: "2.22.2",
   "prop-types": "15.6.1",
-  "react-addons-css-transition-group": "15.6.2",
-  "react-helmet": "5.2.0",
-  "simpl-schema": "1.5.3",
   react: "16.5.2",
+  "react-addons-css-transition-group": "15.6.2",
   "react-dom": "16.5.2",
+  "react-helmet": "5.2.0",
   "react-router-dom": "4.3.1",
-  "js-yaml": "3.12.0"
+  "stream-buffers": "3.0.2",
+  "simpl-schema": "1.5.3"
 });
 
 Package.onTest(function(api) {

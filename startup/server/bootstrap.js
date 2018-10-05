@@ -32,7 +32,13 @@ if (admins.length === 0) {
   });
 
   log.warn(
-    `You have not set any custom passwords in your settings file (see Readme), you can temporarily log in with (reset on each app reload):\n- username: admin\n- password: ${tempPassword}\n`
+    `You have not set a custom password for admin login.
+If you have a settings file (e.g. local.json) with "admins" configured, you can
+restart the app passing in the settings arg: "meteor --settings local.json".
+You can temporarily log in with (reset on each app reload):
+  - username: admin
+  - password: ${tempPassword}
+`
   );
 }
 

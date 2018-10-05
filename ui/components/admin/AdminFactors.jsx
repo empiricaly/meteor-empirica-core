@@ -127,7 +127,7 @@ export default class AdminFactors extends React.Component {
                 )}
 
                 {archived ? null : t.factors.length > 0 ? (
-                  <HTMLTable condensed>
+                  <HTMLTable striped condensed>
                     <thead>
                       <tr>
                         <th>Name</th>

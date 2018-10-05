@@ -12,10 +12,6 @@ import log from "./lib/log";
 const config = { bots: {} };
 
 const Empirica = {
-  Server(conf) {
-    _.extend(config, conf);
-  },
-
   // New name for init: gameInit
   gameInit(func) {
     config.init = func;
@@ -28,33 +24,42 @@ const Empirica = {
     config.bots[name] = func;
   },
 
-  Client() {
-    log.error(
-      `You are trying to access the Client part of Empirica on the server.
-Empirica.Client() is only accessible from the client.`
-    );
+  onGameStart(func) {
+    config.onGameStart = func;
+  },
+
+  onRoundStart(func) {
+    config.onRoundStart = func;
+  },
+
+  onStageStart(func) {
+    config.onStageStart = func;
+  },
+
+  onStageEnd(func) {
+    config.onStageEnd = func;
+  },
+
+  onRoundEnd(func) {
+    config.onRoundEnd = func;
+  },
+
+  onGameEnd(func) {
+    config.onGameEnd = func;
+  },
+
+  onSet(func) {
+    config.onSet = func;
+  },
+
+  onAppend(func) {
+    config.onAppend = func;
+  },
+
+  onChange(func) {
+    config.onChange = func;
   }
 };
-
-const configFields = [
-  "bots",
-  "init",
-  "onGameStart",
-  "onRoundStart",
-  "onStageStart",
-  "onStageEnd",
-  "onRoundEnd",
-  "onGameEnd",
-  "onSet",
-  "onAppend",
-  "onChange"
-];
-
-configFields.forEach(cb => {
-  Empirica[cb] = func => {
-    config[cb] = func;
-  };
-});
 
 export { config };
 export default Empirica;
@@ -62,5 +67,3 @@ export default Empirica;
 // Help access to server only modules from shared modules
 shared.playerIdForConn = playerIdForConn;
 shared.callOnChange = callOnChange;
-
-// console.log(process.env["PWD"]);

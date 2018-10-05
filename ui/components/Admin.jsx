@@ -17,8 +17,8 @@ const configurationPaths = [
 import {
   Alert,
   Button,
-  ButtonGroup,
   Classes,
+  Divider,
   Navbar,
   NavbarGroup,
   NavbarHeading,
@@ -26,8 +26,6 @@ import {
   Menu,
   MenuItem,
   Popover,
-  Tooltip,
-  Position,
   Intent
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
@@ -36,6 +34,7 @@ import AdminBatchesContainer from "../containers/admin/AdminBatchesContainer.jsx
 import AdminFactorsContainer from "../containers/admin/AdminFactorsContainer.jsx";
 import AdminGames from "./admin/AdminGames.jsx";
 import AdminLobbyConfigsContainer from "../containers/admin/AdminLobbyConfigsContainer.jsx";
+import AdminExport from "./admin/AdminExport.jsx";
 import AdminPlayers from "./admin/AdminPlayers.jsx";
 import AdminTreatmentsContainer from "../containers/admin/AdminTreatmentsContainer.jsx";
 import { AlertToaster, SuccessToaster } from "./Toasters.jsx";
@@ -80,11 +79,11 @@ export default class Admin extends React.Component {
     }
   }
 
-  handleImport = () => {
+  handleConfigImport = () => {
     this.uploadRef.current.click();
   };
 
-  onImportFileSelected = event => {
+  onImportConfigFileSelected = event => {
     const file = event.currentTarget.files[0];
     event.currentTarget.value = null;
     if (!file) {
@@ -115,7 +114,6 @@ export default class Admin extends React.Component {
           return;
         } else {
           SuccessToaster.show({
-            // message: `Import Successful "${file.name}"!`
             message: "Import Successful!"
           });
         }
@@ -124,7 +122,7 @@ export default class Admin extends React.Component {
     r.readAsText(file);
   };
 
-  handleExport = () => {
+  handleConfigExport = () => {
     this.setState({ exporting: true });
     Meteor.call("adminExportConfiguration", (err, yaml) => {
       this.setState({ exporting: false });
@@ -134,7 +132,7 @@ export default class Admin extends React.Component {
         });
       } else {
         console.log(yaml);
-        const ts = moment().format("YYYY-MM-DD HH:mm:ss");
+        const ts = moment().format("YYYY-MM-DD HH-mm-ss");
         const filename = `Empirica Configuration - ${ts}.yaml`;
         const a = document.createElement("a");
         a.setAttribute(
@@ -235,24 +233,27 @@ export default class Admin extends React.Component {
       return null;
     }
 
-    // const navbarClasses = ["header"];
-    const navbarClasses = ["admin"];
+    const adminClasses = ["admin"];
 
     const isConfigMode = mode === "configuration";
     if (isConfigMode) {
-      navbarClasses.push(Classes.DARK);
+      adminClasses.push(Classes.DARK);
     }
 
     return (
-      // <div className="admin">
-      <div className={navbarClasses.join(" ")}>
+      <div className={adminClasses.join(" ")}>
         <Helmet>
-          <title>Empirica Adminlah</title>
+          <title>Empirica Admin</title>
         </Helmet>
-        {/* <Navbar className={navbarClasses.join(" ")}> */}
         <Navbar className="header">
           <NavbarGroup align="left">
-            <NavbarHeading>Empirica Admin</NavbarHeading>
+            <NavbarHeading>
+              <strong>Empirica</strong>
+              <Divider tagName="span" />
+              <span className={Classes.TEXT_MUTED}>
+                {isConfigMode ? "Configuration" : "Monitoring"}
+              </span>
+            </NavbarHeading>
             {isConfigMode ? (
               <>
                 <NavBarLink path="/admin/treatments" name="Treatments" />
@@ -266,21 +267,19 @@ export default class Admin extends React.Component {
                   text="Import"
                   minimal
                   icon={IconNames.IMPORT}
-                  onClick={this.handleImport}
+                  onClick={this.handleConfigImport}
                   loading={importing}
                 />
                 <input
-                  // accept="text/yaml, text/x-yaml, application/yaml, application/x-yaml"
                   ref={this.uploadRef}
-                  onChange={this.onImportFileSelected}
+                  onChange={this.onImportConfigFileSelected}
                   type="file"
-                  style={{ visibility: "hidden", width: 0 }}
                 />
                 <Button
                   text="Export"
                   minimal
                   icon={IconNames.EXPORT}
-                  onClick={this.handleExport}
+                  onClick={this.handleConfigExport}
                   loading={exporting}
                 />
               </>
@@ -289,116 +288,14 @@ export default class Admin extends React.Component {
                 <NavBarLink exact path="/admin" name="Batches" />
                 <NavBarLink path="/admin/games" name="Games" />
                 <NavBarLink path="/admin/players" name="Players" />
+                <NavBarLink path="/admin/export" name="Export" />
               </>
             )}
           </NavbarGroup>
 
           <NavbarGroup align="right">
-            <Button
-              className={Classes.MINIMAL}
-              icon={IconNames.LOG_OUT}
-              text="Logout"
-              onClick={this.handleLogout}
-            />
-          </NavbarGroup>
-
-          {this.resetDatabaseIsActived() ? (
-            <NavbarGroup align="right">
-              <Popover
-                content={
-                  <Menu>
-                    <MenuItem
-                      intent={Intent.WARNING}
-                      icon={IconNames.ERASER}
-                      text="Reset Games"
-                      onClick={() => this.setState({ isOpenResetGames: true })}
-                    />
-
-                    <MenuItem
-                      intent={Intent.DANGER}
-                      icon={IconNames.TRASH}
-                      text="Reset Entire App"
-                      onClick={() => this.setState({ isOpenResetApp: true })}
-                    />
-                  </Menu>
-                }
-              >
-                <Button
-                  className={Classes.MINIMAL}
-                  icon={IconNames.ERASER}
-                  text="Reset"
-                />
-              </Popover>
-
-              <Alert
-                className={isConfigMode ? Classes.DARK : ""}
-                canOutsideClickCancel
-                canEscapeKeyCancel
-                confirmButtonText="Reset Games"
-                cancelButtonText="Cancel"
-                intent={Intent.WARNING}
-                icon={IconNames.ERASER}
-                isOpen={isOpenResetGames}
-                onCancel={() => this.setState({ isOpenResetGames: false })}
-                onConfirm={this.handleResetGames}
-              >
-                <p>
-                  This will remove batches/games/players and keep
-                  treatments/factors.
-                </p>
-                <p>Do you wish to continue?</p>
-              </Alert>
-
-              <Alert
-                className={isConfigMode ? Classes.DARK : ""}
-                canOutsideClickCancel
-                canEscapeKeyCancel
-                confirmButtonText="Reset Entire App"
-                cancelButtonText="Cancel"
-                intent={Intent.DANGER}
-                icon={IconNames.TRASH}
-                isOpen={isOpenResetApp}
-                onCancel={() => this.setState({ isOpenResetApp: false })}
-                onConfirm={this.handleResetApp}
-              >
-                <p>You are about to delete all data in the DB!</p>
-                <p>Are you sure you want to do that?</p>
-              </Alert>
-
-              {/* <Tooltip
-                content="This will remove batches/games/players and keep treatments/factors"
-                position={Position.BOTTOM}
-              >
-                <Button
-                  className={Classes.MINIMAL}
-                  icon={IconNames.ERASER}
-                  text="Clear Games"
-                  onClick={this.handleClear}
-                />
-              </Tooltip>
-              <Tooltip
-                content="This clears the entire database!"
-                position={Position.BOTTOM}
-                intent={Intent.DANGER}
-              >
-                <Button
-                  className={Classes.MINIMAL}
-                  icon={IconNames.TRASH}
-                  text="Reset App"
-                  onClick={this.handleReset}
-                />
-              </Tooltip> */}
-              <NavbarDivider />
-            </NavbarGroup>
-          ) : (
-            ""
-          )}
-
-          <NavbarGroup align="right">
-            {/* <ButtonGroup> */}
             {isConfigMode ? (
               <Button
-                // active={!isConfigMode}
                 icon={IconNames.PLAY}
                 onClick={this.setMode.bind(this, "monitoring")}
               >
@@ -406,15 +303,88 @@ export default class Admin extends React.Component {
               </Button>
             ) : (
               <Button
-                // active={isConfigMode}
                 icon={IconNames.COG}
                 onClick={this.setMode.bind(this, "configuration")}
               >
                 Configuration
               </Button>
             )}
-            {/* </ButtonGroup> */}
             <NavbarDivider />
+            {this.resetDatabaseIsActived() ? (
+              <>
+                <Popover
+                  content={
+                    <Menu>
+                      <MenuItem
+                        intent={Intent.WARNING}
+                        icon={IconNames.ERASER}
+                        text="Reset Games"
+                        onClick={() =>
+                          this.setState({ isOpenResetGames: true })
+                        }
+                      />
+
+                      <MenuItem
+                        intent={Intent.DANGER}
+                        icon={IconNames.TRASH}
+                        text="Reset Entire App"
+                        onClick={() => this.setState({ isOpenResetApp: true })}
+                      />
+                    </Menu>
+                  }
+                >
+                  <Button
+                    className={Classes.MINIMAL}
+                    icon={IconNames.ERASER}
+                    text="Reset"
+                  />
+                </Popover>
+
+                <Alert
+                  className={isConfigMode ? Classes.DARK : ""}
+                  canOutsideClickCancel
+                  canEscapeKeyCancel
+                  confirmButtonText="Reset Games"
+                  cancelButtonText="Cancel"
+                  intent={Intent.WARNING}
+                  icon={IconNames.ERASER}
+                  isOpen={isOpenResetGames}
+                  onCancel={() => this.setState({ isOpenResetGames: false })}
+                  onConfirm={this.handleResetGames}
+                >
+                  <p>
+                    This will remove batches/games/players and keep
+                    treatments/factors.
+                  </p>
+                  <p>Do you wish to continue?</p>
+                </Alert>
+
+                <Alert
+                  className={isConfigMode ? Classes.DARK : ""}
+                  canOutsideClickCancel
+                  canEscapeKeyCancel
+                  confirmButtonText="Reset Entire App"
+                  cancelButtonText="Cancel"
+                  intent={Intent.DANGER}
+                  icon={IconNames.TRASH}
+                  isOpen={isOpenResetApp}
+                  onCancel={() => this.setState({ isOpenResetApp: false })}
+                  onConfirm={this.handleResetApp}
+                >
+                  <p>You are about to delete all data in the DB!</p>
+                  <p>Are you sure you want to do that?</p>
+                </Alert>
+              </>
+            ) : (
+              ""
+            )}
+            <NavbarDivider />{" "}
+            <Button
+              className={Classes.MINIMAL}
+              icon={IconNames.LOG_OUT}
+              text="Logout"
+              onClick={this.handleLogout}
+            />
           </NavbarGroup>
         </Navbar>
 
@@ -429,6 +399,7 @@ export default class Admin extends React.Component {
             />
             <Route path="/admin/games" component={AdminGames} />
             <Route path="/admin/players" component={AdminPlayers} />
+            <Route path="/admin/export" component={AdminExport} />
             <Route
               path="/admin/treatments/archived"
               component={withStaticProps(AdminTreatmentsContainer, {

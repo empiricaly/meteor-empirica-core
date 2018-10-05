@@ -10,51 +10,48 @@ import PublicContainer from "./ui/containers/PublicContainer.jsx";
 import StageTimeWrapper from "./ui/components/StageTimeWrapper.jsx";
 import Centered from "./ui/components/Centered.jsx";
 import { AlertToaster } from "./ui/components/Toasters.jsx";
-import log from "./lib/log";
+
+const config = {};
 
 const Empirica = {
-  Client(config) {
-    const {
-      // `name` will allow to namespace experiments within the same Meteor app.
-      // CURRENTLY NOT SUPPORTED
-      name = "empirica",
+  consent(ConsentComp) {
+    config.Consent = ConsentComp || Consent;
+  },
 
-      // loginPath configures where to redirect Admin traffic if unauthenticated
-      loginPath = "/login",
+  round(RoundComp) {
+    config.Round = RoundComp;
+  },
 
-      // adminPath is configures where to redirect logged in traffic from the Login screen
-      adminPath = "/admin",
+  introSteps(func) {
+    config.introSteps = func;
+  },
 
-      // Consent page
-      Consent = Consent,
+  exitSteps(func) {
+    config.exitSteps = func;
+  },
 
-      // Round component
-      Round = Round
-    } = config;
-
-    const AppComp = IdentifiedContainer(PublicContainer, config);
-    const AdminComp = AuthorizedContainer(Admin, { loginPath });
-    const LoginComp = AuthorizedContainer(Login, { adminPath });
-
-    const Routes = (
+  routes() {
+    return (
       <BrowserRouter>
         <div className="app">
           <Switch>
-            <Route path="/" exact component={AppComp} />
-            <Route path="/admin" component={AdminComp} />
-            <Route path="/login" component={LoginComp} />
+            <Route path="/" exact component={this.appComp()} />
+            <Route path="/admin" component={this.adminComp()} />
+            <Route path="/login" component={this.loginComp()} />
           </Switch>
         </div>
       </BrowserRouter>
     );
-
-    return { name, App: AppComp, Admin: AdminComp, Login: LoginComp, Routes };
   },
 
-  Server() {
-    log.error(
-      "You are trying to access the Server part of Empirica on the client. Empirica.Server() is only accessible from the server."
-    );
+  appComp() {
+    return IdentifiedContainer(PublicContainer, config);
+  },
+  adminComp({ loginPath = "/login" } = {}) {
+    return AuthorizedContainer(Admin, { loginPath });
+  },
+  loginComp({ adminPath = "/admin" } = {}) {
+    return AuthorizedContainer(Login, { adminPath });
   }
 };
 

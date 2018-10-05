@@ -63,7 +63,7 @@ export default class AdminBatches extends React.Component {
         {batches.length === 0 ? (
           <p>No batches yet, create one bellow.</p>
         ) : (
-          <HTMLTable>
+          <HTMLTable striped>
             <thead>
               <tr>
                 <th>Status</th>

@@ -32,7 +32,7 @@ export default class AdminTreatments extends React.Component {
               : "No treatments yet, create some bellow."}
           </p>
         ) : (
-          <HTMLTable>
+          <HTMLTable striped>
             <thead>
               <tr>
                 <th>Name</th>

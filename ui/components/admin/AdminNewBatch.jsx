@@ -263,7 +263,7 @@ export default class AdminNewBatch extends React.Component {
 
           <FormGroup label="Treatments" labelFor="treatment">
             {currentTreatments.length > 0 ? (
-              <HTMLTable bordered>
+              <HTMLTable striped bordered>
                 <thead>
                   <tr>
                     <th>Treatment</th>

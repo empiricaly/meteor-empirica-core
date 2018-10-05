@@ -32,7 +32,7 @@ export default class AdminLobbyConfigs extends React.Component {
               : "No lobby configurations yet, create some bellow."}
           </p>
         ) : (
-          <HTMLTable>
+          <HTMLTable striped>
             <thead>
               <tr>
                 <th>Name</th>

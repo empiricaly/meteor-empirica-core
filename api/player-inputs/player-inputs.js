@@ -13,5 +13,6 @@ PlayerInputs.schema = new SimpleSchema({});
 
 PlayerInputs.schema.extend(TimestampSchema);
 PlayerInputs.schema.extend(UserDataSchema);
+PlayerInputs.schema.extend(BelongsTo("Games"));
 PlayerInputs.schema.extend(BelongsTo("Players"));
 PlayerInputs.attachSchema(PlayerInputs.schema);

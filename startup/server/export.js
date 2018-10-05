@@ -1,7 +1,14 @@
 import moment from "moment";
+import archiver from "archiver";
+import streams from "stream-buffers";
+import contentDisposition from "content-disposition";
 
 import { Factors } from "../../api/factors/factors.js";
+import { FactorTypes } from "../../api/factor-types/factor-types.js";
+import { LobbyConfigs } from "../../api/lobby-configs/lobby-configs.js";
+import { Batches } from "../../api/batches/batches.js";
 import { Games } from "../../api/games/games.js";
+import { GameLobbies } from "../../api/game-lobbies/game-lobbies.js";
 import { PlayerInputs } from "../../api/player-inputs/player-inputs.js";
 import { PlayerRounds } from "../../api/player-rounds/player-rounds.js";
 import { PlayerStages } from "../../api/player-stages/player-stages.js";
@@ -10,18 +17,7 @@ import { Rounds } from "../../api/rounds/rounds.js";
 import { Stages } from "../../api/stages/stages.js";
 import { Treatments } from "../../api/treatments/treatments.js";
 import LRUMap from "../../lib/lru.js";
-
-//
-// WARNING!!!
-// The export endpoint is not protected!!
-//
-
-// WebApp.connectHandlers.use(
-//   "/export",
-//   WebAppInternals.NpmModules.connect.module.basicAuth((u, p) => {
-//     return u === "admin" && p === "admin";
-//   }, "export")
-// );
+import log from "../../lib/log.js";
 
 export const BOM = "\uFEFF";
 
@@ -48,6 +44,9 @@ export const cast = out => {
   if (_.isObject(out)) {
     return JSON.stringify(out);
   }
+  if (_.isString(out)) {
+    return out.replace(/\n/g, "\\n");
+  }
 
   if (out === false || out === 0) {
     return out.toString();
@@ -58,9 +57,8 @@ export const cast = out => {
 export const quoteMark = '"';
 export const doubleQuoteMark = '""';
 export const quoteRegex = /"/g;
-export const batchSize = 1000;
 
-export const encodeCells = (line, delimiter = ",", newline = "\n") => {
+export const encodeCells = (line, delimiter = ",", newline = "\\n") => {
   const row = line.slice(0);
   for (var i = 0, len = row.length; i < len; i++) {
     row[i] = cast(row[i]);
@@ -74,250 +72,377 @@ export const encodeCells = (line, delimiter = ",", newline = "\n") => {
   return row.join(delimiter) + newline;
 };
 
-const csvHeaders = [
-  "batchId",
-  "gameId",
-  "playerId",
-  "playerIdParam",
-  "roundId",
-  "stageId",
-  "playerRoundId",
-  "playerStageId",
-  "round.index",
-  "stage.index",
-  "stage.name",
-  "stage.duration"
-];
+const batch = (coll, query = {}, sort = {}, limit = 1000) => iterator => {
+  let skip = 0,
+    records;
+  while (!records || records.length > 0) {
+    records = coll.find(query, { sort, limit, skip }).fetch();
+    records.forEach(iterator);
+    skip += limit;
+  }
+};
 
-const exportStages = format => (req, res, next) => {
+WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
+  //
+  // Authentication
+  //
+
+  const loginToken = req.cookies && req.cookies.meteor_login_token;
+  let user;
+  if (loginToken) {
+    const hashedToken = Accounts._hashLoginToken(loginToken);
+    const query = { "services.resume.loginTokens.hashedToken": hashedToken };
+    const options = { fields: { _id: 1 } };
+    user = Meteor.users.findOne(query, options);
+  }
+
+  if (!user) {
+    res.writeHead(403);
+    res.end();
+    return;
+  }
+
+  //
+  // Format
+  //
+
+  let format;
+  switch (req.url) {
+    case "/":
+      next();
+      return;
+    case "/.json":
+      format = "json";
+      break;
+    case "/.csv":
+      format = "csv";
+      break;
+    default:
+      res.writeHead(404);
+      res.end();
+      return;
+  }
+
+  //
+  // Connection bookkeeping
+  //
+
   let cancelRequest = false,
     requestFinished = false;
 
   req.on("close", function(err) {
     if (!requestFinished) {
-      console.info("Export request was cancelled");
+      log.info("Export request was cancelled");
       cancelRequest = true;
     }
   });
 
-  switch (format) {
-    case "csv":
-      res.writeHead(200, {
-        "Content-Type": "text/csv",
-        "Content-Disposition": "inline"
-      });
-      res.write(BOM);
-      break;
-    case "json":
-      res.writeHead(200, { "Content-Type": "application/json" });
-      break;
-    default:
-      throw "unknown export format";
-      break;
-  }
+  //
+  // Headers
+  //
 
-  const condRaw = Factors.rawCollection();
-  const condDistinct = Meteor.wrapAsync(condRaw.distinct, condRaw);
-  const factorTypes = condDistinct("type");
-  const allFactors = Factors.find().fetch();
-  const getCond = id => allFactors.find(c => c._id === id);
-  const playerKeys = getDataKeys(Players);
-  const playerRoundKeys = getDataKeys(PlayerRounds);
-  const playerStageKeys = getDataKeys(PlayerStages);
-  const roundKeys = getDataKeys(Rounds);
-  const stageKeys = getDataKeys(Stages);
+  const ts = moment().format("YYYY-MM-DD HH-mm-ss");
+  const filename = `Empirica Data - ${ts}`;
+  res.setHeader("Content-Disposition", contentDisposition(filename + ".zip"));
+  res.setHeader("Content-Type", "application/zip");
+  res.writeHead(200);
 
-  for (const type of factorTypes) {
-    csvHeaders.push(`treatment.${type}`);
-  }
+  //
+  // Create archive
+  //
 
-  for (const key of roundKeys) {
-    csvHeaders.push(`round.data.${key}`);
-  }
+  var archive = archiver("zip");
 
-  for (const key of stageKeys) {
-    csvHeaders.push(`stage.data.${key}`);
-  }
-
-  for (const key of playerKeys) {
-    csvHeaders.push(`player.data.${key}`);
-  }
-
-  for (const key of playerRoundKeys) {
-    csvHeaders.push(`playerRound.data.${key}`);
-  }
-
-  for (const key of playerStageKeys) {
-    csvHeaders.push(`playerStage.data.${key}`);
-  }
-
-  let inputsLen = 0;
-  const inputsPerPlayer = {};
-  PlayerInputs.find().forEach(input => {
-    if (!inputsPerPlayer[input.playerId]) {
-      inputsPerPlayer[input.playerId] = 0;
-    }
-    inputsPerPlayer[input.playerId] += 1;
-    if (inputsPerPlayer[input.playerId] > inputsLen) {
-      inputsLen = inputsPerPlayer[input.playerId];
+  // good practice to catch warnings (ie stat failures and other non-blocking errors)
+  archive.on("warning", function(err) {
+    if (err.code === "ENOENT") {
+      log.warn("archive warning", err);
+    } else {
+      log.err("archive error");
+      // throw error
+      throw err;
     }
   });
-  _.times(inputsLen, i => {
-    csvHeaders.push(`data.${i}`);
+
+  // good practice to catch this error explicitly
+  archive.on("error", function(err) {
+    log.err("archive error");
+    throw err;
   });
 
-  if (format === "csv") {
-    res.write(encodeCells(csvHeaders));
-  }
+  // pipe archive data to the file
+  archive.pipe(res);
 
-  if (cancelRequest) {
-    return;
-  }
+  //
+  // File creation helper
+  //
 
-  const caches = {
-    players: new LRUMap(10),
-    games: new LRUMap(10),
-    treatments: new LRUMap(100),
-    rounds: new LRUMap(100),
-    stages: new LRUMap(100),
-    playerInputs: new LRUMap(2),
-    playerRounds: new LRUMap(2)
-  };
-
-  const getCached = (name, id, fetcher) => {
-    let cached = caches[name].get(id);
-    if (!cached) {
-      cached = fetcher();
-      caches[name].set(id, cached);
+  const existingFile = {};
+  const saveFile = (name, keys, func, dataKeys = []) => {
+    if (existingFile[name]) {
+      throw `export filename already exists: ${name}`;
     }
-    return cached;
-  };
+    existingFile[name] = true;
 
-  // Iterate over player stages to export
-  // console.info("Total playerStages:", PlayerStages.find().count());
-  let skip = 0,
-    playerStages;
-  while (!playerStages || playerStages.length > 0) {
-    if (cancelRequest) {
-      return;
+    const file = new streams.ReadableStreamBuffer();
+    archive.append(file, { name: `${filename}/${name}.${format}` });
+    if (format === "csv") {
+      file.put(BOM);
+      file.put(encodeCells(keys.concat(dataKeys.map(k => `data.${k}`))));
     }
-
-    playerStages = PlayerStages.find(
-      {},
-      { sort: { gameId: 1, playerId: 1, createdAt: 1 }, limit: batchSize, skip }
-    ).fetch();
-    // console.info("Batch playerStages:", playerStages.length, skip);
-
-    playerStages.forEach(playerStage => {
-      const out = new Map();
-      const player = getCached("players", playerStage.playerId, () =>
-        Players.findOne(playerStage.playerId)
-      );
-      const playerRound = getCached(
-        "playerRounds",
-        playerStage.playerId + "-" + playerStage.roundId,
-        () =>
-          PlayerRounds.findOne({
-            playerId: playerStage.playerId,
-            roundId: playerStage.roundId
-          })
-      );
-      const round = getCached("rounds", playerStage.roundId, () =>
-        Rounds.findOne(playerStage.roundId)
-      );
-      const stage = getCached("stages", playerStage.stageId, () =>
-        Stages.findOne(playerStage.stageId)
-      );
-      const game = getCached("games", playerStage.gameId, () =>
-        Games.findOne(playerStage.gameId)
-      );
-      const treatment = getCached("treatments", game.treatmentId, () =>
-        Treatments.findOne(game.treatmentId)
-      );
-      const inputs = getCached("playerInputs", playerStage.playerId, () =>
-        PlayerInputs.find({
-          playerId: playerStage.playerId
-        }).fetch()
-      );
-
-      out.set("batchId", playerStage.batchId);
-      out.set("gameId", playerStage.gameId);
-      out.set("playerId", playerStage.playerId);
-      out.set("playerIdParam", player.id);
-      out.set("roundId", playerStage.roundId);
-      out.set("stageId", playerStage.stageId);
-      out.set("playerRoundId", playerRound._id);
-      out.set("playerStageId", playerStage._id);
-      out.set(`round.index`, round.index);
-      out.set(`stage.index`, stage.index);
-      out.set(`stage.name`, stage.name);
-      out.set(`stage.duration`, stage.durationInSeconds);
-
-      const factors = treatment.factorIds.map(getCond);
-      for (const type of factorTypes) {
-        const cond = factors.find(c => c.type === type);
-        out.set(`treatment.${type}`, cond && cond.value);
-      }
-
-      for (const key of roundKeys) {
-        out.set(`round.data.${key}`, round.data[key]);
-      }
-
-      for (const key of stageKeys) {
-        out.set(`stage.data.${key}`, stage.data[key]);
-      }
-
-      for (const key of playerKeys) {
-        out.set(`player.data.${key}`, player.data[key]);
-      }
-
-      for (const key of playerRoundKeys) {
-        out.set(`playerRound.data.${key}`, playerRound.data[key]);
-      }
-
-      for (const key of playerStageKeys) {
-        out.set(`playerStage.data.${key}`, playerStage.data[key]);
-      }
-
-      _.times(inputsLen, i => {
-        out.set(`data.${i}`, inputs[i] && inputs[i].data);
-      });
-
+    func((data, userData = {}) => {
       switch (format) {
         case "csv":
-          res.write(encodeCells(mapToArr(out)));
+          const out = [];
+          keys.forEach(k => {
+            out.push(data[k]);
+          });
+          dataKeys.forEach(k => {
+            out.push(userData[k]);
+          });
+          file.put(encodeCells(out));
           break;
         case "json":
-          res.write(JSON.stringify(mapToObj(out)) + "\n");
+          _.each(userData, (v, k) => (data[`data.${k}`] = v));
+          file.put(JSON.stringify(data) + "\n");
           break;
         default:
-          throw "unknown export format";
+          throw `unknown format: ${format}`;
       }
     });
-    skip += batchSize;
-  }
+    file.stop();
+  };
 
+  //
+  // Exports
+  //
+
+  const factorTypeFields = [
+    "_id",
+    "name",
+    "required",
+    "description",
+    "type",
+    "min",
+    "max",
+    "createdAt",
+    "archivedAt"
+  ];
+  saveFile("factor-types", factorTypeFields, puts => {
+    FactorTypes.find().forEach(ft => puts(_.pick(ft, factorTypeFields)));
+  });
+
+  const factorFields = ["_id", "name", "value", "factorTypeId", "createdAt"];
+  saveFile("factors", factorFields, puts => {
+    batch(Factors)(f => puts(_.pick(f, factorFields)));
+  });
+
+  const treatmentFields = [
+    "_id",
+    "name",
+    "factorIds",
+    "createdAt",
+    "archivedAt"
+  ];
+  saveFile("treatments", treatmentFields, puts => {
+    batch(Treatments)(f => puts(_.pick(f, treatmentFields)));
+  });
+
+  const lobbyConfigFields = [
+    "_id",
+    "name",
+    "timeoutType",
+    "timeoutInSeconds",
+    "timeoutStrategy",
+    "timeoutBots",
+    "extendCount",
+    "createdAt",
+    "archivedAt"
+  ];
+  saveFile("lobby-configs", lobbyConfigFields, puts => {
+    batch(LobbyConfigs)(f => puts(_.pick(f, lobbyConfigFields)));
+  });
+
+  const batchFields = [
+    "_id",
+    "assignment",
+    "full",
+    "runningAt",
+    "finishedAt",
+    "status",
+    "gameIds",
+    "gameLobbyIds",
+    "createdAt",
+    "archivedAt"
+  ];
+  saveFile("batches", batchFields, puts => {
+    batch(Batches)(f => puts(_.pick(f, batchFields)));
+  });
+
+  const gameLobbyFields = [
+    "_id",
+    "index",
+    "availableCount",
+    "timeoutStartedAt",
+    "timedOutAt",
+    "queuedPlayerIds",
+    "playerIds",
+    "gameId",
+    "treatmentId",
+    "batchId",
+    "lobbyConfigId",
+    "createdAt"
+  ];
+  saveFile("game-lobbies", gameLobbyFields, puts => {
+    batch(GameLobbies)(f => puts(_.pick(f, gameLobbyFields)));
+  });
+
+  const gameFields = [
+    "_id",
+    "finishedAt",
+    "gameLobbyId",
+    "treatmentId",
+    "roundIds",
+    "playerIds",
+    "batchId",
+    "createdAt"
+  ];
+  const gameDataFields = getDataKeys(Games);
+  saveFile(
+    "games",
+    gameFields,
+    puts => {
+      batch(Games)(f => puts(_.pick(f, gameFields), _.pick(f, gameDataFields)));
+    },
+    gameDataFields
+  );
+
+  const playerFields = [
+    "_id",
+    "id",
+    "urlParams",
+    "bot",
+    "readyAt",
+    "timeoutStartedAt",
+    "timeoutWaitCount",
+    "exitStepsDone",
+    "exitAt",
+    "exitStatus",
+    "retiredAt",
+    "retiredReason",
+    "createdAt"
+  ];
+  const playerDataFields = getDataKeys(Players);
+  saveFile(
+    "players",
+    playerFields,
+    puts => {
+      batch(Players)(p =>
+        puts(_.pick(p, playerFields), _.pick(p.data, playerDataFields))
+      );
+    },
+    playerDataFields
+  );
+
+  const roundFields = ["_id", "index", "stageIds", "gameId", "createdAt"];
+  const roundDataFields = getDataKeys(Rounds);
+  saveFile(
+    "rounds",
+    roundFields,
+    puts => {
+      batch(Rounds)(p =>
+        puts(_.pick(p, roundFields), _.pick(p.data, roundDataFields))
+      );
+    },
+    roundDataFields
+  );
+
+  const stageFields = [
+    "_id",
+    "index",
+    "name",
+    "displayName",
+    "startTimeAt",
+    "durationInSeconds",
+    "roundId",
+    "gameId",
+    "createdAt"
+  ];
+  const stageDataFields = getDataKeys(Stages);
+  saveFile(
+    "stages",
+    stageFields,
+    puts => {
+      batch(Stages)(p =>
+        puts(_.pick(p, stageFields), _.pick(p.data, stageDataFields))
+      );
+    },
+    stageDataFields
+  );
+
+  const playerRoundFields = [
+    "_id",
+    "batchId",
+    "playerId",
+    "roundId",
+    "gameId",
+    "createdAt"
+  ];
+  const playerRoundDataFields = getDataKeys(PlayerRounds);
+  saveFile(
+    "player-rounds",
+    playerRoundFields,
+    puts => {
+      batch(PlayerRounds)(p =>
+        puts(
+          _.pick(p, playerRoundFields),
+          _.pick(p.data, playerRoundDataFields)
+        )
+      );
+    },
+    playerRoundDataFields
+  );
+
+  const playerStageFields = [
+    "_id",
+    "batchId",
+    "playerId",
+    "stageId",
+    "roundId",
+    "gameId",
+    "createdAt"
+  ];
+  const playerStageDataFields = getDataKeys(PlayerStages);
+  saveFile(
+    "player-stages",
+    playerStageFields,
+    puts => {
+      batch(PlayerStages)(p =>
+        puts(
+          _.pick(p, playerStageFields),
+          _.pick(p.data, playerStageDataFields)
+        )
+      );
+    },
+    playerStageDataFields
+  );
+
+  const playerInputFields = ["_id", "playerId", "gameId", "createdAt"];
+  const playerInputDataFields = getDataKeys(PlayerInputs);
+  saveFile(
+    "player-inputs",
+    playerInputFields,
+    puts => {
+      batch(PlayerInputs)(p =>
+        puts(
+          _.pick(p, playerInputFields),
+          _.pick(p.data, playerInputDataFields)
+        )
+      );
+    },
+    playerInputDataFields
+  );
+
+  archive.finalize();
   requestFinished = true;
-  res.end();
-};
-
-WebApp.connectHandlers.use("/admin/export.json", exportStages("json"));
-WebApp.connectHandlers.use("/admin/export.csv", exportStages("csv"));
-
-function mapToObj(map) {
-  let obj = Object.create(null);
-  for (let [k, v] of map) {
-    obj[k] = v;
-  }
-  return obj;
-}
-
-function mapToArr(map) {
-  let arr = [];
-  let index = 0;
-  for (let [k, v] of map) {
-    arr[index] = v;
-    index++;
-  }
-  return arr;
-}
+});
