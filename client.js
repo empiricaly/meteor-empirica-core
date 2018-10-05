@@ -22,6 +22,14 @@ const Empirica = {
     config.Round = RoundComp;
   },
 
+  header(HeaderComp) {
+    config.Header = HeaderComp;
+  },
+
+  breadcrumb(BreadcrumbComp) {
+    config.Breadcrumb = BreadcrumbComp;
+  },
+
   introSteps(func) {
     config.introSteps = func;
   },

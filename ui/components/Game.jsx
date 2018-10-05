@@ -5,7 +5,7 @@ import {
   markPlayerExitStepDone,
   playerReady
 } from "../../api/players/methods.js";
-import Breadcrumb from "./Breadcrumb.jsx";
+import DefaultBreadcrumb from "./Breadcrumb.jsx";
 import DelayedDisplay from "./DelayedDisplay.jsx";
 import ExitSteps from "./ExitSteps.jsx";
 import GameLobbyContainer from "../containers/GameLobbyContainer.jsx";
@@ -27,6 +27,7 @@ export default class Game extends React.Component {
       gameLobby,
       treatment,
       Round,
+      Breadcrumb,
       exitSteps,
       introSteps,
       ...rest
@@ -49,7 +50,11 @@ export default class Game extends React.Component {
             const playerId = player._id;
             markPlayerExitStepDone.call({ playerId, stepName });
             if (data) {
-              addPlayerInput.call({ playerId, data: JSON.stringify(data), gameId: game._id });
+              addPlayerInput.call({
+                playerId,
+                data: JSON.stringify(data),
+                gameId: game._id
+              });
             }
           }}
         />
@@ -92,9 +97,17 @@ export default class Game extends React.Component {
       content = <Round {...rest} />;
     }
 
+    const BC = Breadcrumb !== undefined ? Breadcrumb : DefaultBreadcrumb;
+    const breadcrumb = BC && <BC round={round} stage={stage} />;
+    // Breadcrumb !== undefined ? (
+    //   Breadcrumb && <Breadcrumb round={round} stage={stage} />
+    // ) : (
+    //   <DefaultBreadcrumb round={round} stage={stage} />
+    // );
+
     return (
       <div className="game">
-        <Breadcrumb round={round} stage={stage} />
+        {breadcrumb}
         {content}
       </div>
     );
