@@ -7,7 +7,8 @@ export default class InstructionSteps extends React.Component {
   componentWillMount() {
     const { introSteps, treatment, onDone } = this.props;
 
-    const steps = introSteps && introSteps(treatment.factorsObject());
+    const factors = treatment.factorsObject();
+    const steps = introSteps && introSteps({ treatment: factors }, factors);
 
     const noInstruction = !introSteps || !steps || steps.length === 0;
 
