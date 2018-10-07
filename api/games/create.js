@@ -149,20 +149,22 @@ export const createGameFromLobby = gameLobby => {
   let totalDuration = 0;
   let firstRoundId;
   params.roundIds = params.rounds.map((round, index) => {
-    // Extract top level data fields into the the data subfield
-    round.data = _.omit(round, "stages");
-
-    const roundId = Rounds.insert(_.extend({ gameId, index }, round));
+    const roundId = Rounds.insert(_.extend({ gameId, index }, round), {
+      autoConvert: false,
+      filter: false,
+      validate: false
+    });
     const stageIds = round.stages.map(stage => {
-      // Extract top level data fields into the the data subfield
-      stage.data = _.omit(stage, "name", "displayName", "durationInSeconds");
-
       if (batch.debugMode) {
         stage.durationInSeconds = 60 * 60; // Stage time in debugMode is 1h
       }
       totalDuration += stage.durationInSeconds;
       const sParams = _.extend({ gameId, roundId, index: stageIndex }, stage);
-      const stageId = Stages.insert(sParams);
+      const stageId = Stages.insert(sParams, {
+        autoConvert: false,
+        filter: false,
+        validate: false
+      });
       stageIndex++;
       if (!params.currentStageId) {
         firstRoundId = roundId;
@@ -201,7 +203,11 @@ export const createGameFromLobby = gameLobby => {
   // Insert game. As soon as it comes online, the game will start for the
   // players so all related object (rounds, stages, players) must be created
   // and ready
-  Games.insert(params);
+  Games.insert(params, {
+    autoConvert: false,
+    filter: false,
+    validate: false
+  });
 
   // Let Game Lobby know Game ID
   GameLobbies.update(gameLobby._id, { $set: { gameId } });
