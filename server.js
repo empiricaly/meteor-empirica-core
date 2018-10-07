@@ -17,7 +17,7 @@ const Empirica = {
     config.init = func;
   },
 
-  bot(name, conf) {
+  bot(name, func) {
     if (config.bots[name]) {
       throw `Bot "${name}" was declared twice!`;
     }
