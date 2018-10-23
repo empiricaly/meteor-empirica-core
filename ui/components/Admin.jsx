@@ -59,6 +59,7 @@ export default class Admin extends React.Component {
       ? "configuration"
       : "monitoring";
     this.state = { mode, isOpenResetGames: false, isOpenResetApp: false };
+    this.setBodyDark(mode);
     this.uploadRef = React.createRef();
   }
 
@@ -75,6 +76,7 @@ export default class Admin extends React.Component {
         : "monitoring";
       if (mode !== this.state.mode) {
         this.setState({ mode });
+        this.setBodyDark(mode);
       }
     }
   }
@@ -168,6 +170,14 @@ export default class Admin extends React.Component {
     router.history.push(path);
   };
 
+  setBodyDark = mode => {
+    if (mode === "configuration") {
+      document.body.classList.add(Classes.DARK);
+    } else {
+      document.body.classList.remove(Classes.DARK);
+    }
+  };
+
   resetDatabaseIsActived() {
     return Meteor.isDevelopment || Meteor.settings.public.debug_resetDatabase;
   }
@@ -233,15 +243,10 @@ export default class Admin extends React.Component {
       return null;
     }
 
-    const adminClasses = ["admin"];
-
     const isConfigMode = mode === "configuration";
-    if (isConfigMode) {
-      adminClasses.push(Classes.DARK);
-    }
 
     return (
-      <div className={adminClasses.join(" ")}>
+      <div className="admin">
         <Helmet>
           <title>Empirica Admin</title>
         </Helmet>
