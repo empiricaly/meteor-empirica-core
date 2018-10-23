@@ -58,7 +58,10 @@ export default withTracker(({ loading, player, playerId, ...rest }) => {
 
   // Only open if a batch is available and the playerIdParam configuration is
   // fulfilled, or a game lobby, or a game assigned.
-  const renderPublic = (batchAvailable && playerIdParamOk) || gameLobby || game;
+  const renderPublic =
+    (batchAvailable && playerIdParamOk) ||
+    (gameLobby && gameLobby.status !== "cancelled") ||
+    (game && game.status !== "cancelled");
 
   return {
     batchAvailable,

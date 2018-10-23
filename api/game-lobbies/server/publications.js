@@ -17,7 +17,6 @@ publishComposite("gameLobby", function({ playerId }) {
         find({ gameLobbyId }) {
           return GameLobbies.find({
             _id: gameLobbyId
-            // $or: [{ playerIds: playerId }, { queuedPlayerIds: playerId }]
           });
         },
         children: [
