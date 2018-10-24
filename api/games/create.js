@@ -200,6 +200,11 @@ export const createGameFromLobby = gameLobby => {
     .add(totalDuration + 300, "seconds") // Give it a 5min window for sync
     .toDate();
 
+  // We're no longer filtering out unspecified fields on insert because of a
+  // simpleschema bug, so we need to remove invalid params now.
+  delete params.players;
+  delete params.rounds;
+
   // Insert game. As soon as it comes online, the game will start for the
   // players so all related object (rounds, stages, players) must be created
   // and ready
