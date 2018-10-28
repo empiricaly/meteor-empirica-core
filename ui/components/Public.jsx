@@ -35,11 +35,12 @@ export default class Public extends React.Component {
   };
 
   handleOpenAltPlayer = event => {
+		const { playerIdParam } = Meteor.settings.public;
     event.preventDefault();
     const randId = Math.random()
       .toString(36)
       .substring(2, 15);
-    window.open(`/?playerIdKey=${randId}`, "_blank");
+    window.open(`/?`+playerIdParam+`=${randId}`, "_blank");
   };
 
   render() {

@@ -7,7 +7,7 @@ import { playerWasRetired } from "../../api/players/methods.js";
 const defaultPlayerIdKey = "d4900a09cf1f41a494d4fc32a626dfef";
 
 const urlParams = new URLSearchParams(window.location.search);
-let playerIdKeyOverride = urlParams.get("playerIdKey");
+let playerIdKeyOverride = urlParams.get(Meteor.settings.public.playerIdParam);
 if (playerIdKeyOverride) {
   playerIdKeyOverride += "-" + defaultPlayerIdKey;
 }
