@@ -58,18 +58,18 @@ export const quoteMark = '"';
 export const doubleQuoteMark = '""';
 export const quoteRegex = /"/g;
 
-export const encodeCells = (line, delimiter = ",", newline = "\\n") => {
+export const encodeCells = line => {
   const row = line.slice(0);
   for (var i = 0, len = row.length; i < len; i++) {
     row[i] = cast(row[i]);
     if (row[i].indexOf(quoteMark) !== -1) {
       row[i] = row[i].replace(quoteRegex, doubleQuoteMark);
     }
-    if (row[i].indexOf(delimiter) !== -1 || row[i].indexOf(newline) !== -1) {
+    if (row[i].indexOf(",") !== -1 || row[i].indexOf("\\n") !== -1) {
       row[i] = quoteMark + row[i] + quoteMark;
     }
   }
-  return row.join(delimiter) + newline;
+  return row.join(",") + "\n";
 };
 
 const batch = (coll, query = {}, sort = {}, limit = 1000) => iterator => {
