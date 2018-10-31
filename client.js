@@ -26,6 +26,11 @@ const Empirica = {
     config.Header = HeaderComp;
   },
 
+  // gameLobby, treatment, player
+  lobby(LobbyComp) {
+    config.Lobby = LobbyComp;
+  },
+
   breadcrumb(BreadcrumbComp) {
     config.Breadcrumb = BreadcrumbComp;
   },
