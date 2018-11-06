@@ -68,9 +68,12 @@ const withGameInfo = withTracker(
 
     game.treatment = treatment.factorsObject();
     game.players = Players.find({ gameId }).fetch();
-    game.rounds = Rounds.find({ gameId }).fetch();
+    game.rounds = Rounds.find({ gameId }, { sort: { index: 1 } }).fetch();
     game.rounds.forEach(round => {
-      round.stages = Stages.find({ roundId: round._id }).fetch();
+      round.stages = Stages.find(
+        { roundId: round._id },
+        { sort: { index: 1 } }
+      ).fetch();
     });
 
     const stage = Stages.findOne(game.currentStageId);
