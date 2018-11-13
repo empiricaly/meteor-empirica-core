@@ -44,6 +44,12 @@ Batches.after.insert(function(userId, batch) {
     l.status = batch.status;
     l.batchId = batch._id;
 
+    // This is trully horrific. Sorry.
+    // The debug mode is assigned asynchronously onto the batch, which might happen
+    // just as this on insert hook is called. Sorry.
+    const batchUpdated = Batches.findOne(batch._id);
+    l.debugMode = batchUpdated.debugMode;
+
     const treatment = Treatments.findOne(l.treatmentId);
     l.availableCount = treatment.factor("playerCount").value;
     const botsCountCond = treatment.factor("botsCount");
