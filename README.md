@@ -1,3 +1,4 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488413.svg)](https://doi.org/10.5281/zenodo.1488413)
 # Empirica
 
 Open source project to tackle the problem of long development cycles required to
