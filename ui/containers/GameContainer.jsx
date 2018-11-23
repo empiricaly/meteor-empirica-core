@@ -133,6 +133,9 @@ export default withTracker(({ player, gameLobby, game, ...rest }) => {
     if (!treatment) {
       return loadingObj;
     }
+    gameLobby.treatment = treatment.factorsObject();
+    gameLobby.queuedCount = gameLobby.queuedPlayerIds.length;
+    gameLobby.readyCount = gameLobby.playerIds.length;
 
     augmentPlayer(player);
 

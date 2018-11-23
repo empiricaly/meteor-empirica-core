@@ -14,7 +14,7 @@ const config = { bots: {} };
 const Empirica = {
   // New name for init: gameInit
   gameInit(func) {
-    config.init = func;
+    config.gameInit = func;
   },
 
   bot(name, func) {

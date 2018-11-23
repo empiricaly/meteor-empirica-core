@@ -77,7 +77,7 @@ export default class Public extends React.Component {
         </Helmet>
 
         {Header !== undefined ? (
-          Header
+          <Header />
         ) : (
           <Navbar className={["header", Classes.DARK].join(" ")}>
             <NavbarGroup align="left">

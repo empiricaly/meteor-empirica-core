@@ -100,7 +100,9 @@ export default class Game extends React.Component {
     }
 
     const BC = Breadcrumb !== undefined ? Breadcrumb : DefaultBreadcrumb;
-    const breadcrumb = BC && <BC round={round} stage={stage} />;
+    const breadcrumb = BC && (
+      <BC game={game} player={player} round={round} stage={stage} />
+    );
 
     return (
       <div className="game">

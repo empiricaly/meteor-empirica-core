@@ -55,6 +55,7 @@ export const createGameFromLobby = gameLobby => {
   // given the factors and players given.
   const params = { data: {}, rounds: [], players };
   var gameCollector = {
+    players,
     treatment: factors,
 
     get(k) {
@@ -95,6 +96,9 @@ export const createGameFromLobby = gameLobby => {
           const stage = { name, displayName, durationInSeconds, data };
           round.stages.push(stage);
           return {
+            name,
+            displayName,
+            durationInSeconds,
             get(k) {
               return stage.data[k];
             },
@@ -106,7 +110,25 @@ export const createGameFromLobby = gameLobby => {
       };
     }
   };
-  config.init(gameCollector, factors, players);
+  config.gameInit(gameCollector, factors, players);
+
+  if (!params.rounds || params.rounds.length === 0) {
+    throw "at least one round must be added per game";
+  }
+
+  params.rounds.forEach(round => {
+    if (!round.stages || round.stages.length === 0) {
+      throw "at least one stage must be added per round";
+    }
+
+    round.stages.forEach(({ name, displayName, durationInSeconds }) => {
+      // This should never happen as we already verified it above.
+      if (!name || !displayName || !durationInSeconds) {
+        log.error(addStageErrMsg);
+        throw "invalid stage";
+      }
+    });
+  });
 
   // Keep debug mode from lobby
   params.debugMode = debugMode;
