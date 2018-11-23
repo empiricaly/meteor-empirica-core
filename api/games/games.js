@@ -3,19 +3,38 @@ import SimpleSchema from "simpl-schema";
 import { statusSchema } from "../batches/status-schema";
 import { BelongsTo, HasManyByRef, TimestampSchema } from "../default-schemas";
 import { DebugModeSchema, UserDataSchema } from "../default-schemas.js";
+import { Counter } from "../../lib/counters";
 
-export const Games = new Mongo.Collection("games");
+class GamesCollection extends Mongo.Collection {
+  insert(doc, callback) {
+    doc.index = Counter.inc("games");
+    return super.insert(doc, callback);
+  }
+}
+
+export const Games = new GamesCollection("games");
 
 Games.schema = new SimpleSchema({
+  // Auto-incremented number assigned to games as they are created
+  index: {
+    type: SimpleSchema.Integer
+  },
+
+  // estFinishedTime is adding up all stages timings when the game is
+  // created/started to estimate when the game should be done at the latests.
   estFinishedTime: {
     type: Date,
     index: 1
   },
+
+  // Time the game acutally finished
   finishedAt: {
     type: Date,
     optional: true,
     index: 1
   },
+
+  // Indicates which stage is ongoing
   currentStageId: {
     type: String,
     optional: true,

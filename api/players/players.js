@@ -1,8 +1,16 @@
 import SimpleSchema from "simpl-schema";
 
 import { TimestampSchema, UserDataSchema, BelongsTo } from "../default-schemas";
+import { Counter } from "../../lib/counters";
 
-export const Players = new Mongo.Collection("players");
+class PlayersCollection extends Mongo.Collection {
+  insert(doc, callback) {
+    doc.index = Counter.inc("players");
+    return super.insert(doc, callback);
+  }
+}
+
+export const Players = new PlayersCollection("players");
 
 export const exitStatuses = [
   "gameFull",
@@ -21,6 +29,11 @@ Players.schema = new SimpleSchema({
   id: {
     type: String,
     max: 256
+  },
+
+  // Auto-incremented number assigned to players as they are created
+  index: {
+    type: SimpleSchema.Integer
   },
 
   // params contains any URL passed parameters

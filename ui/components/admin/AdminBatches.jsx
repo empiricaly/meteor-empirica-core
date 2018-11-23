@@ -66,6 +66,7 @@ export default class AdminBatches extends React.Component {
           <HTMLTable striped>
             <thead>
               <tr>
+                <th>#</th>
                 <th>Status</th>
                 <th>Game Count</th>
                 <th>Created</th>

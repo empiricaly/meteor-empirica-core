@@ -17,7 +17,8 @@ export const createBatch = new ValidatedMethod({
       "createdAt",
       "updatedAt",
       "debugMode",
-      "full"
+      "full",
+      "index"
     )
     .validator(),
 
@@ -26,7 +27,11 @@ export const createBatch = new ValidatedMethod({
       throw new Error("unauthorized");
     }
 
-    Batches.insert(batch);
+    Batches.insert(batch, {
+      autoConvert: false,
+      filter: false,
+      validate: false
+    });
   }
 });
 

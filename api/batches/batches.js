@@ -8,8 +8,16 @@ import {
   DebugModeSchema
 } from "../default-schemas";
 import { Treatments } from "../treatments/treatments";
+import { Counter } from "../../lib/counters";
 
-export const Batches = new Mongo.Collection("batches");
+class BatchesCollection extends Mongo.Collection {
+  insert(doc, callback) {
+    doc.index = Counter.inc("batches");
+    return super.insert(doc, callback);
+  }
+}
+
+export const Batches = new BatchesCollection("batches");
 
 Batches.helpers({
   gameCount() {
@@ -45,6 +53,11 @@ export const assignmentTypes = {
 };
 
 Batches.schema = new SimpleSchema({
+  // Auto-incremented number assigned to batches as they are created
+  index: {
+    type: SimpleSchema.Integer
+  },
+
   assignment: {
     type: String,
     // "custom" not yet supported
