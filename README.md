@@ -1,4 +1,5 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488413.svg)](https://doi.org/10.5281/zenodo.1488413)
+
 # Empirica
 
 Open source project to tackle the problem of long development cycles required to
@@ -36,8 +37,8 @@ Then open http://localhost:3000/ to see your experiment.
 
 ## Usage
 
-`create-empirica-app` requires Node.js >= 8. If you don't already have
-Node.js 8+ setup, we recommend you use the official installer:
+`create-empirica-app` requires Node.js >= 8. If you don't already have Node.js
+8+ setup, we recommend you use the official installer:
 https://nodejs.org/en/download/.
 
 Then you can simply run the following command, where `my-experiment` is the name
@@ -77,8 +78,7 @@ my-experiment
 ```
 
 No configuration or complicated folder structures, just the files you need to
-build your app.
-Once the installation is done, you can open your project folder:
+build your app. Once the installation is done, you can open your project folder:
 
 ```sh
 cd my-experiment
@@ -91,11 +91,11 @@ start you app locally:
 meteor
 ```
 
-`meteor` runs the app in development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+`meteor` runs the app in development mode.<br> Open
+[http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will automatically reload if you make changes to the code.<br>
-You will see the build errors in the console.
+The page will automatically reload if you make changes to the code.<br> You will
+see the build errors in the console.
 
 ## Updating Empirica Core
 
@@ -105,3 +105,19 @@ version you are using in your app. To do so, simply run:
 ```sh
 meteor update empirica:core
 ```
+
+## Development
+
+To run an Empirica app against a development version of `empirica:core`, you
+will need to use the
+[`METEOR_PACKAGE_DIRS` environment variable](https://docs.meteor.com/environment-variables.html#METEOR-PACKAGE-DIRS).
+From an Empirica app, simply point to your copy of `empirica:core` as so (in
+this example, your `meteor-empirica-core` dir would be a child of
+`/usr/local/my_packages/`, .i.e `/usr/local/my_packages/meteor-empirica-core`):
+
+```sh
+METEOR_PACKAGE_DIRS="/usr/local/my_packages/" meteor
+```
+
+For more information on how to contribute please take a look at our
+[contribution guide](./.github/CONTRIBUTING.md).
