@@ -33,19 +33,7 @@
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
-    ],
-    "rules": {
-      "header-max-length": [
-        1,
-        "always",
-        80
-      ],
-      "subject-full-stop": [
-        0,
-        "always",
-        " "
-      ]
-    }
+    ]
   },
   "husky": {
     "hooks": {
