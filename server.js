@@ -5,6 +5,7 @@ SimpleSchema.debug = true;
 
 import { playerIdForConn } from "./startup/server/connections.js";
 import { callOnChange } from "./api/server/onchange.js";
+import { callOnSubmit } from "./api/server/onsubmit.js";
 import shared from "./shared";
 import log from "./lib/log";
 
@@ -58,6 +59,10 @@ const Empirica = {
 
   onChange(func) {
     config.onChange = func;
+  },
+
+  onSubmit(func) {
+    config.onSubmit = func;
   }
 };
 
@@ -67,3 +72,4 @@ export default Empirica;
 // Help access to server only modules from shared modules
 shared.playerIdForConn = playerIdForConn;
 shared.callOnChange = callOnChange;
+shared.callOnSubmit = callOnSubmit;

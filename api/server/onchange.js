@@ -101,7 +101,6 @@ export const callOnChange = params => {
       game,
       round,
       stage,
-      players,
       player,
       target,
       targetType,

@@ -73,7 +73,7 @@ export const submitPlayerStage = new ValidatedMethod({
     }
   }).validator(),
 
-  run({ playerStageId }) {
+  run({ playerStageId, noCallback }) {
     const playerStage = PlayerStages.findOne(playerStageId);
     if (!playerStage) {
       throw new Error("playerStage not found");
@@ -85,5 +85,12 @@ export const submitPlayerStage = new ValidatedMethod({
     }
 
     PlayerStages.update(playerStageId, { $set: { submittedAt: new Date() } });
+
+    if (Meteor.isServer && !noCallback) {
+      shared.callOnSubmit({
+        playerId: playerStage.playerId,
+        playerStage
+      });
+    }
   }
 });
