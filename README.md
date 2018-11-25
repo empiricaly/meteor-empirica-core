@@ -121,3 +121,27 @@ METEOR_PACKAGE_DIRS="/usr/local/my_packages/" meteor
 
 For more information on how to contribute please take a look at our
 [contribution guide](./.github/CONTRIBUTING.md).
+
+
+## Citing Empirica
+If you use Empirica in a scientific publication, we would appreciate citing the following:
+
+Nicolas Paton, & Abdullah Almaatouq. (2018, November 15). Empirica: Open-Source, Real-Time, Synchronous, Virtual Lab Framework (Version v0.0.5). Zenodo. http://doi.org/10.5281/zenodo.1488413
+
+### Bibtex entry:
+```
+@misc{nicolas_paton_2018_1488413,
+  author       = {Nicolas Paton and
+                  Abdullah Almaatouq},
+  title        = {{Empirica: Open-Source, Real-Time, Synchronous, 
+                   Virtual Lab Framework}},
+  month        = nov,
+  year         = 2018,
+  doi          = {10.5281/zenodo.1488413},
+  url          = {https://doi.org/10.5281/zenodo.1488413}
+}
+```
+
+
+
+
