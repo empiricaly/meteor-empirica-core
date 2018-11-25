@@ -21,6 +21,17 @@ export const playerIdForConn = conn => {
 export const savePlayerId = (conn, playerId) => {
   connections[conn.id] = playerId;
 
+  Players.update(playerId, {
+    $set: {
+      online: true,
+      lastLogin: {
+        at: new Date(),
+        ip: conn.clientAddress,
+        userAgent: conn.httpHeaders["user-agent"]
+      }
+    }
+  });
+
   const player = Players.findOne(playerId);
   if (!player.readyAt) {
     return;
@@ -36,24 +47,35 @@ export const savePlayerId = (conn, playerId) => {
   });
 };
 
+export const forgetPlayerId = conn => {
+  if (!connections[conn.id]) {
+    return;
+  }
+
+  const playerId = connections[conn.id];
+
+  Players.update(playerId, {
+    $set: { online: false },
+    $unset: {
+      idle: null
+    }
+  });
+
+  const lobby = playerInLobby(playerId);
+
+  if (!lobby) {
+    return;
+  }
+
+  GameLobbies.update(lobby._id, {
+    $pull: { playerIds: playerId }
+  });
+
+  delete connections[conn.id];
+};
+
 Meteor.onConnection(conn => {
   conn.onClose(() => {
-    if (!connections[conn.id]) {
-      return;
-    }
-
-    const playerId = connections[conn.id];
-
-    const lobby = playerInLobby(playerId);
-
-    if (!lobby) {
-      return;
-    }
-
-    GameLobbies.update(lobby._id, {
-      $pull: { playerIds: playerId }
-    });
-
-    delete connections[conn.id];
+    forgetPlayerId(conn);
   });
 });

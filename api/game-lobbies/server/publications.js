@@ -9,7 +9,7 @@ import { LobbyConfigs } from "../../lobby-configs/lobby-configs.js";
 publishComposite("gameLobby", function({ playerId }) {
   return {
     find() {
-      return Players.find(playerId);
+      return Players.find(playerId, { fields: { lastActivityAt: 0 } });
     },
 
     children: [

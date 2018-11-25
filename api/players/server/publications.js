@@ -1,6 +1,18 @@
 import { Players } from "../players.js";
 import { savePlayerId } from "../../../startup/server/connections.js";
 
+Meteor.publish("admin-players", function(props) {
+  if (!this.userId) {
+    return null;
+  }
+
+  if (!props || props.retired === undefined) {
+    return Players.find();
+  }
+
+  return Players.find({ retiredAt: { $exists: Boolean(props.retired) } });
+});
+
 Meteor.publish("playerInfo", function({ playerId }) {
   const selector = {
     _id: playerId,
@@ -11,7 +23,7 @@ Meteor.publish("playerInfo", function({ playerId }) {
   if (playerExists) {
     savePlayerId(this.connection, playerId);
   }
-  return Players.find(selector);
+  return Players.find(selector, { fields: { lastActivityAt: 0 } });
 });
 
 const clients = {};

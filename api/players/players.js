@@ -31,6 +31,32 @@ Players.schema = new SimpleSchema({
     max: 256
   },
 
+  // True if the player is currently online and idle
+  idle: {
+    label: "Idle",
+    type: Boolean,
+    optional: true
+  },
+
+  // True if the player is currently online
+  online: {
+    label: "Online",
+    type: Boolean,
+    optional: true
+  },
+
+  // Time when the player was last seen online and active
+  lastActivityAt: {
+    label: "Last Activity At",
+    type: Date,
+    optional: true
+  },
+
+  lastLogin: { type: Object, optional: true },
+  "lastLogin.at": { type: Date, optional: true },
+  "lastLogin.ip": { type: String, optional: true },
+  "lastLogin.userAgent": { type: String, optional: true },
+
   // Auto-incremented number assigned to players as they are created
   index: {
     type: SimpleSchema.Integer

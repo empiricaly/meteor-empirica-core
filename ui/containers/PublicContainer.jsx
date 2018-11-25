@@ -4,6 +4,7 @@ import { Batches } from "../../api/batches/batches.js";
 import { GameLobbies } from "../../api/game-lobbies/game-lobbies.js";
 import { Games } from "../../api/games/games.js";
 import Public from "../components/Public";
+import { ActivityMonitor } from "../../lib/monitor.js";
 
 const withGameDependencies = withTracker(
   ({ loading, game, gameLobby, ...rest }) => {
@@ -27,6 +28,8 @@ const withGameDependencies = withTracker(
 )(Public);
 
 export default withTracker(({ loading, player, playerId, ...rest }) => {
+  ActivityMonitor.start();
+
   if (loading) {
     return { loading: true };
   }

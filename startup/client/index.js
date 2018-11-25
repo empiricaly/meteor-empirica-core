@@ -6,6 +6,7 @@ TimeSync.loggingEnabled = false;
 import "../both/index.js";
 import "./accounts.js";
 import "./style.js";
+import "./idle.js";
 
 // https://blueprintjs.com/docs/#core/accessibility.focus-management
 FocusStyleManager.onlyShowFocusOnTabs();

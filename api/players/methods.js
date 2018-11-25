@@ -417,3 +417,42 @@ export const playerWasRetired = new ValidatedMethod({
     );
   }
 });
+
+export const updatePlayerStatus = new ValidatedMethod({
+  name: "Players.methods.updateStatus",
+
+  validate: new SimpleSchema({
+    playerId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+
+    idle: {
+      type: Boolean
+    },
+
+    lastActivityAt: {
+      type: Date
+    }
+  }).validator(),
+
+  run({ playerId, idle, lastActivityAt }) {
+    if (Meteor.isServer) {
+      const playerIdConn = shared.playerIdForConn(this.connection);
+      if (!playerIdConn) {
+        return;
+      }
+      if (playerId !== playerIdConn) {
+        console.error("attempting to update player status from wrong conn");
+        return;
+      }
+    }
+
+    Players.update(playerId, {
+      $set: {
+        idle,
+        lastActivityAt
+      }
+    });
+  }
+});

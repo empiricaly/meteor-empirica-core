@@ -35,7 +35,7 @@ import AdminFactorsContainer from "../containers/admin/AdminFactorsContainer.jsx
 import AdminGames from "./admin/AdminGames.jsx";
 import AdminLobbyConfigsContainer from "../containers/admin/AdminLobbyConfigsContainer.jsx";
 import AdminExport from "./admin/AdminExport.jsx";
-import AdminPlayers from "./admin/AdminPlayers.jsx";
+import AdminPlayersContainer from "../containers/admin/AdminPlayersContainer.jsx";
 import AdminTreatmentsContainer from "../containers/admin/AdminTreatmentsContainer.jsx";
 import { AlertToaster, SuccessToaster } from "./Toasters.jsx";
 import { withStaticProps } from "./Helpers.jsx";
@@ -403,7 +403,13 @@ export default class Admin extends React.Component {
               })}
             />
             <Route path="/admin/games" component={AdminGames} />
-            <Route path="/admin/players" component={AdminPlayers} />
+            <Route
+              path="/admin/players/retired"
+              component={withStaticProps(AdminPlayersContainer, {
+                retired: true
+              })}
+            />
+            <Route path="/admin/players" component={AdminPlayersContainer} />
             <Route path="/admin/export" component={AdminExport} />
             <Route
               path="/admin/treatments/archived"

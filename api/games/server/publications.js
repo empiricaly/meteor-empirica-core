@@ -19,7 +19,7 @@ Meteor.publish("gameDependencies", function({ gameId }) {
   return [
     Rounds.find({ gameId }),
     Stages.find({ gameId }),
-    Players.find({ gameId }),
+    Players.find({ gameId }, { fields: { lastActivityAt: 0 } }),
     PlayerStages.find({ gameId }),
     PlayerRounds.find({ gameId })
   ];
