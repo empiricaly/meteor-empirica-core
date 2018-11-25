@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "commit": "npx git-cz",
-    "release": "standard-version -s"
+    "release": "standard-version -s -a"
   },
   "standard-version": {
     "scripts": {
