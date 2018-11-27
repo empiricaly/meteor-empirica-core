@@ -4,7 +4,6 @@ import { updatePlayerStatus } from "../../api/players/methods.js";
 
 try {
   let playerId;
-  let computation;
   Meteor.startup(() => {
     Tracker.autorun(function() {
       const newPlayerId = getPlayerId();
@@ -12,12 +11,8 @@ try {
         return;
       }
 
-      if (!newPlayerId) {
-        computation.stop();
-      } else {
-        Tracker.autorun(function(c) {
-          computation = c;
-
+      if (newPlayerId) {
+        Tracker.autorun(function() {
           const idle = ActivityMonitor.isIdle;
           const lastActivityAt = ActivityMonitor.lastActivityAt;
           if (!lastActivityAt) {
