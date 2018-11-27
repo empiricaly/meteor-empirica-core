@@ -12,6 +12,9 @@ import { config } from "../../server";
 
 export const callOnSubmit = params => {
   const { onSubmit } = config;
+  if (!onSubmit) {
+    return;
+  }
 
   const { playerId, playerStage } = params;
 
