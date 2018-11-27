@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# 0.3.0 (2018-11-27)
+
+
+### Bug Fixes
+
+* **admin:** add key to players list to avoid React warnings ([f955c90](https://github.com/empiricaly/meteor-empirica-core/commit/f955c90))
+* **callbacks:** do not call onSubmit if not defined by game ([fb8a5cf](https://github.com/empiricaly/meteor-empirica-core/commit/fb8a5cf))
+* **status:** stop cancelling idle computation on player id update ([c3d04d6](https://github.com/empiricaly/meteor-empirica-core/commit/c3d04d6)), closes [#35](https://github.com/empiricaly/meteor-empirica-core/issues/35)
+
+
+
 <a name="0.2.0"></a>
 # 0.2.0 (2018-11-25)
 
