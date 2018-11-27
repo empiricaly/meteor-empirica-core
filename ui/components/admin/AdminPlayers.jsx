@@ -65,7 +65,7 @@ export default class AdminPlayers extends React.Component {
             </thead>
             <tbody>
               {_.map(players, player => (
-                <tr>
+                <tr key={player._id}>
                   <td>{player.index}</td>
                   <td>{player.id}</td>
                   <td>
