@@ -42,7 +42,7 @@ export const createGameFromLobby = gameLobby => {
   const { batchId, treatmentId, status, debugMode } = gameLobby;
 
   players.forEach(player => {
-    player.data = {};
+    player.data = player.data || {};
     player.set = (key, value) => {
       player.data[key] = value;
     };
