@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.0"></a>
+# 0.4.0 (2019-01-18)
+
+
+### Bug Fixes
+
+* keep data set on players in intro steps on game creation ([4dd3223](https://github.com/empiricaly/meteor-empirica-core/commit/4dd3223)), closes [#37](https://github.com/empiricaly/meteor-empirica-core/issues/37)
+
+
+
 <a name="0.3.0"></a>
 # 0.3.0 (2018-11-27)
 
