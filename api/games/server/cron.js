@@ -79,7 +79,7 @@ Cron.add({
             round.stages = game.stages.filter(s => s.roundId === round._id);
           });
 
-          bot.onStageTick(botPlayer, game, round, stage, players, tick);
+          bot.onStageTick(botPlayer, game, round, stage, tick);
         });
       }
     });
