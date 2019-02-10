@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# 0.6.0 (2019-02-10)
+
+
+### Bug Fixes
+
+* **game:** increase estimated game finshed time ([352176a](https://github.com/empiricaly/meteor-empirica-core/commit/352176a)), closes [#47](https://github.com/empiricaly/meteor-empirica-core/issues/47)
+
+
+
 <a name="0.5.0"></a>
 # 0.5.0 (2019-01-22)
 
