@@ -9,7 +9,7 @@
   "scripts": {
     "commit": "npx git-cz",
     "release": "standard-version -s -a",
-    "push": "git push --follow-tags origin master",
+    "push-git": "git push --follow-tags origin master",
     "publish-meteor": "meteor publish"
   },
   "standard-version": {
