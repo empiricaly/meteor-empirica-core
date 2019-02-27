@@ -36,10 +36,28 @@ export default class Public extends React.Component {
 
   handleOpenAltPlayer = event => {
     event.preventDefault();
-    const randId = Math.random()
+
+    // check to see if a playerId is required
+    const { playerIdParam, playerIdParamExclusive } = Meteor.settings.public;
+    const playerIdParamRequired = playerIdParam && playerIdParamExclusive;
+
+    const randPlayerIdKey = Math.random()
       .toString(36)
       .substring(2, 15);
-    window.open(`/?playerIdKey=${randId}`, "_blank");
+
+    // if playerId is required, add that to URL
+    // otherwise, produce URL with just playerIdKey
+    if (playerIdParamRequired) {
+      const randId = Math.random()
+        .toString(36)
+        .substring(2, 15);
+      window.open(
+        `/?playerIdKey=${randPlayerIdKey}&${playerIdParam}=${randId}`,
+        "_blank"
+      );
+    } else {
+      window.open(`/?playerIdKey=${randPlayerIdKey}`, "_blank");
+    }
   };
 
   render() {
