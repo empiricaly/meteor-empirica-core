@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.7.0"></a>
+# 0.7.0 (2019-02-27)
+
+
+### Features
+
+* **testing:** add playerIdParam to URL when required ([#50](https://github.com/empiricaly/meteor-empirica-core/issues/50)) ([e512a56](https://github.com/empiricaly/meteor-empirica-core/commit/e512a56))
+
+
+
 <a name="0.6.0"></a>
 # 0.6.0 (2019-02-10)
 
