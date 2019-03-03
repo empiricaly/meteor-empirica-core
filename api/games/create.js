@@ -161,7 +161,8 @@ export const createGameFromLobby = gameLobby => {
       {
         autoConvert: false,
         filter: false,
-        validate: false
+        validate: false,
+        trimStrings: false
       }
     );
   });
@@ -174,7 +175,8 @@ export const createGameFromLobby = gameLobby => {
     const roundId = Rounds.insert(_.extend({ gameId, index }, round), {
       autoConvert: false,
       filter: false,
-      validate: false
+      validate: false,
+      trimStrings: false
     });
     const stageIds = round.stages.map(stage => {
       if (batch.debugMode) {
@@ -185,7 +187,8 @@ export const createGameFromLobby = gameLobby => {
       const stageId = Stages.insert(sParams, {
         autoConvert: false,
         filter: false,
-        validate: false
+        validate: false,
+        trimStrings: false
       });
       stageIndex++;
       if (!params.currentStageId) {
@@ -241,7 +244,8 @@ export const createGameFromLobby = gameLobby => {
   Games.insert(params, {
     autoConvert: false,
     filter: false,
-    validate: false
+    validate: false,
+    trimStrings: false
   });
 
   // Let Game Lobby know Game ID

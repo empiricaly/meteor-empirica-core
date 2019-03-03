@@ -42,7 +42,8 @@ export const updateStageData = new ValidatedMethod({
     Stages.update(stageId, modifier, {
       autoConvert: false,
       filter: false,
-      validate: false
+      validate: false,
+      trimStrings: false
     });
 
     if (Meteor.isServer && !noCallback) {

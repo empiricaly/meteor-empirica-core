@@ -41,7 +41,8 @@ export const updatePlayerRoundData = new ValidatedMethod({
     PlayerRounds.update(playerRoundId, modifier, {
       autoConvert: false,
       filter: false,
-      validate: false
+      validate: false,
+      trimStrings: false
     });
 
     if (Meteor.isServer && !noCallback) {

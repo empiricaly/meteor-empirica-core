@@ -266,7 +266,8 @@ export const updatePlayerData = new ValidatedMethod({
     Players.update(playerId, modifier, {
       autoConvert: false,
       filter: false,
-      validate: false
+      validate: false,
+      trimStrings: false
     });
 
     if (Meteor.isServer && !noCallback) {
