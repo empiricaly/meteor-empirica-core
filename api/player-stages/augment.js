@@ -2,7 +2,7 @@ import { PlayerRounds } from "../player-rounds/player-rounds";
 import { PlayerStages } from "./player-stages";
 import { submitPlayerStage, updatePlayerStageData } from "./methods";
 import { updateGameData } from "../games/methods.js";
-import { updatePlayerData } from "../players/methods.js";
+import { updatePlayerData, endGame } from "../players/methods.js";
 import { updatePlayerRoundData } from "../player-rounds/methods";
 import { updateRoundData } from "../rounds/methods.js";
 import { updateStageData } from "../stages/methods.js";
@@ -79,6 +79,7 @@ export const augmentPlayer = player => {
   player.get = key => player.data[key];
   player.set = set(player.data, playerSet(playerId));
   player.append = append(player.data, playerSet(playerId, true));
+  player.endGame = () => endGame.call({ _id: playerId });
 };
 
 export const augmentPlayerStageRound = (player, stage, round) => {

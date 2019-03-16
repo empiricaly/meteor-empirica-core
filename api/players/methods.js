@@ -457,3 +457,19 @@ export const updatePlayerStatus = new ValidatedMethod({
     });
   }
 });
+
+export const endGame = new ValidatedMethod({
+  name: "Players.methods.endGame",
+
+  validate: IdSchema.validator(),
+  run({ _id }) {
+    console.log("werd");
+    // Set exitAt and exitStatus
+    Players.update(_id, {
+      $set: {
+        exitAt: new Date(),
+        exitStatus: "finishedEarly"
+      }
+    });
+  }
+});

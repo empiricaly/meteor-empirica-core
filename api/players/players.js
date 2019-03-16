@@ -18,7 +18,8 @@ export const exitStatuses = [
   "gameLobbyTimedOut",
   "playerEndedLobbyWait",
   "playerLobbyTimedOut",
-  "finished"
+  "finished",
+  "finishedEarly"
 ];
 
 Players.schema = new SimpleSchema({
