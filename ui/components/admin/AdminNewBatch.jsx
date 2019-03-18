@@ -59,7 +59,7 @@ export default class AdminNewBatch extends React.Component {
   handleAddTreatment = event => {
     event.preventDefault();
 
-    const { lobbyConfigs } = this.props;
+    const lobbyConfigs = this.validLobbyConfigs();
     const { assignment, simpleGamesCount } = this.state;
 
     const key = `${assignment}Treatments`;
