@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.9.0"></a>
+# 0.9.0 (2019-03-18)
+
+
+### Bug Fixes
+
+* **batch:** attach valid lobby config to treatment by default ([6cf5907](https://github.com/empiricaly/meteor-empirica-core/commit/6cf5907)), closes [#40](https://github.com/empiricaly/meteor-empirica-core/issues/40)
+
+
+
 <a name="0.8.0"></a>
 # 0.8.0 (2019-03-03)
 
