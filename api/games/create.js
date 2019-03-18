@@ -6,6 +6,7 @@ import { Games } from "./games";
 import { PlayerRounds } from "../player-rounds/player-rounds";
 import { PlayerStages } from "../player-stages/player-stages";
 import { Players } from "../players/players";
+import { endGame } from "../players/methods.js";
 import { Rounds } from "../rounds/rounds";
 import { Stages } from "../stages/stages";
 import {
@@ -48,6 +49,9 @@ export const createGameFromLobby = gameLobby => {
     };
     player.get = key => {
       return player.data[key];
+    };
+    player.endGame = () => {
+      endGame.call({ _id: player._id });
     };
   });
 
