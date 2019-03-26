@@ -36,7 +36,8 @@ export const addPlayerInput = new ValidatedMethod({
         autoConvert: false,
         filter: false,
         validate: false,
-        trimStrings: false
+        trimStrings: false,
+        removeEmptyStrings: false
       }
     );
   }
