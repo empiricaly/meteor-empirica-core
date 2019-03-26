@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.10.0"></a>
+# 0.10.0 (2019-03-26)
+
+
+### Bug Fixes
+
+* **getset:** allow set() to save empty string ("") values ([9ce3dbd](https://github.com/empiricaly/meteor-empirica-core/commit/9ce3dbd)), closes [#54](https://github.com/empiricaly/meteor-empirica-core/issues/54)
+
+
+
 <a name="0.9.0"></a>
 # 0.9.0 (2019-03-18)
 
