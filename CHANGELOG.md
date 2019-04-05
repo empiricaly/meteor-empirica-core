@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.11.0"></a>
+# 0.11.0 (2019-04-05)
+
+
+### Bug Fixes
+
+* **exitsteps:** avoid throwing if onSubmit is called without data ([3186962](https://github.com/empiricaly/meteor-empirica-core/commit/3186962))
+* **introsteps:** disable automatic focus on first input in intro steps ([e868005](https://github.com/empiricaly/meteor-empirica-core/commit/e868005)), closes [#59](https://github.com/empiricaly/meteor-empirica-core/issues/59)
+
+
+
 <a name="0.10.0"></a>
 # 0.10.0 (2019-03-26)
 
