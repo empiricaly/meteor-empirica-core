@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.12.0"></a>
+# 0.12.0 (2019-04-05)
+
+
+### Features
+
+* **about:** expose about text to api ([859084c](https://github.com/empiricaly/meteor-empirica-core/commit/859084c)), closes [#56](https://github.com/empiricaly/meteor-empirica-core/issues/56)
+
+
+
 <a name="0.11.0"></a>
 # 0.11.0 (2019-04-05)
 
