@@ -15,15 +15,8 @@ export default class InstructionSteps extends React.Component {
       onDone();
     }
 
-    this.setState({ steps, noInstruction }, this.focusFirstField);
+    this.setState({ steps, noInstruction });
   }
-
-  focusFirstField = () => {
-    const input = window.document.querySelector(".introduction-steps input");
-    if (input) {
-      input.focus();
-    }
-  };
 
   onNext = () => {
     let { onDone } = this.props;
@@ -33,11 +26,11 @@ export default class InstructionSteps extends React.Component {
       onDone();
       return;
     }
-    this.setState({ current }, this.focusFirstField);
+    this.setState({ current });
   };
 
   onPrev = () => {
-    this.setState({ current: this.state.current - 1 }, this.focusFirstField);
+    this.setState({ current: this.state.current - 1 });
   };
 
   render() {
