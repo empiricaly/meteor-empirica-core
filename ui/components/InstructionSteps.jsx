@@ -1,5 +1,4 @@
 import React from "react";
-
 import Loading from "./Loading.jsx";
 
 export default class InstructionSteps extends React.Component {

@@ -1,7 +1,6 @@
-import React from "react";
-
 import { NonIdealState } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
+import React from "react";
 
 const errExitStepMissingName = `
 At least one Exit Step is missing a stepName. All Exist Steps Components must

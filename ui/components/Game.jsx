@@ -1,14 +1,13 @@
 import React from "react";
-
 import { addPlayerInput } from "../../api/player-inputs/methods.js";
 import {
   markPlayerExitStepDone,
   playerReady
 } from "../../api/players/methods.js";
+import GameLobbyContainer from "../containers/GameLobbyContainer.jsx";
 import DefaultBreadcrumb from "./Breadcrumb.jsx";
 import DelayedDisplay from "./DelayedDisplay.jsx";
 import ExitSteps from "./ExitSteps.jsx";
-import GameLobbyContainer from "../containers/GameLobbyContainer.jsx";
 import InstructionSteps from "./InstructionSteps.jsx";
 import Loading from "./Loading.jsx";
 import WaitingForServer from "./WaitingForServer.jsx";
@@ -50,12 +49,19 @@ export default class Game extends React.Component {
           onSubmit={(stepName, data) => {
             const playerId = player._id;
             markPlayerExitStepDone.call({ playerId, stepName });
-            if (data) {
-              addPlayerInput.call({
-                playerId,
-                data: JSON.stringify(data),
-                gameId: game._id
-              });
+            // Checkig for data.nativeEvent, as that indicates the data is an
+            // event object dispached by React.
+            if (data && !data.nativeEvent) {
+              try {
+                const encoded = JSON.stringify(data);
+                addPlayerInput.call({
+                  playerId,
+                  data: encoded,
+                  gameId: game._id
+                });
+              } catch (e) {
+                console.error("could not encode data returned by onSubmit", e);
+              }
             }
           }}
         />
