@@ -1,22 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
-import { Helmet } from "react-helmet";
 import {
   Button,
   Classes,
   Dialog,
   Icon,
+  Intent,
   Navbar,
   NavbarGroup,
-  NavbarHeading,
-  Intent
+  NavbarHeading
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-
-import { CoreWrapper } from "./Helpers.jsx";
-import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
+import React from "react";
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
 import GameContainer from "../containers/GameContainer.jsx";
+import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
+import AboutOriginal from "./About.jsx";
+import { CoreWrapper } from "./Helpers.jsx";
 import Loading from "./Loading.jsx";
 import NewPlayer from "./NewPlayer.jsx";
 import NoBatch from "./NoBatch.jsx";
@@ -61,8 +60,17 @@ export default class Public extends React.Component {
   };
 
   render() {
-    const { loading, renderPublic, playerIdKey, Header, ...rest } = this.props;
+    const {
+      loading,
+      renderPublic,
+      playerIdKey,
+      Header,
+      About,
+      ...rest
+    } = this.props;
     const { player } = rest;
+
+    const AboutComp = About || AboutOriginal;
 
     if (loading) {
       return <Loading />;
@@ -152,7 +160,7 @@ export default class Public extends React.Component {
                 title="About"
               >
                 <div className={Classes.DIALOG_BODY}>
-                  Here be the presentation of the experiement(ers).
+                  <AboutComp />
                 </div>
 
                 <div className={Classes.DIALOG_FOOTER}>
