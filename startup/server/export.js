@@ -1,14 +1,13 @@
-import moment from "moment";
 import archiver from "archiver";
-import streams from "stream-buffers";
 import contentDisposition from "content-disposition";
-
-import { Factors } from "../../api/factors/factors.js";
-import { FactorTypes } from "../../api/factor-types/factor-types.js";
-import { LobbyConfigs } from "../../api/lobby-configs/lobby-configs.js";
+import moment from "moment";
+import streams from "stream-buffers";
 import { Batches } from "../../api/batches/batches.js";
-import { Games } from "../../api/games/games.js";
+import { FactorTypes } from "../../api/factor-types/factor-types.js";
+import { Factors } from "../../api/factors/factors.js";
 import { GameLobbies } from "../../api/game-lobbies/game-lobbies.js";
+import { Games } from "../../api/games/games.js";
+import { LobbyConfigs } from "../../api/lobby-configs/lobby-configs.js";
 import { PlayerInputs } from "../../api/player-inputs/player-inputs.js";
 import { PlayerRounds } from "../../api/player-rounds/player-rounds.js";
 import { PlayerStages } from "../../api/player-stages/player-stages.js";
@@ -16,7 +15,6 @@ import { Players } from "../../api/players/players.js";
 import { Rounds } from "../../api/rounds/rounds.js";
 import { Stages } from "../../api/stages/stages.js";
 import { Treatments } from "../../api/treatments/treatments.js";
-import LRUMap from "../../lib/lru.js";
 import log from "../../lib/log.js";
 
 export const BOM = "\uFEFF";
@@ -312,7 +310,9 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "games",
     gameFields,
     puts => {
-      batch(Games)(f => puts(_.pick(f, gameFields), _.pick(f, gameDataFields)));
+      batch(Games)(f =>
+        puts(_.pick(f, gameFields), _.pick(f.data, gameDataFields))
+      );
     },
     gameDataFields
   );
