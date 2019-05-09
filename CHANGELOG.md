@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.14.0"></a>
+# 0.14.0 (2019-05-09)
+
+
+### Bug Fixes
+
+* **export:** ensure data fields on Games are exported ([7f2b2df](https://github.com/empiricaly/meteor-empirica-core/commit/7f2b2df))
+
+
+
 <a name="0.13.0"></a>
 # 0.13.0 (2019-05-09)
 
