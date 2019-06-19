@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.15.0"></a>
+# 0.15.0 (2019-06-19)
+
+
+### Bug Fixes
+
+* **bots:** ensure bot field is available on client ([cb94771](https://github.com/empiricaly/meteor-empirica-core/commit/cb94771)), closes [#65](https://github.com/empiricaly/meteor-empirica-core/issues/65)
+
+
+### Features
+
+* **bots:** throw error when creating batch without bots defined ([646a9a9](https://github.com/empiricaly/meteor-empirica-core/commit/646a9a9)), closes [#65](https://github.com/empiricaly/meteor-empirica-core/issues/65)
+
+
+
 <a name="0.14.0"></a>
 # 0.14.0 (2019-05-09)
 
@@ -150,8 +165,8 @@ recommended to move.
 
 ### Bug Fixes
 
-* **debugmode:** make debug mode work for all games in a batch ([18d2304](https://github.com/empiricaly/meteor-empirica-core/commit/18d2304)), closes [#12](https://github.com/empiricaly/meteor-empirica-core/issues/12)
 * Minor API fixes and better warnings for bad game initialization ([89ae8be](https://github.com/empiricaly/meteor-empirica-core/commit/89ae8be))
+* **debugmode:** make debug mode work for all games in a batch ([18d2304](https://github.com/empiricaly/meteor-empirica-core/commit/18d2304)), closes [#12](https://github.com/empiricaly/meteor-empirica-core/issues/12)
 
 
 ### Features
@@ -211,9 +226,9 @@ recommended to move.
 
 ### Bug Fixes
 
-* cancel doesn't cancel before game started ([212ec05](https://github.com/empiricaly/meteor-empirica-core/commit/212ec05))
-* **admin:** background is white when content longer than window ([6230c19](https://github.com/empiricaly/meteor-empirica-core/commit/6230c19))
 * cancellation improvements ([f3319f2](https://github.com/empiricaly/meteor-empirica-core/commit/f3319f2))
+* **admin:** background is white when content longer than window ([6230c19](https://github.com/empiricaly/meteor-empirica-core/commit/6230c19))
+* cancel doesn't cancel before game started ([212ec05](https://github.com/empiricaly/meteor-empirica-core/commit/212ec05))
 * game.set() does not work in callbacks ([382cb87](https://github.com/empiricaly/meteor-empirica-core/commit/382cb87))
 
 
