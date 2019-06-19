@@ -1,5 +1,5 @@
-import { Players } from "../players.js";
 import { savePlayerId } from "../../../startup/server/connections.js";
+import { Players } from "../players.js";
 
 Meteor.publish("admin-players", function(props) {
   if (!this.userId) {
@@ -23,7 +23,7 @@ Meteor.publish("playerInfo", function({ playerId }) {
   if (playerExists) {
     savePlayerId(this.connection, playerId);
   }
-  return Players.find(selector, { fields: { lastActivityAt: 0 } });
+  return Players.find(selector);
 });
 
 const clients = {};

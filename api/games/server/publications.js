@@ -14,7 +14,7 @@ Meteor.publish("gameDependencies", function({ gameId }) {
     return [];
   }
 
-  return [Players.find({ gameId }, { fields: { lastActivityAt: 0 } })];
+  return [Players.find({ gameId })];
 });
 
 Meteor.publish("gameCurrentRoundStage", function({ gameId, stageId }) {

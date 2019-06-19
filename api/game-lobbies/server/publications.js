@@ -1,15 +1,14 @@
 import { publishComposite } from "meteor/reywood:publish-composite";
-
 import { Factors } from "../../factors/factors.js";
-import { GameLobbies } from "../game-lobbies";
+import { LobbyConfigs } from "../../lobby-configs/lobby-configs.js";
 import { Players } from "../../players/players";
 import { Treatments } from "../../treatments/treatments";
-import { LobbyConfigs } from "../../lobby-configs/lobby-configs.js";
+import { GameLobbies } from "../game-lobbies";
 
 publishComposite("gameLobby", function({ playerId }) {
   return {
     find() {
-      return Players.find(playerId, { fields: { lastActivityAt: 0 } });
+      return Players.find(playerId);
     },
 
     children: [

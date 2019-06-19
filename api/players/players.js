@@ -1,7 +1,6 @@
 import SimpleSchema from "simpl-schema";
-
-import { TimestampSchema, UserDataSchema, BelongsTo } from "../default-schemas";
 import { Counter } from "../../lib/counters";
+import { BelongsTo, TimestampSchema, UserDataSchema } from "../default-schemas";
 
 class PlayersCollection extends Mongo.Collection {
   insert(doc, callback) {
