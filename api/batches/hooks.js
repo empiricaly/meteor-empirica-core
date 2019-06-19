@@ -61,7 +61,8 @@ Batches.after.insert(function(userId, batch) {
       if (botsCount === l.availableCount) {
         throw "Creating a game with only bots...";
       }
-      if (!config.bots) {
+      const botNames = config.bots && _.keys(config.bots);
+      if (!config.bots || botNames.length === 0) {
         throw "Trying to create a game with bots, but no bots defined";
       }
 
@@ -71,9 +72,9 @@ Batches.after.insert(function(userId, batch) {
           id: Random.id(),
           gameLobbyId: l._id,
           readyAt: new Date(),
-          bot: _.shuffle(_.keys(config.bots))[0]
+          bot: _.shuffle(botNames)[0]
         };
-        console.info(`Creating bot: ${params}`);
+        console.info("Creating bot:", params);
         const playerId = Players.insert(params);
         l.playerIds.push(playerId);
       });
