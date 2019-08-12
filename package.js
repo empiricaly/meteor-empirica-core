@@ -73,7 +73,7 @@ Npm.depends({
   "react-helmet": "5.2.0",
   "react-router-dom": "4.3.1",
   "stream-buffers": "3.0.2",
-  "simpl-schema": "1.5.3"
+  "simpl-schema": "1.5.5"
 });
 
 Package.onTest(function(api) {
