@@ -1,15 +1,14 @@
 import moment from "moment";
-
+import { config } from "../../server";
 import { Games } from "../games/games.js";
+import {
+  augmentGameStageRound,
+  augmentPlayerStageRound
+} from "../player-stages/augment.js";
 import { Players } from "../players/players.js";
 import { Rounds } from "../rounds/rounds.js";
-import { Stages } from "./stages.js";
 import { Treatments } from "../treatments/treatments.js";
-import {
-  augmentPlayerStageRound,
-  augmentGameStageRound
-} from "../player-stages/augment.js";
-import { config } from "../../server";
+import { Stages } from "./stages.js";
 
 export const endOfStage = stageId => {
   const stage = Stages.findOne(stageId);

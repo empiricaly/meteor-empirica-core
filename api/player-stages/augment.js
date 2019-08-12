@@ -1,11 +1,11 @@
-import { PlayerRounds } from "../player-rounds/player-rounds";
-import { PlayerStages } from "./player-stages";
-import { submitPlayerStage, updatePlayerStageData } from "./methods";
 import { updateGameData } from "../games/methods.js";
-import { updatePlayerData } from "../players/methods.js";
 import { updatePlayerRoundData } from "../player-rounds/methods";
+import { PlayerRounds } from "../player-rounds/player-rounds";
+import { updatePlayerData } from "../players/methods.js";
 import { updateRoundData } from "../rounds/methods.js";
 import { updateStageData } from "../stages/methods.js";
+import { submitPlayerStage, updatePlayerStageData } from "./methods";
+import { PlayerStages } from "./player-stages";
 
 const gameSet = (gameId, append = false) => (key, value) => {
   updateGameData.call({

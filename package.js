@@ -53,7 +53,7 @@ Npm.depends({
   "@blueprintjs/core": "3.6.1",
   "@blueprintjs/icons": "3.1.0",
   "babel-runtime": "6.26.0",
-  bcrypt: "3.0.1",
+  bcrypt: "3.0.3",
   colors: "1.3.0",
   "content-disposition": "0.5.2",
   history: "4.7.2",
