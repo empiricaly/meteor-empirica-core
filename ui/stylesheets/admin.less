@@ -14,11 +14,31 @@ body.bp3-dark {
     }
   }
 
+  .archived-button {
+    float: right;
+  }
+
   .admin-heading {
     margin-bottom: 1.5rem;
 
     .bp3-icon {
       margin-right: 0.5rem;
+    }
+
+    button {
+      margin-left: 1rem;
+    }
+  }
+
+  .bp3-callout {
+    display: inline-block;
+    width: auto;
+  }
+
+  .double-stripped tbody {
+    tr:nth-child(4n + 1) td,
+    tr:nth-child(4n + 2) td {
+      background-color: rgba(191, 204, 214, 0.15);
     }
   }
 

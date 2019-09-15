@@ -1,18 +1,17 @@
-import React from "react";
-import moment from "moment";
-
 import { Button, ButtonGroup, Classes, Intent, Tag } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-
+import moment from "moment";
+import React from "react";
 import { assignmentTypes } from "../../../api/batches/batches";
 import {
-  updateBatchStatus,
   duplicateBatch,
   setBatchInDebugMode,
-  updateBatch
+  updateBatch,
+  updateBatchStatus
 } from "../../../api/batches/methods";
+import AdminBatchGamesContainer from "../../containers/admin/AdminBatchGamesContainer";
+import LoadingInline from "../LoadingInline.jsx";
 import { AlertToaster, SuccessToaster } from "../Toasters.jsx";
-import Loading from "../Loading.jsx";
 
 export default class AdminBatch extends React.Component {
   state = {
@@ -66,7 +65,13 @@ export default class AdminBatch extends React.Component {
     const { loading, batch, treatments, archived } = this.props;
 
     if (loading) {
-      return <Loading />;
+      return (
+        <tr>
+          <td colSpan={7} style={{ textAlign: "center" }}>
+            <LoadingInline />
+          </td>
+        </tr>
+      );
     }
 
     const actions = [];
@@ -97,15 +102,6 @@ export default class AdminBatch extends React.Component {
     if (batch.status === "finished" || batch.status === "cancelled") {
       actions.push(
         <Button
-          text="Duplicate"
-          icon={IconNames.DUPLICATE}
-          key="duplicate"
-          onClick={this.handleDuplicate}
-        />
-      );
-
-      actions.push(
-        <Button
           text={archived ? "Unarchive" : "Archive"}
           intent={archived ? Intent.SUCCESS : Intent.DANGER}
           minimal
@@ -116,6 +112,15 @@ export default class AdminBatch extends React.Component {
         />
       );
     }
+
+    actions.push(
+      <Button
+        text="Duplicate"
+        icon={IconNames.DUPLICATE}
+        key="duplicate"
+        onClick={this.handleDuplicate}
+      />
+    );
 
     let config;
     switch (batch.assignment) {
@@ -169,25 +174,32 @@ export default class AdminBatch extends React.Component {
     }
 
     return (
-      <tr>
-        <td>{batch.index}</td>
-        <td>
-          <Tag intent={statusIntent} minimal={statusMinimal}>
-            {batch.status}
-          </Tag>
-        </td>
-        <td className="numeric">{batch.gameCount()}</td>
-        <td title={moment(batch.createdAt).format()}>
-          {moment(batch.createdAt).fromNow()}
-        </td>
-        <td>{assignmentTypes[batch.assignment]}</td>
-        <td>{config}</td>
-        <td>
-          <ButtonGroup minimal className={Classes.SMALL}>
-            {actions}
-          </ButtonGroup>
-        </td>
-      </tr>
+      <>
+        <tr>
+          <td>{batch.index}</td>
+          <td>
+            <Tag intent={statusIntent} minimal={statusMinimal}>
+              {batch.status}
+            </Tag>
+          </td>
+          <td className="numeric">{batch.gameCount()}</td>
+          <td title={moment(batch.createdAt).format()}>
+            {moment(batch.createdAt).fromNow()}
+          </td>
+          <td>{assignmentTypes[batch.assignment]}</td>
+          <td>{config}</td>
+          <td>
+            <ButtonGroup minimal className={Classes.SMALL}>
+              {actions}
+            </ButtonGroup>
+          </td>
+        </tr>
+        <AdminBatchGamesContainer
+          batchId={batch._id}
+          batch={batch}
+          treatments={treatments}
+        />
+      </>
     );
   }
 }
