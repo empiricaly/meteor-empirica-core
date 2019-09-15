@@ -1,9 +1,8 @@
 import SimpleSchema from "simpl-schema";
-
+import { Counter } from "../../lib/counters";
 import { statusSchema } from "../batches/status-schema";
 import { BelongsTo, HasManyByRef, TimestampSchema } from "../default-schemas";
 import { DebugModeSchema, UserDataSchema } from "../default-schemas.js";
-import { Counter } from "../../lib/counters";
 
 class GamesCollection extends Mongo.Collection {
   insert(doc, callback) {
@@ -27,7 +26,7 @@ Games.schema = new SimpleSchema({
     index: 1
   },
 
-  // Time the game acutally finished
+  // Time the game actually finished
   finishedAt: {
     type: Date,
     optional: true,

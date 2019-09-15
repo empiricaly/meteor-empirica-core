@@ -1,19 +1,16 @@
+import { Button, Callout, HTMLTable } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import React from "react";
 import { Link } from "react-router-dom";
-
-import { Button, HTMLTable, Icon } from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
-
 import {
-  updateBatchStatus,
   duplicateBatch,
-  setBatchInDebugMode
+  setBatchInDebugMode,
+  updateBatchStatus
 } from "../../../api/batches/methods";
-
-import AdminNewBatch from "./AdminNewBatch.jsx";
-import AdminBatch from "./AdminBatch.jsx";
 import Loading from "../Loading.jsx";
+import AdminBatch from "./AdminBatch";
 import { AdminPageHeader } from "./AdminHeading.jsx";
+import AdminNewBatch from "./AdminNewBatch.jsx";
 
 export default class AdminBatches extends React.Component {
   state = {
@@ -56,14 +53,40 @@ export default class AdminBatches extends React.Component {
 
     return (
       <div className="batches">
+        {archived ? (
+          <Link to="/admin" className="archived-button bp3-button bp3-minimal">
+            Back to Active Batches
+          </Link>
+        ) : (
+          <Link
+            to="/admin/batches/archived"
+            className="archived-button bp3-button bp3-minimal"
+          >
+            View Archived Batches
+          </Link>
+        )}
+
         <AdminPageHeader icon={IconNames.LAYERS}>
           {archived ? "Archived Batches" : "Batches"}
+
+          {!archived ? (
+            <Button
+              text="New Batch"
+              onClick={() => this.setState({ newIsOpen: true })}
+            />
+          ) : (
+            ""
+          )}
         </AdminPageHeader>
 
         {batches.length === 0 ? (
-          <p>No batches yet, create one bellow.</p>
+          <Callout>
+            {archived
+              ? "No archived batches."
+              : "No batches yet, create one above."}
+          </Callout>
         ) : (
-          <HTMLTable striped>
+          <HTMLTable className="double-stripped">
             <thead>
               <tr>
                 <th>#</th>
@@ -89,33 +112,16 @@ export default class AdminBatches extends React.Component {
           </HTMLTable>
         )}
 
-        {archived ? (
-          <p>
-            <br />
-            <Link to="/admin">Back to Active Batches</Link>
-          </p>
+        {!archived ? (
+          <AdminNewBatch
+            treatments={treatments}
+            factors={factors}
+            lobbyConfigs={lobbyConfigs}
+            isOpen={newIsOpen}
+            onClose={() => this.setState({ newIsOpen: false })}
+          />
         ) : (
-          <>
-            <br />
-
-            <Button
-              text="New Batch"
-              onClick={() => this.setState({ newIsOpen: true })}
-            />
-
-            <AdminNewBatch
-              treatments={treatments}
-              factors={factors}
-              lobbyConfigs={lobbyConfigs}
-              isOpen={newIsOpen}
-              onClose={() => this.setState({ newIsOpen: false })}
-            />
-
-            <p>
-              <br />
-              <Link to="/admin/batches/archived">View Archived Batches</Link>
-            </p>
-          </>
+          ""
         )}
       </div>
     );
