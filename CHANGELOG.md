@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.2.0 (2019-10-10)
+
+
+### Bug Fixes
+
+* can only check conn on server ([d334c6f](https://github.com/empiricaly/meteor-empirica-core/commit/d334c6f))
+
+
+### Features
+
+* add way to force a player to exit ([6334223](https://github.com/empiricaly/meteor-empirica-core/commit/6334223))
+
 ## 1.1.0 (2019-08-12)
 
 
