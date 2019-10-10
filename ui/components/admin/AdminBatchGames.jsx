@@ -22,18 +22,21 @@ export default class AdminBatchGames extends React.Component {
       <tr>
         <td colSpan={2} />
         <td colSpan={5}>
-          <HTMLTable condensed>
-            {/* <thead>
+          <HTMLTable
+            condensed
+            className="bp3-html-table-bordered batch-games-table"
+          >
+            <thead>
               <tr>
                 <th>#</th>
+                <th>Treatment</th>
                 <th>Status</th>
-                <th>Game Count</th>
-                <th>Created</th>
-                <th>Assignment</th>
-                <th>Configuration</th>
-                <th></th>
+                <th>Start Time</th>
+                <th>Finish Time</th>
+                <th>Current State</th>
+                <th>Players</th>
               </tr>
-            </thead> */}
+            </thead>
 
             <tbody>
               {gameLobbies.map(lobby => (

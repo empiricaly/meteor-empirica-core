@@ -35,10 +35,18 @@ body.bp3-dark {
     width: auto;
   }
 
-  .double-stripped tbody {
-    tr:nth-child(4n + 1) td,
-    tr:nth-child(4n + 2) td {
+  .double-stripped > tbody {
+    > tr:nth-child(4n + 1) > td,
+    > tr:nth-child(4n + 2) > td {
       background-color: rgba(191, 204, 214, 0.15);
+    }
+
+    .batch-games-table {
+      width: 100%;
+
+      tbody tr:first-child th {
+        box-shadow: none !important;
+      }
     }
   }
 

@@ -82,14 +82,33 @@ export default class AdminBatchGame extends React.Component {
           </Tag>
         </td>
         <td>{treatment.displayName()}</td>
-        {game && game.finishedAt ? (
-          <td title={moment(game.finishedAt).format()} colSpan={2}>
-            Finished: {moment(game.finishedAt).fromNow()}
+
+        {game && game.createdAt ? (
+          <td title={moment(game.createdAt).format()}>
+            {moment(game.createdAt).fromNow()}
           </td>
         ) : (
+          <td />
+        )}
+
+        {game && game.finishedAt ? (
+          <td title={moment(game.finishedAt).format()}>
+            {moment(game.finishedAt).fromNow()}
+          </td>
+        ) : (
+          <td />
+        )}
+
+        {game && game.finishedAt ? (
+          <td title={moment(game.finishedAt).format()}>-</td>
+        ) : (
           <>
-            <td>{currentRound ? `Round ${currentRound.index + 1}` : ""}</td>
-            <td>{currentStage ? `> ${currentStage.displayName}` : ""}</td>
+            <td>
+              {currentRound
+                ? `Round: ${currentRound.index + 1} / ${rounds.length}`
+                : ""}
+              {currentStage ? ` > Stage: ${currentStage.displayName}` : ""}
+            </td>
           </>
         )}
         <td>
