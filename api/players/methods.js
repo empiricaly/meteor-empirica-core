@@ -380,6 +380,9 @@ export const earlyExitPlayer = new ValidatedMethod({
   }).validator(),
 
   run({ exitReason, playerId }) {
+    if (!Meteor.isServer) {
+      return;
+    }
     const playerIdConn = shared.playerIdForConn(this.connection);
     if (!playerIdConn) {
       console.error("Attempting to exit player without player ID");
