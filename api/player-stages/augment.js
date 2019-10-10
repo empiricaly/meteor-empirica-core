@@ -76,7 +76,8 @@ const nullFunc = () => {
 export const augmentPlayer = player => {
   const { _id: playerId } = player;
 
-  player.exit = reason => earlyExitPlayer({ playerId, exitReason: reason });
+  player.exit = reason =>
+    earlyExitPlayer.call({ playerId, exitReason: reason });
   player.get = key => player.data[key];
   player.set = set(player.data, playerSet(playerId));
   player.append = append(player.data, playerSet(playerId, true));
