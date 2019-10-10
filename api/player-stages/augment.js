@@ -1,7 +1,7 @@
 import { updateGameData } from "../games/methods.js";
 import { updatePlayerRoundData } from "../player-rounds/methods";
 import { PlayerRounds } from "../player-rounds/player-rounds";
-import { updatePlayerData } from "../players/methods.js";
+import { updatePlayerData, earlyExitPlayer } from "../players/methods.js";
 import { updateRoundData } from "../rounds/methods.js";
 import { updateStageData } from "../stages/methods.js";
 import { submitPlayerStage, updatePlayerStageData } from "./methods";
@@ -76,6 +76,7 @@ const nullFunc = () => {
 export const augmentPlayer = player => {
   const { _id: playerId } = player;
 
+  player.exit = reason => earlyExitPlayer({ playerId, exitReason: reason });
   player.get = key => player.data[key];
   player.set = set(player.data, playerSet(playerId));
   player.append = append(player.data, playerSet(playerId, true));

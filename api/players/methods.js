@@ -364,6 +364,42 @@ export const endPlayerTimeoutWait = new ValidatedMethod({
   }
 });
 
+export const earlyExitPlayer = new ValidatedMethod({
+  name: "Players.methods.admin.earlyExitPlayer",
+
+  validate: new SimpleSchema({
+    exitReason: {
+      label: "Reason for Exit",
+      type: String,
+      regEx: /[a-zA-Z0-9_]+/
+    },
+    playerId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+
+  run({ exitReason, playerId }) {
+    const playerIdConn = shared.playerIdForConn(this.connection);
+    if (!playerIdConn) {
+      console.error("Attempting to exit player without player ID");
+      return;
+    }
+    if (playerId !== playerIdConn) {
+      console.error("Attempting to exit player from wrong connection");
+      return;
+    }
+
+    Players.update(playerId, {
+      $set: {
+        exitAt: new Date(),
+        exitStatus: "custom",
+        exitReason
+      }
+    });
+  }
+});
+
 export const retireGameFullPlayers = new ValidatedMethod({
   name: "Players.methods.admin.retireGameFull",
 
@@ -445,7 +481,9 @@ export const updatePlayerStatus = new ValidatedMethod({
         return;
       }
       if (playerId !== playerIdConn) {
-        console.error("attempting to update player status from wrong conn");
+        console.error(
+          "Attempting to update player status from wrong connection"
+        );
         return;
       }
     }

@@ -17,7 +17,8 @@ export const exitStatuses = [
   "gameLobbyTimedOut",
   "playerEndedLobbyWait",
   "playerLobbyTimedOut",
-  "finished"
+  "finished",
+  "custom"
 ];
 
 Players.schema = new SimpleSchema({
@@ -109,10 +110,16 @@ Players.schema = new SimpleSchema({
     optional: true
   },
   exitStatus: {
-    label: "Failed Reason",
+    label: "Failed Status",
     type: String,
     optional: true,
     allowedValues: exitStatuses
+  },
+  exitReason: {
+    label: "Failed Reason",
+    type: String,
+    optional: true,
+    regEx: /[a-zA-Z0-9_]+/
   },
 
   // A player can be retired. Retired players should no longer be used in active
