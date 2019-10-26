@@ -15,7 +15,12 @@ import { AlertToaster, SuccessToaster } from "../Toasters.jsx";
 
 export default class AdminBatch extends React.Component {
   state = {
-    newIsOpen: false
+    newIsOpen: false,
+    detailsVisible: false
+  };
+
+  toggleDetails = () => {
+    this.setState({ detailsVisible: !this.state.detailsVisible });
   };
 
   handleArchive = () => {
@@ -63,6 +68,7 @@ export default class AdminBatch extends React.Component {
 
   render() {
     const { loading, batch, treatments, archived } = this.props;
+    const { detailsVisible } = this.state;
 
     if (loading) {
       return (
@@ -173,9 +179,21 @@ export default class AdminBatch extends React.Component {
         break;
     }
 
+    const detailsVisibleClass = detailsVisible ? "detailsVisible" : "";
+    const detailsClass = `detailsButton ${detailsVisibleClass}`;
     return (
       <>
         <tr>
+          <td className="showDetailsButton">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 125.304 125.304"
+              onClick={this.toggleDetails}
+              className={detailsClass}
+            >
+              <path fill="#010002" d="M62.652 103.895L0 21.409h125.304z" />
+            </svg>
+          </td>
           <td>{batch.index}</td>
           <td>
             <Tag intent={statusIntent} minimal={statusMinimal}>
@@ -194,11 +212,18 @@ export default class AdminBatch extends React.Component {
             </ButtonGroup>
           </td>
         </tr>
-        <AdminBatchGamesContainer
-          batchId={batch._id}
-          batch={batch}
-          treatments={treatments}
-        />
+
+        {detailsVisible ? (
+          <tr>
+            <AdminBatchGamesContainer
+              batchId={batch._id}
+              batch={batch}
+              treatments={treatments}
+            />
+          </tr>
+        ) : (
+          <tr />
+        )}
       </>
     );
   }

@@ -89,6 +89,7 @@ export default class AdminBatches extends React.Component {
           <HTMLTable className="double-stripped">
             <thead>
               <tr>
+                <th />
                 <th>#</th>
                 <th>Status</th>
                 <th>Game Count</th>

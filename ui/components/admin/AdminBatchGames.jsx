@@ -9,19 +9,19 @@ export default class AdminBatchGames extends React.Component {
 
     if (loading) {
       return (
-        <tr>
+        <>
           <td colSpan={2} />
           <td colSpan={5} style={{ textAlign: "center" }}>
             <LoadingInline />
           </td>
-        </tr>
+        </>
       );
     }
 
     return (
-      <tr>
+      <>
         <td colSpan={2} />
-        <td colSpan={5}>
+        <td colSpan={6}>
           <HTMLTable
             condensed
             className="bp3-html-table-bordered batch-games-table"
@@ -34,6 +34,7 @@ export default class AdminBatchGames extends React.Component {
                 <th>Start Time</th>
                 <th>Finish Time</th>
                 <th>Current State</th>
+                <th>Player Count</th>
                 <th>Players</th>
               </tr>
             </thead>
@@ -51,7 +52,7 @@ export default class AdminBatchGames extends React.Component {
             </tbody>
           </HTMLTable>
         </td>
-      </tr>
+      </>
     );
   }
 }
