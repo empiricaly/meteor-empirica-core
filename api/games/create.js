@@ -367,7 +367,7 @@ export const createGameFromLobby = gameLobby => {
     players.forEach(player => {
       player.round = _.extend({}, nextRound);
       player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round);
+      augmentPlayerStageRound(player, player.stage, player.round, game);
     });
 
     if (onGameStart) {

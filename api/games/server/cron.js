@@ -66,12 +66,17 @@ Cron.add({
           players.forEach(player => {
             player.stage = _.extend({}, stage);
             player.round = _.extend({}, round);
-            augmentPlayerStageRound(player, player.stage, player.round);
+            augmentPlayerStageRound(player, player.stage, player.round, game);
           });
 
           botPlayer.stage = _.extend({}, stage);
           botPlayer.round = _.extend({}, round);
-          augmentPlayerStageRound(botPlayer, botPlayer.stage, botPlayer.round);
+          augmentPlayerStageRound(
+            botPlayer,
+            botPlayer.stage,
+            botPlayer.round,
+            game
+          );
 
           const tick = endTimeAt.diff(now, "seconds");
 

@@ -117,73 +117,87 @@ export default class AdminBatchGame extends React.Component {
         )}
         <td>{playerCount}</td>
         <td>
-          <span className="player-group">
-            {bots.length > 10 ? (
-              <>
-                <span title={`${bots.length} Bots`} key="bots">
-                  <Icon
-                    icon={IconNames.PERSON}
-                    iconSize={16}
-                    style={{ color: "#D99E0B" }}
-                  />{" "}
-                  × {bots.length}
-                </span>
-              </>
-            ) : (
-              bots.map(p => (
-                <span title="Bot" key={p}>
-                  <Icon
-                    icon={IconNames.PERSON}
-                    iconSize={16}
-                    style={{ color: "#D99E0B" }}
-                  />
-                </span>
-              ))
-            )}
-          </span>
-          <span className="player-group">
-            {notReadyPlayers.length > 10 ? (
-              <>
-                <span
-                  title={`${notReadyPlayers.length} Players in Intro Steps`}
-                  key="notReadyPlayers"
-                >
-                  <Icon
-                    icon={IconNames.PERSON}
-                    iconSize={16}
-                    style={{ color: "#A7B6C2" }}
-                  />
-                </span>{" "}
-                × {notReadyPlayers.length}
-              </>
-            ) : (
-              notReadyPlayers.map(p => (
-                <span title="Player in Intro Steps" key={p}>
-                  <Icon
-                    icon={IconNames.PERSON}
-                    iconSize={16}
-                    style={{ color: "#A7B6C2" }}
-                  />
-                </span>
-              ))
-            )}
-          </span>
-          <span className="player-group">
-            {players.length > 10 ? (
-              <>
-                <span title={`${players.length} Players`} key="players">
-                  <Icon icon={IconNames.PERSON} iconSize={16} />
-                </span>{" "}
-                × {players.length}
-              </>
-            ) : (
-              players.map(p => (
-                <span title="Player" key={p}>
-                  <Icon icon={IconNames.PERSON} iconSize={16} />
-                </span>
-              ))
-            )}
-          </span>
+          {bots.length > 0 ? (
+            <span className="player-group">
+              {bots.length > 10 ? (
+                <>
+                  <span title={`${bots.length} Bots`} key="bots">
+                    <Icon
+                      icon={IconNames.PERSON}
+                      iconSize={16}
+                      style={{ color: "#D99E0B" }}
+                    />{" "}
+                    × {bots.length}
+                  </span>
+                </>
+              ) : (
+                bots.map(p => (
+                  <span title="Bot" key={p}>
+                    <Icon
+                      icon={IconNames.PERSON}
+                      iconSize={16}
+                      style={{ color: "#D99E0B" }}
+                    />
+                  </span>
+                ))
+              )}
+            </span>
+          ) : (
+            ""
+          )}
+
+          {notReadyPlayers.length > 0 ? (
+            <span className="player-group">
+              {notReadyPlayers.length > 10 ? (
+                <>
+                  <span
+                    title={`${notReadyPlayers.length} Players in Intro Steps`}
+                    key="notReadyPlayers"
+                  >
+                    <Icon
+                      icon={IconNames.PERSON}
+                      iconSize={16}
+                      style={{ color: "#A7B6C2" }}
+                    />
+                  </span>{" "}
+                  × {notReadyPlayers.length}
+                </>
+              ) : (
+                notReadyPlayers.map(p => (
+                  <span title="Player in Intro Steps" key={p}>
+                    <Icon
+                      icon={IconNames.PERSON}
+                      iconSize={16}
+                      style={{ color: "#A7B6C2" }}
+                    />
+                  </span>
+                ))
+              )}
+            </span>
+          ) : (
+            ""
+          )}
+
+          {players.length > 0 ? (
+            <span className="player-group">
+              {players.length > 10 ? (
+                <>
+                  <span title={`${players.length} Players`} key="players">
+                    <Icon icon={IconNames.PERSON} iconSize={16} />
+                  </span>{" "}
+                  × {players.length}
+                </>
+              ) : (
+                players.map(p => (
+                  <span title="Player" key={p}>
+                    <Icon icon={IconNames.PERSON} iconSize={16} />
+                  </span>
+                ))
+              )}
+            </span>
+          ) : (
+            ""
+          )}
         </td>
       </tr>
     );

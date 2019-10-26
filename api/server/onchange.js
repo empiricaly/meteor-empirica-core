@@ -93,7 +93,7 @@ export const callOnChange = params => {
   players.forEach(player => {
     player.stage = _.extend({}, stage);
     player.round = _.extend({}, round);
-    augmentPlayerStageRound(player, player.stage, player.round);
+    augmentPlayerStageRound(player, player.stage, player.round, game);
   });
 
   callbacks.forEach(callback => {

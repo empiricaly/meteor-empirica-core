@@ -29,7 +29,7 @@ export const endOfStage = stageId => {
   players.forEach(player => {
     player.stage = _.extend({}, stage);
     player.round = _.extend({}, round);
-    augmentPlayerStageRound(player, player.stage, player.round);
+    augmentPlayerStageRound(player, player.stage, player.round, game);
   });
 
   const { onStageEnd, onRoundEnd, onRoundStart, onStageStart } = config;
@@ -49,7 +49,13 @@ export const endOfStage = stageId => {
     players.forEach(player => {
       player.round = _.extend({}, nextRound);
       player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round, player.stage);
+      augmentPlayerStageRound(
+        player,
+        player.stage,
+        player.round,
+        player.stage,
+        game
+      );
     });
 
     if (onRoundStart && stage.roundId !== nextStage.roundId) {

@@ -9,6 +9,7 @@ import { GameLobbies } from "../../api/game-lobbies/game-lobbies.js";
 import { Games } from "../../api/games/games.js";
 import { LobbyConfigs } from "../../api/lobby-configs/lobby-configs.js";
 import { PlayerInputs } from "../../api/player-inputs/player-inputs.js";
+import { PlayerLogs } from "../../api/player-logs/player-logs.js";
 import { PlayerRounds } from "../../api/player-rounds/player-rounds.js";
 import { PlayerStages } from "../../api/player-stages/player-stages.js";
 import { Players } from "../../api/players/players.js";
@@ -442,6 +443,19 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     },
     playerInputDataFields
   );
+
+  const playerLogFields = [
+    "_id",
+    "playerId",
+    "gameId",
+    "roundId",
+    "stageId",
+    "jsonData",
+    "createdAt"
+  ];
+  saveFile("player-logs", playerLogFields, puts => {
+    batch(PlayerLogs)(p => puts(_.pick(p, playerLogFields)));
+  });
 
   archive.finalize();
   requestFinished = true;

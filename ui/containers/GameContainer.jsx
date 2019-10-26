@@ -104,7 +104,7 @@ const withGameInfo = withTracker(
     const applyAugment = player => {
       player.stage = { _id: stage._id };
       player.round = { _id: round._id };
-      augmentPlayerStageRound(player, player.stage, player.round);
+      augmentPlayerStageRound(player, player.stage, player.round, game);
     };
     applyAugment(player);
     game.players.forEach(applyAugment);
