@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.3.0 (2019-11-05)
+
+
+### Features
+
+* add player logs features ([65f975d](https://github.com/empiricaly/meteor-empirica-core/commit/65f975d))
+* **admin:** add batch games collapse and players overflow ([817ea8f](https://github.com/empiricaly/meteor-empirica-core/commit/817ea8f))
+* new batch ui with games details ([19a4c35](https://github.com/empiricaly/meteor-empirica-core/commit/19a4c35))
+
 ## 1.2.0 (2019-10-10)
 
 
