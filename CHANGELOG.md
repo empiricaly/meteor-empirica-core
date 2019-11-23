@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.3.1 (2019-11-23)
+
+
+### Bug Fixes
+
+* remove unnecessary player connection check on player.exit method ([f2cb4e6](https://github.com/empiricaly/meteor-empirica-core/commit/f2cb4e6)), closes [#73](https://github.com/empiricaly/meteor-empirica-core/issues/73)
+
 ## 1.3.0 (2019-11-05)
 
 
