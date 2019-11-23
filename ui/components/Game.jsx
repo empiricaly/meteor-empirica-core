@@ -2,7 +2,7 @@ import React from "react";
 import { addPlayerInput } from "../../api/player-inputs/methods.js";
 import {
   markPlayerExitStepDone,
-  playerReady
+  introStepsDone
 } from "../../api/players/methods.js";
 import GameLobbyContainer from "../containers/GameLobbyContainer.jsx";
 import DefaultBreadcrumb from "./Breadcrumb.jsx";
@@ -30,6 +30,7 @@ export default class Game extends React.Component {
       Lobby,
       exitSteps,
       introSteps,
+      postAssignSteps,
       ...rest
     } = this.props;
     const { started, timedOut, game, player, round, stage } = rest;
@@ -79,17 +80,35 @@ export default class Game extends React.Component {
           />
         );
       }
+      if (!player.introStepsDone) {
+        return (
+          <InstructionSteps
+            type="intro"
+            introSteps={introSteps}
+            treatment={treatment}
+            player={player}
+            onDone={() => {
+              introStepsDone.call({ _id: player._id });
+            }}
+          />
+        );
+      }
 
-      return (
-        <InstructionSteps
-          introSteps={introSteps}
-          treatment={treatment}
-          player={player}
-          onDone={() => {
-            playerReady.call({ _id: player._id });
-          }}
-        />
-      );
+      if (!player.postAssignStepsDone) {
+        return (
+          <InstructionSteps
+            type="postAssign"
+            introSteps={postAssignSteps}
+            treatment={treatment}
+            player={player}
+            onDone={() => {
+              introStepsDone.call({ _id: player._id, type: "postAssign" });
+            }}
+          />
+        );
+      }
+
+      return <Loading />;
     }
 
     let content;

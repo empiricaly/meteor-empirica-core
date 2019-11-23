@@ -20,6 +20,7 @@ import "../../api/games/server/cron.js";
 import "../../api/lobby-configs/methods.js";
 import "../../api/lobby-configs/server/publications.js";
 import "../../api/players/methods.js";
+import "../../api/players/server/hooks.js";
 import "../../api/players/server/publications";
 import "../../api/player-inputs/methods.js";
 import "../../api/player-rounds/methods.js";

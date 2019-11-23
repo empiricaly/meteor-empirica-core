@@ -42,189 +42,21 @@ export const createPlayer = new ValidatedMethod({
       return;
     }
 
-    // TODO: MAYBE, add verification that the user is not current connected
-    // elsewhere and this is not a flagrant impersonation. Note that is
-    // extremely difficult to guaranty. Could also add verification of user's
-    // id with email verication for example. For now the assumption is that
-    // there is no immediate reason or long-term motiviation for people to hack
-    // each other's player account.
-
     const existing = Players.findOne({ id: player.id });
 
     // If the player already has a game lobby assigned, no need to
     // re-initialize them
-    if (existing && existing.gameLobbyId) {
+    if (existing) {
       return existing._id;
     }
 
-    if (existing) {
-      player = existing;
-    } else {
-      // Because of a bug in SimpleSchema around blackbox: true, skipping
-      // validation here. Validation did happen at the method level though.
-      player._id = Players.insert(player, {
+    return Players.insert(
+      { batchId: batch._id, ...player },
+      {
         filter: false,
         validate: false
-      });
-    }
-
-    // Looking for all lobbies for batch (for which that game has not started yet)
-    const lobbies = GameLobbies.find({
-      batchId: batch._id,
-      status: "running",
-      timedOutAt: { $exists: false },
-      gameId: { $exists: false }
-    }).fetch();
-
-    if (lobbies.length === 0) {
-      // This is the same case as when there are no batches available.
-      return;
-    }
-
-    // Let's first try to find lobbies for which their queue isn't full yet
-    let lobbyPool = lobbies.filter(
-      l => l.availableCount > l.queuedPlayerIds.length
+      }
     );
-
-    // If no lobbies still have "availability", just fill any lobby
-    if (lobbyPool.length === 0) {
-      lobbyPool = lobbies;
-    }
-
-    // Book proportially to total expected playerCount
-    const weigthedLobbyPool = lobbyPool.map(lobby => {
-      return {
-        value: lobby,
-        weight: lobby.availableCount
-      };
-    });
-
-    // Choose a lobby in the available weigthed pool
-    const lobby = weightedRandom(weigthedLobbyPool)();
-
-    // Adding the player to specified lobby queue
-    GameLobbies.update(lobby._id, {
-      $addToSet: {
-        queuedPlayerIds: player._id
-      }
-    });
-
-    const gameLobbyId = lobby._id;
-    const $set = { gameLobbyId };
-
-    // Check if there will be instructions
-    let skipInstructions = lobby.debugMode;
-
-    // If there are no instruction, mark the player as ready immediately
-    if (skipInstructions) {
-      $set.readyAt = new Date();
-    }
-
-    Players.update(player._id, { $set });
-
-    // If there are no instruction, player is ready, notify the lobby
-    if (skipInstructions) {
-      GameLobbies.update(gameLobbyId, {
-        $addToSet: { playerIds: player._id }
-      });
-    }
-
-    return player._id;
-  }
-});
-
-export const playerReady = new ValidatedMethod({
-  name: "Players.methods.ready",
-
-  validate: IdSchema.validator(),
-
-  run({ _id }) {
-    try {
-      // TODO: MAYBE, add verification that the user is not current connected
-      // elsewhere and this is not a flagrant impersonation. Note that is
-      // extremely difficult to guaranty. Could also add verification of user's
-      // id with email verication for example. For now the assumption is that
-      // there is no immediate reason or long-term motiviation for people to hack
-      // each other's player account.
-
-      const player = Players.findOne(_id);
-
-      if (!player) {
-        throw `unknown ready player: ${_id}`;
-      }
-      const { readyAt, gameLobbyId } = player;
-
-      if (readyAt) {
-        // Already ready
-        return;
-      }
-
-      // Loop while trying to book a spot on lobby
-      // We need to make sure the booking of slots on the game are not above
-      // the number of available slots, so we try to add the user with a known
-      // playerIds value. If the update does not happen, the playerIds was
-      // changed by another server instance and we should try again until
-      // there are no slots left.
-      // If no slots are left, we marked the player's attempt to participate as
-      // failed, with a reason why. They will be led to the exit steps.
-      while (true) {
-        const lobby = GameLobbies.findOne(gameLobbyId);
-        if (!lobby) {
-          throw `unknown lobby for ready player: ${_id}`;
-        }
-
-        // Game is Full, bail the player
-        if (lobby.playerIds.length === lobby.availableCount) {
-          // User already ready, something happened out of order
-          if (lobby.playerIds.includes(_id)) {
-            return;
-          }
-
-          // Mark the player's participation attemp as failed
-          Players.update(_id, {
-            $set: {
-              exitAt: new Date(),
-              exitStatus: "gameFull"
-            }
-          });
-
-          return;
-        }
-
-        // Try to update the GameLobby with the playerIds we just queried.
-        GameLobbies.update(
-          { _id: gameLobbyId, playerIds: lobby.playerIds },
-          {
-            $addToSet: { playerIds: _id }
-          }
-        );
-
-        // If the playerId insert succeeded (playerId WAS added to playerIds),
-        // mark the user record as ready and potentially start the individual
-        // lobby timer.
-        const lobbyUpdated = GameLobbies.findOne(gameLobbyId);
-        if (lobbyUpdated.playerIds.includes(_id)) {
-          // If it did work, mark player as ready
-          $set = { readyAt: new Date() };
-
-          // If it's an individual lobby timeout, mark the first timer as started.
-          const lobbyConfig = LobbyConfigs.findOne(lobbyUpdated.lobbyConfigId);
-          if (lobbyConfig.timeoutType === "individual") {
-            $set.timeoutStartedAt = new Date();
-            $set.timeoutWaitCount = 1;
-          }
-
-          Players.update(_id, { $set });
-          return;
-        }
-
-        // If the playerId insert failed (playerId NOT added to playerIds), the
-        // playerIds has changed since it was queried and the lobby might not
-        // have any available slots left, loop and retry.
-      }
-    } catch (error) {
-      console.error("Players.methods.ready", error);
-    }
   }
 });
 
@@ -280,6 +112,79 @@ export const updatePlayerData = new ValidatedMethod({
         prevValue: player.data && player.data[key],
         append
       });
+    }
+  }
+});
+
+export const playerUpdateIntroStepIndex = new ValidatedMethod({
+  name: "Players.methods.updateIntroStepIndex",
+
+  validate: new SimpleSchema({
+    playerId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    introStepIndex: {
+      type: String
+    },
+    type: {
+      type: "string",
+      defaultValue: "intro"
+    }
+  }).validator(),
+
+  run({ playerId, introStepIndex, type }) {
+    const player = Players.findOne(playerId);
+    if (!player) {
+      throw new Error("player not found");
+    }
+
+    if (type === "intro") {
+      Players.update(playerId, { $set: { introStepIndex } });
+    }
+
+    if (type === "postAssign") {
+      Players.update(playerId, { $set: { postAssignStepIndex } });
+    }
+  }
+});
+
+export const introStepsDone = new ValidatedMethod({
+  name: "Players.methods.introStepsDone",
+
+  validate: new SimpleSchema({
+    id: {
+      type: String
+    },
+    type: {
+      type: "string",
+      defaultValue: "intro"
+    }
+  }).validator(),
+
+  run({ _id, type }) {
+    introStepsDone;
+
+    const player = Players.findOne(_id);
+
+    if (!player) {
+      throw `unknown ready player: ${_id}`;
+    }
+
+    if (type === "intro") {
+      if (player.introStepsDone) {
+        throw `player already finished introSteps: ${_id}`;
+      }
+
+      Players.update(_id, { $set: { introStepsDone: new Date() } });
+    }
+
+    if (type === "postAssign") {
+      if (player.postAssignStepsDone) {
+        throw `player already finished postAssignStep: ${_id}`;
+      }
+
+      Players.update(_id, { $set: { postAssignStepsDone: new Date() } });
     }
   }
 });

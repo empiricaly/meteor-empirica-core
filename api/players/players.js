@@ -95,6 +95,30 @@ Players.schema = new SimpleSchema({
     min: 1
   },
 
+  introStepIndex: {
+    label: "Intro step the player is current at",
+    type: SimpleSchema.Integer,
+    defaultValue: 0
+  },
+
+  introStepsDone: {
+    label: "Intro steps are finished",
+    type: Date,
+    optional: true
+  },
+
+  postAssignStepIndex: {
+    label: "Post assignment step the player is current at",
+    type: SimpleSchema.Integer,
+    defaultValue: 0
+  },
+
+  postAssignStepsDone: {
+    label: "Post assignment steps are finished",
+    type: Date,
+    optional: true
+  },
+
   exitStepsDone: {
     type: Array,
     defaultValue: []

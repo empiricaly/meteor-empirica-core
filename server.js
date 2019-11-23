@@ -25,6 +25,10 @@ const Empirica = {
     config.bots[name] = func;
   },
 
+  onAssign(func) {
+    config.onAssign = func;
+  },
+
   onGameStart(func) {
     config.onGameStart = func;
   },

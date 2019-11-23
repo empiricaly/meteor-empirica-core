@@ -83,7 +83,9 @@ export const submitPlayerStage = new ValidatedMethod({
     // TODO check can update this record playerStage
 
     if (playerStage.submittedAt) {
-      throw new Error("not permitted");
+      throw new Error(
+        "stage already submited: player.stage.submit() was called more than once per round"
+      );
     }
 
     PlayerStages.update(playerStageId, { $set: { submittedAt: new Date() } });
