@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 1.3.4 (2019-11-25)
+
+
+### Bug Fixes
+
+* do not depend on playerIdConn; update meteor version ([cf75d01](https://github.com/empiricaly/meteor-empirica-core/commit/cf75d01))
+
 ### 1.3.3 (2019-11-25)
 
 ### 1.3.2 (2019-11-25)
