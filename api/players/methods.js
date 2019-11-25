@@ -384,11 +384,6 @@ export const earlyExitPlayer = new ValidatedMethod({
       return;
     }
 
-    if (playerId !== playerIdConn) {
-      console.error("Attempting to exit player from wrong connection");
-      return;
-    }
-
     Players.update(playerId, {
       $set: {
         exitAt: new Date(),

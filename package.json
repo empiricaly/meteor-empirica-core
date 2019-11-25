@@ -12,7 +12,7 @@
     "release-minor": "standard-version -s -a -r minor",
     "release": "standard-version -s -a -r",
     "push-git": "git push --follow-tags origin master",
-    "publish-meteor": "meteor publish"
+    "publish-meteor": "meteor --release 1.8.2 publish"
   },
   "standard-version": {
     "scripts": {
