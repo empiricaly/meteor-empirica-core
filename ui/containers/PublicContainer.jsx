@@ -1,10 +1,44 @@
 import { withTracker } from "meteor/react-meteor-data";
-
 import { Batches } from "../../api/batches/batches.js";
 import { GameLobbies } from "../../api/game-lobbies/game-lobbies.js";
 import { Games } from "../../api/games/games.js";
-import Public from "../components/Public";
+import { PlayerRounds } from "../../api/player-rounds/player-rounds.js";
+import { PlayerStages } from "../../api/player-stages/player-stages.js";
+import { Rounds } from "../../api/rounds/rounds.js";
+import { Stages } from "../../api/stages/stages.js";
 import { ActivityMonitor } from "../../lib/monitor.js";
+import Public from "../components/Public";
+
+const withStageDependencies = withTracker(({ loading, game, ...rest }) => {
+  const gameId = game && game._id;
+  const stageId = game && game.currentStageId;
+
+  const sub = Meteor.subscribe("gameCurrentRoundStage", {
+    gameId,
+    stageId
+  });
+
+  const playerStage = PlayerStages.findOne({ gameId, stageId });
+  const playerRound =
+    playerStage &&
+    PlayerRounds.findOne({ gameId, roundId: playerStage.roundId });
+
+  const stage = Stages.findOne({ gameId, _id: stageId });
+  const stages =
+    stage && Stages.find({ gameId, roundId: stage.roundId }).fetch();
+  const round = stage && Rounds.findOne({ gameId, _id: stage.roundId });
+
+  return {
+    loading: loading || !sub.ready(),
+    game,
+    playerStage,
+    playerRound,
+    stage,
+    stages,
+    round,
+    ...rest
+  };
+})(Public);
 
 const withGameDependencies = withTracker(
   ({ loading, game, gameLobby, ...rest }) => {
@@ -25,7 +59,7 @@ const withGameDependencies = withTracker(
       ...rest
     };
   }
-)(Public);
+)(withStageDependencies);
 
 export default withTracker(({ loading, player, playerId, ...rest }) => {
   ActivityMonitor.start();

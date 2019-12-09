@@ -42,7 +42,9 @@ export const updateGameData = new ValidatedMethod({
     Games.update(gameId, modifier, {
       autoConvert: false,
       filter: false,
-      validate: false
+      validate: false,
+      trimStrings: false,
+      removeEmptyStrings: false
     });
 
     if (Meteor.isServer && !noCallback) {

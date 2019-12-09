@@ -1,19 +1,24 @@
 import React from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./startup/client/index.js";
+import About from "./ui/components/About.jsx";
 import Admin from "./ui/components/Admin.jsx";
-import Login from "./ui/components/Login.jsx";
-import Consent, { ConsentButton } from "./ui/components/Consent.jsx";
-import IdentifiedContainer from "./ui/containers/IdentifiedContainer.jsx";
-import AuthorizedContainer from "./ui/containers/AuthorizedContainer.jsx";
-import PublicContainer from "./ui/containers/PublicContainer.jsx";
-import StageTimeWrapper from "./ui/components/StageTimeWrapper.jsx";
 import Centered from "./ui/components/Centered.jsx";
+import Consent, { ConsentButton } from "./ui/components/Consent.jsx";
+import Login from "./ui/components/Login.jsx";
+import StageTimeWrapper from "./ui/components/StageTimeWrapper.jsx";
 import { AlertToaster } from "./ui/components/Toasters.jsx";
+import AuthorizedContainer from "./ui/containers/AuthorizedContainer.jsx";
+import IdentifiedContainer from "./ui/containers/IdentifiedContainer.jsx";
+import PublicContainer from "./ui/containers/PublicContainer.jsx";
 
 const config = {};
 
 const Empirica = {
+  about(AboutComp) {
+    config.About = AboutComp || About;
+  },
+
   consent(ConsentComp) {
     config.Consent = ConsentComp || Consent;
   },

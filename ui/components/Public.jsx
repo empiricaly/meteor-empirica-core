@@ -1,22 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
-import { Helmet } from "react-helmet";
 import {
   Button,
   Classes,
   Dialog,
   Icon,
+  Intent,
   Navbar,
   NavbarGroup,
-  NavbarHeading,
-  Intent
+  NavbarHeading
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-
-import { CoreWrapper } from "./Helpers.jsx";
-import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
+import React from "react";
+import { Helmet } from "react-helmet";
+import { Link } from "react-router-dom";
 import GameContainer from "../containers/GameContainer.jsx";
+import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
+import AboutOriginal from "./About.jsx";
+import { CoreWrapper } from "./Helpers.jsx";
 import Loading from "./Loading.jsx";
 import NewPlayer from "./NewPlayer.jsx";
 import NoBatch from "./NoBatch.jsx";
@@ -36,15 +35,42 @@ export default class Public extends React.Component {
 
   handleOpenAltPlayer = event => {
     event.preventDefault();
-    const randId = Math.random()
+
+    // check to see if a playerId is required
+    const { playerIdParam, playerIdParamExclusive } = Meteor.settings.public;
+    const playerIdParamRequired = playerIdParam && playerIdParamExclusive;
+
+    const randPlayerIdKey = Math.random()
       .toString(36)
       .substring(2, 15);
-    window.open(`/?playerIdKey=${randId}`, "_blank");
+
+    // if playerId is required, add that to URL
+    // otherwise, produce URL with just playerIdKey
+    if (playerIdParamRequired) {
+      const randId = Math.random()
+        .toString(36)
+        .substring(2, 15);
+      window.open(
+        `/?playerIdKey=${randPlayerIdKey}&${playerIdParam}=${randId}`,
+        "_blank"
+      );
+    } else {
+      window.open(`/?playerIdKey=${randPlayerIdKey}`, "_blank");
+    }
   };
 
   render() {
-    const { loading, renderPublic, playerIdKey, Header, ...rest } = this.props;
+    const {
+      loading,
+      renderPublic,
+      playerIdKey,
+      Header,
+      About,
+      ...rest
+    } = this.props;
     const { player } = rest;
+
+    const AboutComp = About || AboutOriginal;
 
     if (loading) {
       return <Loading />;
@@ -134,7 +160,7 @@ export default class Public extends React.Component {
                 title="About"
               >
                 <div className={Classes.DIALOG_BODY}>
-                  Here be the presentation of the experiement(ers).
+                  <AboutComp />
                 </div>
 
                 <div className={Classes.DIALOG_FOOTER}>

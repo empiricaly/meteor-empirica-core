@@ -28,46 +28,52 @@
  * Copyright 2015 Daniel Cardoso <@DanielCardoso>
  * Licensed under MIT
  */
-.la-ball-grid-pulse,
-.la-ball-grid-pulse > div {
+.la-ball-grid-beat,
+.la-ball-grid-beat > div {
   position: relative;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.la-ball-grid-pulse {
+
+.la-ball-grid-beat {
   display: block;
   font-size: 0;
+  color: #fff;
+}
+
+.la-ball-grid-beat.la-dark {
   color: #333;
 }
-.bp3-dark .la-ball-grid-pulse {
-  color: #f5f8fa;
-}
-.la-ball-grid-pulse > div {
+
+.la-ball-grid-beat > div {
   display: inline-block;
   float: none;
   background-color: currentColor;
   border: 0 solid currentColor;
 }
-.la-ball-grid-pulse {
+
+.la-ball-grid-beat {
   width: 36px;
   height: 36px;
 }
-.la-ball-grid-pulse > div {
+
+.la-ball-grid-beat > div {
   width: 8px;
   height: 8px;
   margin: 2px;
   border-radius: 100%;
-  -webkit-animation-name: ball-grid-pulse;
-  -moz-animation-name: ball-grid-pulse;
-  -o-animation-name: ball-grid-pulse;
-  animation-name: ball-grid-pulse;
+  -webkit-animation-name: ball-grid-beat;
+  -moz-animation-name: ball-grid-beat;
+  -o-animation-name: ball-grid-beat;
+  animation-name: ball-grid-beat;
   -webkit-animation-iteration-count: infinite;
   -moz-animation-iteration-count: infinite;
   -o-animation-iteration-count: infinite;
   animation-iteration-count: infinite;
 }
-.la-ball-grid-pulse > div:nth-child(1) {
+
+.la-ball-grid-beat > div:nth-child(1) {
   -webkit-animation-duration: 0.65s;
   -moz-animation-duration: 0.65s;
   -o-animation-duration: 0.65s;
@@ -77,7 +83,8 @@
   -o-animation-delay: 0.03s;
   animation-delay: 0.03s;
 }
-.la-ball-grid-pulse > div:nth-child(2) {
+
+.la-ball-grid-beat > div:nth-child(2) {
   -webkit-animation-duration: 1.02s;
   -moz-animation-duration: 1.02s;
   -o-animation-duration: 1.02s;
@@ -87,7 +94,8 @@
   -o-animation-delay: 0.09s;
   animation-delay: 0.09s;
 }
-.la-ball-grid-pulse > div:nth-child(3) {
+
+.la-ball-grid-beat > div:nth-child(3) {
   -webkit-animation-duration: 1.06s;
   -moz-animation-duration: 1.06s;
   -o-animation-duration: 1.06s;
@@ -97,7 +105,8 @@
   -o-animation-delay: -0.69s;
   animation-delay: -0.69s;
 }
-.la-ball-grid-pulse > div:nth-child(4) {
+
+.la-ball-grid-beat > div:nth-child(4) {
   -webkit-animation-duration: 1.5s;
   -moz-animation-duration: 1.5s;
   -o-animation-duration: 1.5s;
@@ -107,7 +116,8 @@
   -o-animation-delay: -0.41s;
   animation-delay: -0.41s;
 }
-.la-ball-grid-pulse > div:nth-child(5) {
+
+.la-ball-grid-beat > div:nth-child(5) {
   -webkit-animation-duration: 1.6s;
   -moz-animation-duration: 1.6s;
   -o-animation-duration: 1.6s;
@@ -117,7 +127,8 @@
   -o-animation-delay: 0.04s;
   animation-delay: 0.04s;
 }
-.la-ball-grid-pulse > div:nth-child(6) {
+
+.la-ball-grid-beat > div:nth-child(6) {
   -webkit-animation-duration: 0.84s;
   -moz-animation-duration: 0.84s;
   -o-animation-duration: 0.84s;
@@ -127,7 +138,8 @@
   -o-animation-delay: 0.07s;
   animation-delay: 0.07s;
 }
-.la-ball-grid-pulse > div:nth-child(7) {
+
+.la-ball-grid-beat > div:nth-child(7) {
   -webkit-animation-duration: 0.68s;
   -moz-animation-duration: 0.68s;
   -o-animation-duration: 0.68s;
@@ -137,7 +149,8 @@
   -o-animation-delay: -0.66s;
   animation-delay: -0.66s;
 }
-.la-ball-grid-pulse > div:nth-child(8) {
+
+.la-ball-grid-beat > div:nth-child(8) {
   -webkit-animation-duration: 0.93s;
   -moz-animation-duration: 0.93s;
   -o-animation-duration: 0.93s;
@@ -147,7 +160,8 @@
   -o-animation-delay: -0.76s;
   animation-delay: -0.76s;
 }
-.la-ball-grid-pulse > div:nth-child(9) {
+
+.la-ball-grid-beat > div:nth-child(9) {
   -webkit-animation-duration: 1.24s;
   -moz-animation-duration: 1.24s;
   -o-animation-duration: 1.24s;
@@ -157,107 +171,84 @@
   -o-animation-delay: -0.76s;
   animation-delay: -0.76s;
 }
-.la-ball-grid-pulse.la-sm {
+
+.la-ball-grid-beat.la-sm {
   width: 18px;
   height: 18px;
 }
-.la-ball-grid-pulse.la-sm > div {
+
+.la-ball-grid-beat.la-sm > div {
   width: 4px;
   height: 4px;
   margin: 1px;
 }
-.la-ball-grid-pulse.la-2x {
+
+.la-ball-grid-beat.la-2x {
   width: 72px;
   height: 72px;
 }
-.la-ball-grid-pulse.la-2x > div {
+
+.la-ball-grid-beat.la-2x > div {
   width: 16px;
   height: 16px;
   margin: 4px;
 }
-.la-ball-grid-pulse.la-3x {
+
+.la-ball-grid-beat.la-3x {
   width: 108px;
   height: 108px;
 }
-.la-ball-grid-pulse.la-3x > div {
+
+.la-ball-grid-beat.la-3x > div {
   width: 24px;
   height: 24px;
   margin: 6px;
 }
+
 /*
-  * Animation
-  */
-@-webkit-keyframes ball-grid-pulse {
+ * Animation
+ */
+@-webkit-keyframes ball-grid-beat {
   0% {
     opacity: 1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
   }
   50% {
     opacity: 0.35;
-    -webkit-transform: scale(0.45);
-    transform: scale(0.45);
   }
   100% {
     opacity: 1;
-    -webkit-transform: scale(1);
-    transform: scale(1);
   }
 }
-@-moz-keyframes ball-grid-pulse {
+@-moz-keyframes ball-grid-beat {
   0% {
     opacity: 1;
-    -moz-transform: scale(1);
-    transform: scale(1);
   }
   50% {
     opacity: 0.35;
-    -moz-transform: scale(0.45);
-    transform: scale(0.45);
   }
   100% {
     opacity: 1;
-    -moz-transform: scale(1);
-    transform: scale(1);
   }
 }
-@-o-keyframes ball-grid-pulse {
+@-o-keyframes ball-grid-beat {
   0% {
     opacity: 1;
-    -o-transform: scale(1);
-    transform: scale(1);
   }
   50% {
     opacity: 0.35;
-    -o-transform: scale(0.45);
-    transform: scale(0.45);
   }
   100% {
     opacity: 1;
-    -o-transform: scale(1);
-    transform: scale(1);
   }
 }
-@keyframes ball-grid-pulse {
+@keyframes ball-grid-beat {
   0% {
     opacity: 1;
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -o-transform: scale(1);
-    transform: scale(1);
   }
   50% {
     opacity: 0.35;
-    -webkit-transform: scale(0.45);
-    -moz-transform: scale(0.45);
-    -o-transform: scale(0.45);
-    transform: scale(0.45);
   }
   100% {
     opacity: 1;
-    -webkit-transform: scale(1);
-    -moz-transform: scale(1);
-    -o-transform: scale(1);
-    transform: scale(1);
   }
 }

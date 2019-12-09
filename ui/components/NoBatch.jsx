@@ -1,7 +1,7 @@
-import React from "react";
-
 import { NonIdealState } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
+import React from "react";
+import { Link } from "react-router-dom";
 
 export default class NoBatch extends React.Component {
   render() {
@@ -15,7 +15,21 @@ export default class NoBatch extends React.Component {
       <NonIdealState
         icon={IconNames.ISSUE}
         title="No experiments available"
-        description="There are currently no available experiments. Please wait until an experiment becomes available or come back at a later date."
+        description={
+          <>
+            <p>
+              There are currently no available experiments. Please wait until an
+              experiment becomes available or come back at a later date.
+            </p>
+            {Meteor.isDevelopment ? (
+              <p>
+                Go to <Link to="/admin">Admin</Link> to get started.
+              </p>
+            ) : (
+              ""
+            )}
+          </>
+        }
       />
     );
   }

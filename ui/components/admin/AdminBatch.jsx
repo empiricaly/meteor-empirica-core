@@ -1,22 +1,26 @@
-import React from "react";
-import moment from "moment";
-
 import { Button, ButtonGroup, Classes, Intent, Tag } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
-
+import moment from "moment";
+import React from "react";
 import { assignmentTypes } from "../../../api/batches/batches";
 import {
-  updateBatchStatus,
   duplicateBatch,
   setBatchInDebugMode,
-  updateBatch
+  updateBatch,
+  updateBatchStatus
 } from "../../../api/batches/methods";
+import AdminBatchGamesContainer from "../../containers/admin/AdminBatchGamesContainer";
+import LoadingInline from "../LoadingInline.jsx";
 import { AlertToaster, SuccessToaster } from "../Toasters.jsx";
-import Loading from "../Loading.jsx";
 
 export default class AdminBatch extends React.Component {
   state = {
-    newIsOpen: false
+    newIsOpen: false,
+    detailsVisible: false
+  };
+
+  toggleDetails = () => {
+    this.setState({ detailsVisible: !this.state.detailsVisible });
   };
 
   handleArchive = () => {
@@ -64,9 +68,16 @@ export default class AdminBatch extends React.Component {
 
   render() {
     const { loading, batch, treatments, archived } = this.props;
+    const { detailsVisible } = this.state;
 
     if (loading) {
-      return <Loading />;
+      return (
+        <tr>
+          <td colSpan={7} style={{ textAlign: "center" }}>
+            <LoadingInline />
+          </td>
+        </tr>
+      );
     }
 
     const actions = [];
@@ -97,15 +108,6 @@ export default class AdminBatch extends React.Component {
     if (batch.status === "finished" || batch.status === "cancelled") {
       actions.push(
         <Button
-          text="Duplicate"
-          icon={IconNames.DUPLICATE}
-          key="duplicate"
-          onClick={this.handleDuplicate}
-        />
-      );
-
-      actions.push(
-        <Button
           text={archived ? "Unarchive" : "Archive"}
           intent={archived ? Intent.SUCCESS : Intent.DANGER}
           minimal
@@ -116,6 +118,15 @@ export default class AdminBatch extends React.Component {
         />
       );
     }
+
+    actions.push(
+      <Button
+        text="Duplicate"
+        icon={IconNames.DUPLICATE}
+        key="duplicate"
+        onClick={this.handleDuplicate}
+      />
+    );
 
     let config;
     switch (batch.assignment) {
@@ -168,26 +179,52 @@ export default class AdminBatch extends React.Component {
         break;
     }
 
+    const detailsVisibleClass = detailsVisible ? "detailsVisible" : "";
+    const detailsClass = `detailsButton ${detailsVisibleClass}`;
     return (
-      <tr>
-        <td>{batch.index}</td>
-        <td>
-          <Tag intent={statusIntent} minimal={statusMinimal}>
-            {batch.status}
-          </Tag>
-        </td>
-        <td className="numeric">{batch.gameCount()}</td>
-        <td title={moment(batch.createdAt).format()}>
-          {moment(batch.createdAt).fromNow()}
-        </td>
-        <td>{assignmentTypes[batch.assignment]}</td>
-        <td>{config}</td>
-        <td>
-          <ButtonGroup minimal className={Classes.SMALL}>
-            {actions}
-          </ButtonGroup>
-        </td>
-      </tr>
+      <>
+        <tr>
+          <td className="showDetailsButton">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 125.304 125.304"
+              onClick={this.toggleDetails}
+              className={detailsClass}
+            >
+              <path fill="#010002" d="M62.652 103.895L0 21.409h125.304z" />
+            </svg>
+          </td>
+          <td>{batch.index}</td>
+          <td>
+            <Tag intent={statusIntent} minimal={statusMinimal}>
+              {batch.status}
+            </Tag>
+          </td>
+          <td className="numeric">{batch.gameCount()}</td>
+          <td title={moment(batch.createdAt).format()}>
+            {moment(batch.createdAt).fromNow()}
+          </td>
+          <td>{assignmentTypes[batch.assignment]}</td>
+          <td>{config}</td>
+          <td>
+            <ButtonGroup minimal className={Classes.SMALL}>
+              {actions}
+            </ButtonGroup>
+          </td>
+        </tr>
+
+        {detailsVisible ? (
+          <tr>
+            <AdminBatchGamesContainer
+              batchId={batch._id}
+              batch={batch}
+              treatments={treatments}
+            />
+          </tr>
+        ) : (
+          <tr />
+        )}
+      </>
     );
   }
 }

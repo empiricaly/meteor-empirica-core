@@ -1,9 +1,9 @@
-import { Batches } from "./batches";
+import { config } from "../../server";
 import { GameLobbies } from "../game-lobbies/game-lobbies";
 import { Games } from "../games/games";
 import { Players } from "../players/players.js";
 import { Treatments } from "../treatments/treatments";
-import { config } from "../../server";
+import { Batches } from "./batches";
 
 // Create GameLobbies
 Batches.after.insert(function(userId, batch) {
@@ -61,18 +61,21 @@ Batches.after.insert(function(userId, batch) {
       if (botsCount === l.availableCount) {
         throw "Creating a game with only bots...";
       }
-      if (!config.bots) {
+      const botNames = config.bots && _.keys(config.bots);
+      if (!config.bots || botNames.length === 0) {
         throw "Trying to create a game with bots, but no bots defined";
       }
 
       l.playerIds = [];
       _.times(botsCount, () => {
-        const playerId = Players.insert({
+        const params = {
           id: Random.id(),
           gameLobbyId: l._id,
           readyAt: new Date(),
-          bot: _.shuffle(_.keys(config.bots))[0]
-        });
+          bot: _.shuffle(botNames)[0]
+        };
+        console.info("Creating bot:", params);
+        const playerId = Players.insert(params);
         l.playerIds.push(playerId);
       });
       l.queuedPlayerIds = l.playerIds;

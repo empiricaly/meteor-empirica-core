@@ -1,18 +1,17 @@
 import { TimeSync } from "meteor/mizzao:timesync";
 import { withTracker } from "meteor/react-meteor-data";
 import moment from "moment";
-
 import { PlayerRounds } from "../../api/player-rounds/player-rounds";
+import {
+  augmentGameStageRound,
+  augmentPlayer,
+  augmentPlayerStageRound
+} from "../../api/player-stages/augment";
 import { PlayerStages } from "../../api/player-stages/player-stages";
 import { Players } from "../../api/players/players";
 import { Rounds } from "../../api/rounds/rounds";
 import { Stages } from "../../api/stages/stages";
 import { Treatments } from "../../api/treatments/treatments.js";
-import {
-  augmentPlayer,
-  augmentPlayerStageRound,
-  augmentGameStageRound
-} from "../../api/player-stages/augment";
 import Game from "../components/Game.jsx";
 
 const loadingObj = { loading: true };
@@ -77,6 +76,9 @@ const withGameInfo = withTracker(
     });
 
     const stage = Stages.findOne(game.currentStageId);
+    if (!stage) {
+      return loadingObj;
+    }
     const round = game.rounds.find(r => r._id === stage.roundId);
 
     // We're having streaming updates from the backend that put us in an
@@ -102,7 +104,7 @@ const withGameInfo = withTracker(
     const applyAugment = player => {
       player.stage = { _id: stage._id };
       player.round = { _id: round._id };
-      augmentPlayerStageRound(player, player.stage, player.round);
+      augmentPlayerStageRound(player, player.stage, player.round, game);
     };
     applyAugment(player);
     game.players.forEach(applyAugment);

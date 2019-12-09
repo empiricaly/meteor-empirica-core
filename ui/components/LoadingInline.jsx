@@ -1,6 +1,6 @@
 import React from "react";
 
-export default class Loading extends React.Component {
+export default class LoadingInline extends React.Component {
   constructor(props) {
     super(props);
     this.state = { visible: false };
@@ -14,16 +14,9 @@ export default class Loading extends React.Component {
 
   render() {
     return (
-      <div className={`loading ${this.state.visible ? "visible" : ""}`}>
+      <div className={`loading-inline ${this.state.visible ? "visible" : ""}`}>
         <div>
-          Loading...
-          <div className="la-ball-grid-beat la-dark">
-            <div />
-            <div />
-            <div />
-            <div />
-            <div />
-            <div />
+          <div className="la-ball-beat la-dark">
             <div />
             <div />
             <div />

@@ -161,7 +161,9 @@ export const createGameFromLobby = gameLobby => {
       {
         autoConvert: false,
         filter: false,
-        validate: false
+        validate: false,
+        trimStrings: false,
+        removeEmptyStrings: false
       }
     );
   });
@@ -174,7 +176,9 @@ export const createGameFromLobby = gameLobby => {
     const roundId = Rounds.insert(_.extend({ gameId, index }, round), {
       autoConvert: false,
       filter: false,
-      validate: false
+      validate: false,
+      trimStrings: false,
+      removeEmptyStrings: false
     });
     const stageIds = round.stages.map(stage => {
       if (batch.debugMode) {
@@ -185,7 +189,9 @@ export const createGameFromLobby = gameLobby => {
       const stageId = Stages.insert(sParams, {
         autoConvert: false,
         filter: false,
-        validate: false
+        validate: false,
+        trimStrings: false,
+        removeEmptyStrings: false
       });
       stageIndex++;
       if (!params.currentStageId) {
@@ -241,7 +247,9 @@ export const createGameFromLobby = gameLobby => {
   Games.insert(params, {
     autoConvert: false,
     filter: false,
-    validate: false
+    validate: false,
+    trimStrings: false,
+    removeEmptyStrings: false
   });
 
   // Let Game Lobby know Game ID
@@ -359,7 +367,7 @@ export const createGameFromLobby = gameLobby => {
     players.forEach(player => {
       player.round = _.extend({}, nextRound);
       player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round);
+      augmentPlayerStageRound(player, player.stage, player.round, game);
     });
 
     if (onGameStart) {

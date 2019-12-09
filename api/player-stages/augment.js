@@ -1,11 +1,12 @@
-import { PlayerRounds } from "../player-rounds/player-rounds";
-import { PlayerStages } from "./player-stages";
-import { submitPlayerStage, updatePlayerStageData } from "./methods";
 import { updateGameData } from "../games/methods.js";
-import { updatePlayerData } from "../players/methods.js";
 import { updatePlayerRoundData } from "../player-rounds/methods";
+import { PlayerRounds } from "../player-rounds/player-rounds";
+import { updatePlayerData, earlyExitPlayer } from "../players/methods.js";
+import { playerLog } from "../player-logs/methods.js";
 import { updateRoundData } from "../rounds/methods.js";
 import { updateStageData } from "../stages/methods.js";
+import { submitPlayerStage, updatePlayerStageData } from "./methods";
+import { PlayerStages } from "./player-stages";
 
 const gameSet = (gameId, append = false) => (key, value) => {
   updateGameData.call({
@@ -73,21 +74,44 @@ const nullFunc = () => {
   throw "You called .get(...) or .set(...) but there is no data for the player yet. Did the game run for this player?";
 };
 
-export const augmentPlayer = player => {
+export const augmentPlayer = (player, stage = {}, round = {}, game = {}) => {
   const { _id: playerId } = player;
 
+  player.exit = reason =>
+    earlyExitPlayer.call({
+      playerId,
+      exitReason: reason
+    });
   player.get = key => player.data[key];
   player.set = set(player.data, playerSet(playerId));
   player.append = append(player.data, playerSet(playerId, true));
+  player.log = (name, data) => {
+    playerLog.call({
+      playerId,
+      name,
+      jsonData: JSON.stringify(data),
+      stageId: stage._id,
+      roundId: round._id,
+      gameId: game._id
+    });
+  };
 };
 
-export const augmentPlayerStageRound = (player, stage, round) => {
+export const augmentPlayerStageRound = (
+  player,
+  stage = {},
+  round = {},
+  game = {}
+) => {
   const { _id: playerId } = player;
 
-  augmentPlayer(player);
+  augmentPlayer(player, stage, round, game);
 
   if (stage) {
-    const playerStage = PlayerStages.findOne({ stageId: stage._id, playerId });
+    const playerStage = PlayerStages.findOne({
+      stageId: stage._id,
+      playerId
+    });
     stage.get = key => playerStage.data[key];
     stage.set = set(playerStage.data, stageSet(playerStage._id));
     stage.append = append(playerStage.data, stageSet(playerStage._id, true));
@@ -100,7 +124,10 @@ export const augmentPlayerStageRound = (player, stage, round) => {
   }
 
   if (round) {
-    const playerRound = PlayerRounds.findOne({ roundId: round._id, playerId });
+    const playerRound = PlayerRounds.findOne({
+      roundId: round._id,
+      playerId
+    });
     round.get = key => playerRound.data[key];
     round.set = set(playerRound.data, roundSet(playerRound._id));
     round.append = append(playerRound.data, roundSet(playerRound._id, true));
