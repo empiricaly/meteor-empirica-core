@@ -450,6 +450,7 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "gameId",
     "roundId",
     "stageId",
+    "name",
     "jsonData",
     "createdAt"
   ];
