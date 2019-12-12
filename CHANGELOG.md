@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.4.0 (2019-12-12)
+
+
+### Bug Fixes
+
+* ensure stage is created with a seconds as a number ([6b3a7af](https://github.com/empiricaly/meteor-empirica-core/commit/6b3a7af))
+* Include logged variable name in export ([3b79b7c](https://github.com/empiricaly/meteor-empirica-core/commit/3b79b7c)), closes [#78](https://github.com/empiricaly/meteor-empirica-core/issues/78)
+
 ### 1.3.4 (2019-11-25)
 
 
