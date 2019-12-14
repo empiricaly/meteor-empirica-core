@@ -2,23 +2,18 @@
 import { Players } from "../players";
 import { config } from "../../../server";
 import { augmentPlayer } from "../../player-stages/augment";
+import { Treatments } from "../../treatments/treatments";
 
-const defaultAssignment = (batch, player, otherBatches) => {
-  // games can be empty if all games of the batch the player was assigned to at
-  // start are full and have all already started.
-  // This happens when we let more players in than there are spots available.
-  if (!batch.games) {
-    if (otherBatches.length > 0) {
-      otherBatches[0].assign();
-    } else {
-      player.gameFull();
-    }
-    return;
-  }
+const defaultAssignment = (batches, player) => {
+  // Batches will always contain at least one batch. If there are no batches
+  // left by this point, the player will be automatically sent to the Exit Steps
+  // with player.exitStatus === "noBatchesLeft".
+  const batch = batches[0];
 
-  // Let's first try to find games for which their queue isn't full yet
+  // Let's first try to find games for which their assigned players isn't above
+  // the number of expected players
   let availableGames = batch.games.filter(
-    l => l.availableCount > l.queuedPlayerIds.length
+    l => l.treatment.playerCount > l.players.length
   );
 
   // If no games still have "availability", just fill any game
@@ -26,111 +21,108 @@ const defaultAssignment = (batch, player, otherBatches) => {
     availableGames = batch.games;
   }
 
-  // Book proportially to total expected playerCount
-  const weigthedGames = availableGames.map(game => {
-    return {
-      value: game,
-      weight: game.availableCount
-    };
-  });
-
-  // Choose a game in the available weigthed pool
-  const samples = [];
-  for (var i = 0; i < weigthedGames.length; i += 1) {
-    for (var j = 0; j < weigthedGames[i].weight; j += 1) {
-      samples.push(weigthedGames[i].value);
+  // Try to assign proportially to total expected playerCount
+  const gamesPool = [];
+  for (const game of availableGames) {
+    for (let i = 0; i < game.treatment.playerCount; i++) {
+      gamesPool.push(game);
     }
   }
-  const game = _.sample(samples);
+  const game = _.sample(gamesPool);
 
+  // In this assignment model, we always assign to the first batch, in any of
+  // the remaining unstarted games, with over-assignment.
+  // In other assignment models, you could try to go through multiple batches
+  // and never do over-assigning.
   game.assign();
 };
 
-const previouslyAssignedBatchIds = {};
-const assign = player => {
-  const { batchId } = player;
-
-  const batch = Batches.findOne(batchId);
-
-  // NOTE should we give all lobbies, or only viable lobbies
-  const lobbies = GameLobbies.find({
-    batchId,
-    status: "running",
-    timedOutAt: { $exists: false },
-    gameId: { $exists: false }
-  }).fetch();
-
-  let assigned = false;
-  for (const lobby of lobbies) {
-    lobby.assign = () => {
-      if (assigned) {
-        throw new Error("Attempting to assign a player to 2 different games");
-      }
-      assigned = true;
-      // Adding the player to specified lobby queue
-      GameLobbies.update(lobby._id, {
-        $addToSet: {
-          queuedPlayerIds: player._id
-        }
-      });
-      Players.update(player._id, {
-        $set: { gameLobbyId: lobby._id }
-      });
-      lobby.players.push(player);
-    };
-    lobby.players = Players.find({
-      _id: { $in: queuedPlayerIds }
-    }).fetch();
-  }
-
-  augmentPlayer(player);
-  player.gameFull = () => {
-    // Mark the player's participation attemp as failed
-    Players.update(_id, {
-      $set: {
-        exitAt: new Date(),
-        exitStatus: "gameFull"
-      }
-    });
-  };
-
-  // Find the first running batch (in order of running started time)
-  const otherBatches = Batches.find(
-    { status: "running", full: false, _id: { $ne: batchId } },
+export const assign = player => {
+  // Get all batches still running
+  const runningBatches = Batches.find(
+    { status: "running", full: false },
     { sort: { runningAt: 1 } }
   ).fetch();
 
-  let assignedBatch = false;
-  if (previouslyAssignedBatchIds[player._id]) {
-    previouslyAssignedBatchIds[player._id] = [];
+  // If not batches running, lead player to exit
+  if (runningBatches.length === 0) {
+    Players.update(_id, {
+      $set: {
+        exitAt: new Date(),
+        exitStatus: "noBatchesLeft"
+      }
+    });
+    return;
   }
-  for (const otherBatch of otherBatches) {
-    otherBatch.assign = () => {
-      if (assignedBatch) {
-        throw new Error("Attempting to assign a player to 2 different batches");
-      }
-      assignedBatch = true;
 
-      if (previouslyAssignedBatchIds[player._id].includes(otherBatch._id)) {
-        throw new Error(
-          "Attempting to assign a player to the same batch again"
-        );
-      }
-      previouslyAssignedBatchIds[player._id].push(batch._id);
+  // We will only collect batches that still have unstarted games
+  const batches = [];
 
-      Players.update(player._id, {
-        $set: {
-          batchId: otherBatch._id
+  // We will go through each batch and collect non-running games
+  for (const batch of runningBatches) {
+    // We only grab lobbies (games) that haven't started yet
+    const lobbies = GameLobbies.find({
+      batchId: batch._id,
+      status: "running",
+      timedOutAt: { $exists: false },
+      gameId: { $exists: false }
+    }).fetch();
+
+    // If there are none, we will be skipping this batch entirely
+    if (lobbies.length === 0) {
+      continue;
+    }
+
+    let assigned = false;
+    for (const lobby of lobbies) {
+      lobby.treatment = Treatments.findOne(lobby.treatmentId).factorsObject();
+
+      lobby.assign = () => {
+        if (assigned) {
+          throw new Error("Attempting to assign a player to 2 different games");
         }
-      });
-      assign(Players.findOne(player._id));
-    };
+        assigned = true;
+        // Adding the player to specified lobby queue
+        GameLobbies.update(lobby._id, {
+          $addToSet: {
+            queuedPlayerIds: player._id
+          }
+        });
+        Players.update(player._id, {
+          $set: { gameLobbyId: lobby._id }
+        });
+        lobby.players.push(player);
+      };
+
+      lobby.players = Players.find({
+        _id: { $in: lobby.queuedPlayerIds }
+      }).fetch();
+    }
+
+    // Allow get/set on player
+    augmentPlayer(player);
+
+    // We masquarade lobbies as games at this stage
+    // TODO add get/set to lobby as game
+    batch.games = lobbies;
+
+    // There are games available in this batch, add to batches
+    batches.push(batch);
   }
 
-  batch.games = lobbies;
+  // If no game was still available in any running batch, lead player to exit
+  if (batches.length === 0) {
+    Players.update(_id, {
+      $set: {
+        exitAt: new Date(),
+        exitStatus: "noBatchesLeft"
+      }
+    });
+    return;
+  }
 
   if (config.onAssign) {
-    config.onAssign(batch, lobbies, player, otherBatches);
+    config.onAssign(batches, player);
   }
 
   if (!config.onAssign || !assigned) {
@@ -139,13 +131,13 @@ const assign = player => {
         "No assignment was made in Empirica.onAssign() callback, so the default assignment is used"
       );
     }
-    defaultAssignment(batch, lobbies, player, otherBatches);
+    defaultAssignment(batches, player);
   }
 };
 
 Players.after.update(
   function(userId, player, fieldNames, modifier, options) {
-    if (fieldNames.includes("introStepsDone")) {
+    if (fieldNames.includes("preAssignStepsDone")) {
       assign(player);
     }
   },

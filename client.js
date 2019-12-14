@@ -44,8 +44,8 @@ const Empirica = {
     config.introSteps = func;
   },
 
-  postAssignSteps(func) {
-    config.introSteps = func;
+  preAssignmentIntroSteps(func) {
+    config.preAssignmentIntroSteps = func;
   },
 
   exitSteps(func) {

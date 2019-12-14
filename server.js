@@ -29,6 +29,10 @@ const Empirica = {
     config.onAssign = func;
   },
 
+  onPreGameInit(func) {
+    config.onPreGameInit = func;
+  },
+
   onGameStart(func) {
     config.onGameStart = func;
   },

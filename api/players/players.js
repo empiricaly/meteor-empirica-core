@@ -12,6 +12,7 @@ class PlayersCollection extends Mongo.Collection {
 export const Players = new PlayersCollection("players");
 
 export const exitStatuses = [
+  "noBatchesLeft",
   "gameFull",
   "gameCancelled",
   "gameLobbyTimedOut",
@@ -107,14 +108,14 @@ Players.schema = new SimpleSchema({
     optional: true
   },
 
-  postAssignStepIndex: {
-    label: "Post assignment step the player is current at",
+  preAssignStepIndex: {
+    label: "Pre assignment step the player is current at",
     type: SimpleSchema.Integer,
     defaultValue: 0
   },
 
-  postAssignStepsDone: {
-    label: "Post assignment steps are finished",
+  preAssignStepsDone: {
+    label: "Pre assignment steps are finished",
     type: Date,
     optional: true
   },

@@ -30,7 +30,7 @@ export default class Game extends React.Component {
       Lobby,
       exitSteps,
       introSteps,
-      postAssignSteps,
+      preAssignmentIntroSteps,
       ...rest
     } = this.props;
     const { started, timedOut, game, player, round, stage } = rest;
@@ -80,6 +80,20 @@ export default class Game extends React.Component {
           />
         );
       }
+
+      if (!player.preAssignStepsDone) {
+        return (
+          <InstructionSteps
+            type="preAssign"
+            introSteps={preAssignmentIntroSteps}
+            treatment={treatment}
+            player={player}
+            onDone={() => {
+              introStepsDone.call({ _id: player._id, type: "preAssign" });
+            }}
+          />
+        );
+      }
       if (!player.introStepsDone) {
         return (
           <InstructionSteps
@@ -88,21 +102,7 @@ export default class Game extends React.Component {
             treatment={treatment}
             player={player}
             onDone={() => {
-              introStepsDone.call({ _id: player._id });
-            }}
-          />
-        );
-      }
-
-      if (!player.postAssignStepsDone) {
-        return (
-          <InstructionSteps
-            type="postAssign"
-            introSteps={postAssignSteps}
-            treatment={treatment}
-            player={player}
-            onDone={() => {
-              introStepsDone.call({ _id: player._id, type: "postAssign" });
+              introStepsDone.call({ _id: player._id, type: "intro" });
             }}
           />
         );

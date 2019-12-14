@@ -25,38 +25,16 @@ export const createPlayer = new ValidatedMethod({
   }).validator(),
 
   run(player) {
-    // Find the first running batch (in order of running started time)
-    const batch = Batches.findOne(
-      { status: "running", full: false },
-      { sort: { runningAt: 1 } }
-    );
-
-    if (!batch) {
-      // The UI should update and realize there is no batch available
-      // This should be a rare case where a fraction of a second of
-      // desynchornisation when the last available batch just finished.
-      // If this is the case, since the user exist in the DB at this point
-      // but has no lobby assigned, and the UI will soon determine there
-      // is no available game, the UI will switch to "No experiments
-      // available", nothing else to do.
-      return;
-    }
-
     const existing = Players.findOne({ id: player.id });
 
-    // If the player already has a game lobby assigned, no need to
-    // re-initialize them
     if (existing) {
       return existing._id;
     }
 
-    return Players.insert(
-      { batchId: batch._id, ...player },
-      {
-        filter: false,
-        validate: false
-      }
-    );
+    return Players.insert(player, {
+      filter: false,
+      validate: false
+    });
   }
 });
 
@@ -143,8 +121,8 @@ export const playerUpdateIntroStepIndex = new ValidatedMethod({
       Players.update(playerId, { $set: { introStepIndex } });
     }
 
-    if (type === "postAssign") {
-      Players.update(playerId, { $set: { postAssignStepIndex } });
+    if (type === "preAssign") {
+      Players.update(playerId, { $set: { preAssignStepIndex } });
     }
   }
 });
@@ -179,12 +157,12 @@ export const introStepsDone = new ValidatedMethod({
       Players.update(_id, { $set: { introStepsDone: new Date() } });
     }
 
-    if (type === "postAssign") {
-      if (player.postAssignStepsDone) {
-        throw `player already finished postAssignStep: ${_id}`;
+    if (type === "preAssign") {
+      if (player.preAssignStepsDone) {
+        throw `player already finished preAssignStep: ${_id}`;
       }
 
-      Players.update(_id, { $set: { postAssignStepsDone: new Date() } });
+      Players.update(_id, { $set: { preAssignStepsDone: new Date() } });
     }
   }
 });

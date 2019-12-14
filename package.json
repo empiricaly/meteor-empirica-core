@@ -1,7 +1,7 @@
 {
   "name": "meteor-empirica-core",
   "version": "1.4.0",
-  "description": "Core Meteor package for the experiment Empirica platform.",
+  "description": "Core Meteor package for the Empirica experiment platform.",
   "main": "server.js",
   "repository": "git@github.com:empiricaly/meteor-empirica-core.git",
   "author": "Nicolas Paton <nicolas.paton@gmail.com>",

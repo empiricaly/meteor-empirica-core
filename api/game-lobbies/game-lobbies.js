@@ -55,7 +55,7 @@ GameLobbies.schema = new SimpleSchema({
   // but are not confirmed for the game yet. playerIds is used for confirmed
   // players
   // There might be more queued player than availableCount as we
-  // allow overbooking to make games start faster.
+  // allow over-assignment to make games start faster.
   queuedPlayerIds: {
     type: Array,
     defaultValue: [],
