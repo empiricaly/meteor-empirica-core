@@ -39,8 +39,7 @@ export default class Game extends React.Component {
     }
 
     if (player.exitAt) {
-      const steps = exitSteps && exitSteps(game, player);
-
+      const steps = exitSteps(game, player) ? exitSteps(game, player) : [];
       return (
         <ExitSteps
           steps={steps}
