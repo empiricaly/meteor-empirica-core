@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./startup/client/index.js";
 import About from "./ui/components/About.jsx";
@@ -12,7 +13,12 @@ import AuthorizedContainer from "./ui/containers/AuthorizedContainer.jsx";
 import IdentifiedContainer from "./ui/containers/IdentifiedContainer.jsx";
 import PublicContainer from "./ui/containers/PublicContainer.jsx";
 
-const config = {};
+import { isReactComponents } from "./lib/utils";
+
+const config = {
+  exitSteps: () => [],
+  introSteps: () => []
+};
 
 const Empirica = {
   about(AboutComp) {
@@ -41,11 +47,19 @@ const Empirica = {
   },
 
   introSteps(func) {
-    config.introSteps = func;
+    if (!_.isFunction(func)) {
+      throw new Error("introSteps requires a function");
+    }
+
+    config.introSteps = isReactComponents(func()) ? func : () => [];
   },
 
   exitSteps(func) {
-    config.exitSteps = func;
+    if (!_.isFunction(func)) {
+      throw new Error("exitSteps requires a function");
+    }
+
+    config.exitSteps = isReactComponents(func()) ? func : () => [];
   },
 
   routes() {
