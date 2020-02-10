@@ -66,7 +66,6 @@ Npm.depends({
   "meteor-node-stubs": "0.4.1",
   "message-box": "0.2.0",
   moment: "2.22.2",
-  lodash: "4.17.15",
   "prop-types": "15.6.1",
   react: "16.5.2",
   "react-addons-css-transition-group": "15.6.2",
