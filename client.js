@@ -1,5 +1,4 @@
 import React from "react";
-import _ from "lodash";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./startup/client/index.js";
 import About from "./ui/components/About.jsx";
@@ -48,18 +47,38 @@ const Empirica = {
 
   introSteps(func) {
     if (!_.isFunction(func)) {
-      throw new Error("introSteps requires a function");
+      throw new Error("Empirica.introSteps() requires a function");
     }
 
-    config.introSteps = isReactComponents(func()) ? func : () => [];
+    config.introSteps = function() {
+      const results = func.apply(null, arguments);
+      if (!results || isReactComponents(results)) {
+        return results || [];
+      } else {
+        console.error(
+          "Empirica.introSteps() is not returning an array of components as expected."
+        );
+        return [];
+      }
+    };
   },
 
   exitSteps(func) {
     if (!_.isFunction(func)) {
-      throw new Error("exitSteps requires a function");
+      throw new Error("Empirica.exitSteps() requires a function");
     }
 
-    config.exitSteps = isReactComponents(func()) ? func : () => [];
+    config.exitSteps = function() {
+      const results = func.apply(null, arguments);
+      if (!results || isReactComponents(results)) {
+        return results || [];
+      } else {
+        console.error(
+          "Empirica.exitSteps() is not returning an array of components as expected."
+        );
+        return [];
+      }
+    };
   },
 
   routes() {
