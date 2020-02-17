@@ -39,11 +39,9 @@ export default class Game extends React.Component {
     }
 
     if (player.exitAt) {
-      const steps = exitSteps && exitSteps(game, player);
-
       return (
         <ExitSteps
-          steps={steps}
+          steps={exitSteps(game, player)}
           game={game}
           player={player}
           onSubmit={(stepName, data) => {

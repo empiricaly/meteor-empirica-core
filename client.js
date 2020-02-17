@@ -12,7 +12,12 @@ import AuthorizedContainer from "./ui/containers/AuthorizedContainer.jsx";
 import IdentifiedContainer from "./ui/containers/IdentifiedContainer.jsx";
 import PublicContainer from "./ui/containers/PublicContainer.jsx";
 
-const config = {};
+import { isReactComponents } from "./lib/utils";
+
+const config = {
+  exitSteps: () => [],
+  introSteps: () => []
+};
 
 const Empirica = {
   about(AboutComp) {
@@ -41,11 +46,39 @@ const Empirica = {
   },
 
   introSteps(func) {
-    config.introSteps = func;
+    if (!_.isFunction(func)) {
+      throw new Error("Empirica.introSteps() requires a function");
+    }
+
+    config.introSteps = function() {
+      const results = func.apply(null, arguments);
+      if (!results || isReactComponents(results)) {
+        return results || [];
+      } else {
+        console.error(
+          "Empirica.introSteps() is not returning an array of components as expected."
+        );
+        return [];
+      }
+    };
   },
 
   exitSteps(func) {
-    config.exitSteps = func;
+    if (!_.isFunction(func)) {
+      throw new Error("Empirica.exitSteps() requires a function");
+    }
+
+    config.exitSteps = function() {
+      const results = func.apply(null, arguments);
+      if (!results || isReactComponents(results)) {
+        return results || [];
+      } else {
+        console.error(
+          "Empirica.exitSteps() is not returning an array of components as expected."
+        );
+        return [];
+      }
+    };
   },
 
   routes() {
