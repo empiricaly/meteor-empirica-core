@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.4.0 (2019-12-12)
+
+
+### Bug Fixes
+
+* ensure stage is created with a seconds as a number ([6b3a7af](https://github.com/empiricaly/meteor-empirica-core/commit/6b3a7af))
+* Include logged variable name in export ([3b79b7c](https://github.com/empiricaly/meteor-empirica-core/commit/3b79b7c)), closes [#78](https://github.com/empiricaly/meteor-empirica-core/issues/78)
+
+### 1.3.4 (2019-11-25)
+
+
+### Bug Fixes
+
+* do not depend on playerIdConn; update meteor version ([cf75d01](https://github.com/empiricaly/meteor-empirica-core/commit/cf75d01))
+
+### 1.3.3 (2019-11-25)
+
+### 1.3.2 (2019-11-25)
+
 ### 1.3.1 (2019-11-23)
 
 
@@ -14,8 +33,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* add player logs features ([65f975d](https://github.com/empiricaly/meteor-empirica-core/commit/65f975d))
 * **admin:** add batch games collapse and players overflow ([817ea8f](https://github.com/empiricaly/meteor-empirica-core/commit/817ea8f))
+* add player logs features ([65f975d](https://github.com/empiricaly/meteor-empirica-core/commit/65f975d))
 * new batch ui with games details ([19a4c35](https://github.com/empiricaly/meteor-empirica-core/commit/19a4c35))
 
 ## 1.2.0 (2019-10-10)
@@ -154,8 +173,8 @@ recommended to move.
 
 ### Bug Fixes
 
-* Minor API fixes and better warnings for bad game initialization ([89ae8be](https://github.com/empiricaly/meteor-empirica-core/commit/89ae8be))
 * **debugmode:** make debug mode work for all games in a batch ([18d2304](https://github.com/empiricaly/meteor-empirica-core/commit/18d2304)), closes [#12](https://github.com/empiricaly/meteor-empirica-core/issues/12)
+* Minor API fixes and better warnings for bad game initialization ([89ae8be](https://github.com/empiricaly/meteor-empirica-core/commit/89ae8be))
 
 
 ### Features
@@ -200,9 +219,9 @@ recommended to move.
 
 ### Bug Fixes
 
-* cancellation improvements ([f3319f2](https://github.com/empiricaly/meteor-empirica-core/commit/f3319f2))
-* **admin:** background is white when content longer than window ([6230c19](https://github.com/empiricaly/meteor-empirica-core/commit/6230c19))
 * cancel doesn't cancel before game started ([212ec05](https://github.com/empiricaly/meteor-empirica-core/commit/212ec05))
+* **admin:** background is white when content longer than window ([6230c19](https://github.com/empiricaly/meteor-empirica-core/commit/6230c19))
+* cancellation improvements ([f3319f2](https://github.com/empiricaly/meteor-empirica-core/commit/f3319f2))
 * game.set() does not work in callbacks ([382cb87](https://github.com/empiricaly/meteor-empirica-core/commit/382cb87))
 
 

@@ -91,19 +91,31 @@ export const createGameFromLobby = gameLobby => {
 `
             );
             throw "gameInit error";
-            return;
           }
-          const stage = { name, displayName, durationInSeconds, data };
-          round.stages.push(stage);
-          return {
+
+          const durationInSecondsAsInt = parseInt(durationInSeconds);
+          if (
+            Number.isNaN(durationInSecondsAsInt) ||
+            durationInSecondsAsInt < 1
+          ) {
+            console.error(
+              `Error in addStage call: durationInSeconds must be an number > 0 (name: ${name})`
+            );
+          }
+
+          const stage = {
             name,
             displayName,
-            durationInSeconds,
+            durationInSeconds: durationInSecondsAsInt
+          };
+          round.stages.push({ ...stage, data });
+          return {
+            ...stage,
             get(k) {
-              return stage.data[k];
+              return data[k];
             },
             set(k, v) {
-              stage.data[k] = v;
+              data[k] = v;
             }
           };
         }
