@@ -1,3 +1,5 @@
+// gameContainer.jsx
+
 import { TimeSync } from "meteor/mizzao:timesync";
 import { withTracker } from "meteor/react-meteor-data";
 import moment from "moment";
@@ -5,7 +7,8 @@ import { PlayerRounds } from "../../api/player-rounds/player-rounds";
 import {
   augmentGameStageRound,
   augmentPlayer,
-  augmentPlayerStageRound
+  augmentPlayerStageRound,
+  augmentGameLobby
 } from "../../api/player-stages/augment";
 import { PlayerStages } from "../../api/player-stages/player-stages";
 import { Players } from "../../api/players/players";
@@ -135,10 +138,12 @@ export default withTracker(({ player, gameLobby, game, ...rest }) => {
     if (!treatment) {
       return loadingObj;
     }
+
     gameLobby.treatment = treatment.factorsObject();
     gameLobby.queuedCount = gameLobby.queuedPlayerIds.length;
     gameLobby.readyCount = gameLobby.playerIds.length;
 
+    augmentGameLobby(gameLobby);
     augmentPlayer(player);
 
     return {
