@@ -55,7 +55,7 @@ export const createGameFromLobby = gameLobby => {
 
   // Ask (experimenter designer) init function to configure this game
   // given the factors and players given.
-  const params = { data: {}, rounds: [], players, gameLobby };
+  const params = { data: { ...gameLobby.data }, rounds: [], players };
   var gameCollector = {
     players,
     treatment: factors,

@@ -4,6 +4,7 @@ import {
   markPlayerExitStepDone,
   playerReady
 } from "../../api/players/methods.js";
+import GameLobby from "../components/GameLobby.jsx";
 import GameLobbyContainer from "../containers/GameLobbyContainer.jsx";
 import DefaultBreadcrumb from "./Breadcrumb.jsx";
 import DelayedDisplay from "./DelayedDisplay.jsx";
@@ -13,7 +14,7 @@ import Loading from "./Loading.jsx";
 import WaitingForServer from "./WaitingForServer.jsx";
 
 const DelayedWaitingForServer = DelayedDisplay(WaitingForServer, 250);
-const DelayedGameLobby = DelayedDisplay(GameLobbyContainer, 250);
+const DelayedGameLobby = DelayedDisplay(GameLobby, 250);
 
 export default class Game extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -68,13 +69,22 @@ export default class Game extends React.Component {
 
     if (!game) {
       if (player.readyAt) {
-        const TheLobby = Lobby || DelayedGameLobby;
+        const gameLobbyProps = {
+          gameLobby,
+          game: gameLobby,
+          treatment,
+          player
+        };
+
         return (
-          <TheLobby
-            gameLobby={gameLobby}
-            treatment={treatment}
-            player={player}
-          />
+          <GameLobbyContainer {...gameLobbyProps}>
+            {Lobby ? (
+              <Lobby {...gameLobbyProps} />
+            ) : (
+              <DelayedGameLobby {...gameLobbyProps} />
+            )}
+            }
+          </GameLobbyContainer>
         );
       }
 
