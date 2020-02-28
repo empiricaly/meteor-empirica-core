@@ -54,7 +54,6 @@ export const createGameFromLobby = gameLobby => {
   // Ask (experimenter designer) init function to configure this game
   // given the factors and players given.
   const params = { data: {}, rounds: [], players };
-  // console.log('\n\nini params 1 ', params)
   var gameCollector = {
     players,
     treatment: factors,
@@ -284,7 +283,6 @@ export const createGameFromLobby = gameLobby => {
       .map(ids => ids._id);
     StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
 
-    // bulk.find({ appid }).upsert().updateOne({ $set: game });
     stageIds.forEach(stageId =>
       StagesOp.find({ stageId })
         .upsert()
