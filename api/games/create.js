@@ -193,6 +193,7 @@ export const createGameFromLobby = gameLobby => {
     removeEmptyStrings: false
   };
 
+  let StagesUpdateOp = Stages.rawCollection().initializeUnorderedBulkOp();
   let RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
   let StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
   let roundsOpResult;
@@ -206,7 +207,7 @@ export const createGameFromLobby = gameLobby => {
           index,
           _id: Random.id(),
           createdAt: new Date(),
-          updatedAt: new Date()
+          data: {}
         },
         round
       ),
@@ -241,7 +242,7 @@ export const createGameFromLobby = gameLobby => {
           index: stageIndex,
           _id: Random.id(),
           createdAt: new Date(),
-          updatedAt: new Date()
+          data: {}
         },
         stage
       );
@@ -269,7 +270,7 @@ export const createGameFromLobby = gameLobby => {
           batchId,
           _id: Random.id(),
           createdAt: new Date(),
-          updatedAt: new Date()
+          data: {}
         })
       );
     });
@@ -281,15 +282,12 @@ export const createGameFromLobby = gameLobby => {
     const playerStageIds = playerStagesResult
       .getInsertedIds()
       .map(ids => ids._id);
-    StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
 
     stageIds.forEach(stageId =>
-      StagesOp.find({ stageId })
+      StagesUpdateOp.find({ _id: stageId })
         .upsert()
-        .update({ $set: { playerStageIds } })
+        .updateOne({ $set: { playerStageIds, updatedAt: new Date() } })
     );
-
-    Meteor.wrapAsync(StagesOp.execute, StagesOp)();
 
     players.forEach(({ _id: playerId }) =>
       PlayerRoundsOp.insert({
@@ -299,8 +297,7 @@ export const createGameFromLobby = gameLobby => {
         batchId,
         _id: Random.id(),
         data: {},
-        createdAt: new Date(),
-        updatedAt: new Date()
+        createdAt: new Date()
       })
     );
 
@@ -312,11 +309,12 @@ export const createGameFromLobby = gameLobby => {
       .getInsertedIds()
       .map(ids => ids._id);
 
-    RoundsOp.find({ roundId })
+    RoundsOp.find({ _id: roundId })
       .upsert()
-      .update({ $set: { stageIds, playerRoundIds } });
+      .updateOne({ $set: { stageIds, playerRoundIds, updatedAt: new Date() } });
   });
 
+  Meteor.wrapAsync(StagesUpdateOp.execute, StagesUpdateOp)();
   Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
 
   // An estimation of the finish time to help querying.
