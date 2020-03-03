@@ -184,55 +184,138 @@ export const createGameFromLobby = gameLobby => {
   let stageIndex = 0;
   let totalDuration = 0;
   let firstRoundId;
-  params.roundIds = params.rounds.map((round, index) => {
-    const roundId = Rounds.insert(_.extend({ gameId, index }, round), {
-      autoConvert: false,
-      filter: false,
-      validate: false,
-      trimStrings: false,
-      removeEmptyStrings: false
-    });
-    const stageIds = round.stages.map(stage => {
+
+  const insertOption = {
+    autoConvert: false,
+    filter: false,
+    validate: false,
+    trimStrings: false,
+    removeEmptyStrings: false
+  };
+
+  let StagesUpdateOp = Stages.rawCollection().initializeUnorderedBulkOp();
+  let RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
+  let StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
+  let roundsOpResult;
+  let stagesOpResult;
+
+  params.rounds.forEach((round, index) =>
+    RoundsOp.insert(
+      _.extend(
+        {
+          gameId,
+          index,
+          _id: Random.id(),
+          createdAt: new Date(),
+          data: {}
+        },
+        round
+      ),
+      insertOption
+    )
+  );
+
+  roundsOpResult = Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
+
+  const roundIds = roundsOpResult.getInsertedIds().map(ids => ids._id);
+  RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
+
+  params.rounds.forEach((round, index) => {
+    const roundId = roundIds[index];
+    const { players } = params;
+
+    StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
+    let PlayerStagesOp = PlayerStages.rawCollection().initializeUnorderedBulkOp();
+    let PlayerRoundsOp = PlayerRounds.rawCollection().initializeUnorderedBulkOp();
+
+    round.stages.forEach(stage => {
       if (batch.debugMode) {
         stage.durationInSeconds = 60 * 60; // Stage time in debugMode is 1h
       }
+
       totalDuration += stage.durationInSeconds;
-      const sParams = _.extend({ gameId, roundId, index: stageIndex }, stage);
-      const stageId = Stages.insert(sParams, {
-        autoConvert: false,
-        filter: false,
-        validate: false,
-        trimStrings: false,
-        removeEmptyStrings: false
-      });
+
+      const sParams = _.extend(
+        {
+          gameId,
+          roundId,
+          index: stageIndex,
+          _id: Random.id(),
+          createdAt: new Date(),
+          data: {}
+        },
+        stage
+      );
+
+      StagesOp.insert(sParams, insertOption);
+
       stageIndex++;
+    });
+
+    stagesOpResult = Meteor.wrapAsync(StagesOp.execute, StagesOp)();
+    const stageIds = stagesOpResult.getInsertedIds().map(ids => ids._id);
+
+    stageIds.forEach(stageId => {
       if (!params.currentStageId) {
         firstRoundId = roundId;
         params.currentStageId = stageId;
       }
-      const playerStageIds = params.players.map(({ _id: playerId }) => {
-        return PlayerStages.insert({
+
+      players.forEach(({ _id: playerId }) =>
+        PlayerStagesOp.insert({
           playerId,
           stageId,
           roundId,
           gameId,
-          batchId
-        });
-      });
-      Stages.update(stageId, { $set: { playerStageIds } });
-      return stageId;
+          batchId,
+          _id: Random.id(),
+          createdAt: new Date(),
+          data: {}
+        })
+      );
     });
-    const playerRoundIds = params.players.map(({ _id: playerId }) => {
-      return PlayerRounds.insert({
+
+    const playerStagesResult = Meteor.wrapAsync(
+      PlayerStagesOp.execute,
+      PlayerStagesOp
+    )();
+    const playerStageIds = playerStagesResult
+      .getInsertedIds()
+      .map(ids => ids._id);
+
+    stageIds.forEach(stageId =>
+      StagesUpdateOp.find({ _id: stageId })
+        .upsert()
+        .updateOne({ $set: { playerStageIds, updatedAt: new Date() } })
+    );
+
+    players.forEach(({ _id: playerId }) =>
+      PlayerRoundsOp.insert({
         playerId,
         roundId,
         gameId,
-        batchId
-      });
-    });
-    Rounds.update(roundId, { $set: { stageIds, playerRoundIds } });
-    return roundId;
+        batchId,
+        _id: Random.id(),
+        data: {},
+        createdAt: new Date()
+      })
+    );
+
+    const playerRoundIdsResult = Meteor.wrapAsync(
+      PlayerRoundsOp.execute,
+      PlayerRoundsOp
+    )();
+    const playerRoundIds = playerRoundIdsResult
+      .getInsertedIds()
+      .map(ids => ids._id);
+
+    RoundsOp.find({ _id: roundId })
+      .upsert()
+      .updateOne({ $set: { stageIds, playerRoundIds, updatedAt: new Date() } });
   });
+
+  Meteor.wrapAsync(StagesUpdateOp.execute, StagesUpdateOp)();
+  Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
 
   // An estimation of the finish time to help querying.
   // At the moment, this will 100% break with pausing the game/batch.
