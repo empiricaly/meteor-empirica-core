@@ -51,6 +51,7 @@ export const callOnSubmit = params => {
 
   player.stage = _.extend({}, stage);
   player.round = _.extend({}, round);
+  augmentPlayerStageRound(player, player.stage, player.round, game);
 
   onSubmit(game, round, stage, player);
 };
