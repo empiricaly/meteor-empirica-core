@@ -1,12 +1,17 @@
 import { TimeSync } from "meteor/mizzao:timesync";
 import { withTracker } from "meteor/react-meteor-data";
+import React from "react";
 import moment from "moment";
 
 import { LobbyConfigs } from "../../api/lobby-configs/lobby-configs.js";
-import GameLobby from "../components/GameLobby.jsx";
 
-// Handles all the timing stuff
-export default withTracker(({ gameLobby, player, ...rest }) => {
+export default class GameLobbyContainer extends React.Component {
+  render() {
+    return <div>{this.props.children}</div>;
+  }
+}
+
+return withTracker(({ gameLobby, player, ...rest }) => {
   const lobbyConfig = LobbyConfigs.findOne(gameLobby.lobbyConfigId);
 
   // TimeSync.serverTime() is a reactive source that will trigger this
@@ -26,4 +31,4 @@ export default withTracker(({ gameLobby, player, ...rest }) => {
     // endTimeAt,
     ...rest
   };
-})(GameLobby);
+})(GameLobbyContainer);

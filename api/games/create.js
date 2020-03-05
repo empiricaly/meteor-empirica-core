@@ -1,3 +1,5 @@
+// create.js
+
 import moment from "moment";
 
 import { Batches } from "../batches/batches.js";
@@ -53,7 +55,7 @@ export const createGameFromLobby = gameLobby => {
 
   // Ask (experimenter designer) init function to configure this game
   // given the factors and players given.
-  const params = { data: {}, rounds: [], players };
+  const params = { data: { ...gameLobby.data }, rounds: [], players };
   var gameCollector = {
     players,
     treatment: factors,
@@ -147,7 +149,7 @@ export const createGameFromLobby = gameLobby => {
 
   // We need to create/configure stuff associated with the game before we
   // create it so we generate the id early
-  const gameId = Random.id();
+  const gameId = gameLobby._id;
   params._id = gameId;
   params.gameLobbyId = gameLobby._id;
   // We also add a few related objects

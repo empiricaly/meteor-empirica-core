@@ -1,9 +1,10 @@
+// game-lobbies.js
 import SimpleSchema from "simpl-schema";
 
 import { statusSchema } from "../batches/status-schema";
 import { Batches } from "../batches/batches";
 import { BelongsTo, HasManyByRef, TimestampSchema } from "../default-schemas";
-import { DebugModeSchema } from "../default-schemas.js";
+import { DebugModeSchema, UserDataSchema } from "../default-schemas.js";
 import { Players } from "../players/players";
 import { Treatments } from "../treatments/treatments";
 
@@ -73,6 +74,7 @@ if (Meteor.isDevelopment || Meteor.settings.public.debug_gameDebugMode) {
   GameLobbies.schema.extend(DebugModeSchema);
 }
 
+GameLobbies.schema.extend(UserDataSchema);
 GameLobbies.schema.extend(TimestampSchema);
 // playerIds tells us how many players are ready to start (finished intro)
 // Once playerIds.length == availableCount, the game starts. Player that are
