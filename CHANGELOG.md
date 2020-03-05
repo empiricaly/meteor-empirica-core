@@ -2,33 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## 1.4.0 (2019-12-12)
+### 1.4.1 (2020-03-05)
 
 
 ### Bug Fixes
 
-* ensure stage is created with a seconds as a number ([6b3a7af](https://github.com/empiricaly/meteor-empirica-core/commit/6b3a7af))
-* Include logged variable name in export ([3b79b7c](https://github.com/empiricaly/meteor-empirica-core/commit/3b79b7c)), closes [#78](https://github.com/empiricaly/meteor-empirica-core/issues/78)
-
-### 1.3.4 (2019-11-25)
-
-
-### Bug Fixes
-
+* add missing player attribute onSubmit [#93](https://github.com/empiricaly/meteor-empirica-core/issues/93) ([#97](https://github.com/empiricaly/meteor-empirica-core/issues/97)) ([5657c21](https://github.com/empiricaly/meteor-empirica-core/commit/5657c21))
 * do not depend on playerIdConn; update meteor version ([cf75d01](https://github.com/empiricaly/meteor-empirica-core/commit/cf75d01))
-
-### 1.3.3 (2019-11-25)
-
-### 1.3.2 (2019-11-25)
-
-### 1.3.1 (2019-11-23)
-
-
-### Bug Fixes
-
+* ensure stage is created with a seconds as a number ([6b3a7af](https://github.com/empiricaly/meteor-empirica-core/commit/6b3a7af))
+* fixed exitSteps undefined (fixes [#85](https://github.com/empiricaly/meteor-empirica-core/issues/85)) ([f01ca69](https://github.com/empiricaly/meteor-empirica-core/commit/f01ca69))
+* Include logged variable name in export ([3b79b7c](https://github.com/empiricaly/meteor-empirica-core/commit/3b79b7c)), closes [#78](https://github.com/empiricaly/meteor-empirica-core/issues/78)
 * remove unnecessary player connection check on player.exit method ([f2cb4e6](https://github.com/empiricaly/meteor-empirica-core/commit/f2cb4e6)), closes [#73](https://github.com/empiricaly/meteor-empirica-core/issues/73)
-
-## 1.3.0 (2019-11-05)
 
 
 ### Features
