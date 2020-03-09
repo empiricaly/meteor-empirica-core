@@ -39,6 +39,13 @@ Games.schema = new SimpleSchema({
     optional: true,
     regEx: SimpleSchema.RegEx.Id,
     index: 1
+  },
+
+  endReason: {
+    label: "Ended Reason",
+    type: String,
+    optional: true,
+    regEx: /[a-zA-Z0-9_]+/
   }
 });
 

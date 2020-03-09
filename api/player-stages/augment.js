@@ -1,5 +1,5 @@
 // augment.js
-import { updateGameData } from "../games/methods.js";
+import { updateGameData, earlyExitGame } from "../games/methods.js";
 import { updateGameLobbyData } from "../game-lobbies/methods";
 import { updatePlayerRoundData } from "../player-rounds/methods";
 import { PlayerRounds } from "../player-rounds/player-rounds";
@@ -179,6 +179,11 @@ export const augmentGameStageRound = (game, stage, round) => {
     game.get = key => game.data[key];
     game.set = set(game.data, gameSet(game._id));
     game.append = append(game.data, gameSet(game._id, true));
+    game.end = endReason =>
+      earlyExitGame.call({
+        gameId: game._id,
+        endReason
+      });
   }
 
   if (stage) {
