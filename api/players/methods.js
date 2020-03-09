@@ -5,6 +5,7 @@ import { Batches } from "../batches/batches.js";
 import { GameLobbies } from "../game-lobbies/game-lobbies";
 import { IdSchema } from "../default-schemas.js";
 import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
+import { Games } from "../games/games.js";
 import { Players } from "./players";
 import { exitStatuses } from "./players.js";
 import { weightedRandom } from "../../lib/utils.js";
@@ -376,10 +377,14 @@ export const earlyExitPlayer = new ValidatedMethod({
     playerId: {
       type: String,
       regEx: SimpleSchema.RegEx.Id
+    },
+    gameId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
 
-  run({ exitReason, playerId }) {
+  run({ exitReason, playerId, gameId }) {
     if (!Meteor.isServer) {
       return;
     }
@@ -391,6 +396,29 @@ export const earlyExitPlayer = new ValidatedMethod({
         exitReason
       }
     });
+
+    const players = Players.find({ gameId }).fetch();
+    const onlinePlayers = players.filter(player => !player.exitAt);
+
+    if (!onlinePlayers || (onlinePlayers && onlinePlayers.length === 0)) {
+      Games.update(gameId, {
+        $set: {
+          finishedAt: new Date(),
+          status: "custom",
+          endReason: "finished early"
+        }
+      });
+
+      GameLobbies.update(
+        { gameId },
+        {
+          $set: {
+            status: "custom",
+            endReason: "finished early"
+          }
+        }
+      );
+    }
   }
 });
 
