@@ -100,7 +100,8 @@ export const augmentPlayer = (player, stage = {}, round = {}, game = {}) => {
   player.exit = reason =>
     earlyExitPlayer.call({
       playerId,
-      exitReason: reason
+      exitReason: reason,
+      gameId: game._id
     });
   player.get = key => player.data[key];
   player.set = set(player.data, playerSet(playerId));
