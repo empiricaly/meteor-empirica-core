@@ -389,6 +389,30 @@ export const earlyExitPlayer = new ValidatedMethod({
       return;
     }
 
+    const game = Games.findOne(gameId);
+
+    if (!game) {
+      throw new Error("game not found");
+    }
+
+    if (game && game.finishedAt) {
+      if (Meteor.isDevelopment) {
+        console.log("\n\ngame already ended!");
+      }
+
+      return;
+    }
+
+    const currentPlayer = Players.findOne(playerId);
+
+    if (currentPlayer && currentPlayer.exitAt) {
+      if (Meteor.isDevelopment) {
+        console.log("\nplayer already exited!");
+      }
+
+      return;
+    }
+
     Players.update(playerId, {
       $set: {
         exitAt: new Date(),
@@ -405,7 +429,7 @@ export const earlyExitPlayer = new ValidatedMethod({
         $set: {
           finishedAt: new Date(),
           status: "custom",
-          endReason: "finished early"
+          endReason: "finished_early"
         }
       });
 
@@ -414,7 +438,7 @@ export const earlyExitPlayer = new ValidatedMethod({
         {
           $set: {
             status: "custom",
-            endReason: "finished early"
+            endReason: "finished_early"
           }
         }
       );
