@@ -52,6 +52,13 @@ GameLobbies.schema = new SimpleSchema({
     index: 1
   },
 
+  endReason: {
+    label: "Ended Reason",
+    type: String,
+    optional: true,
+    regEx: /[a-zA-Z0-9_]+/
+  },
+
   // Queued players are players that have been associated with the lobby
   // but are not confirmed for the game yet. playerIds is used for confirmed
   // players
