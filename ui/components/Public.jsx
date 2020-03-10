@@ -15,10 +15,10 @@ import { Link } from "react-router-dom";
 import GameContainer from "../containers/GameContainer.jsx";
 import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
 import AboutOriginal from "./About.jsx";
+import NoBatchOriginal from "./NoBatch.jsx";
 import { CoreWrapper } from "./Helpers.jsx";
 import Loading from "./Loading.jsx";
 import NewPlayer from "./NewPlayer.jsx";
-import NoBatch from "./NoBatch.jsx";
 
 const loadDocTitle = document.title;
 
@@ -66,18 +66,19 @@ export default class Public extends React.Component {
       playerIdKey,
       Header,
       About,
+      NoBatch,
       ...rest
     } = this.props;
     const { player } = rest;
-
     const AboutComp = About || AboutOriginal;
+    const NoBatchComp = NoBatch || NoBatchOriginal;
 
     if (loading) {
       return <Loading />;
     }
 
     if (!renderPublic) {
-      return <NoBatch />;
+      return <NoBatchComp />;
     }
 
     let content;
