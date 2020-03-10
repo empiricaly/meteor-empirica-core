@@ -79,13 +79,22 @@ export const earlyExitGame = new ValidatedMethod({
   }).validator(),
 
   run({ gameId, endReason }) {
-    if (!Meteor.isServer) {
-      return;
+    if (this.connection) {
+      throw new Error("not allowed");
     }
 
     const game = Games.findOne(gameId);
+
     if (!game) {
       throw new Error("game not found");
+    }
+
+    if (game && game.finishedAt) {
+      if (Meteor.isDevelopment) {
+        console.log("\n\ngame already ended!");
+      }
+
+      return;
     }
 
     Games.update(gameId, {
