@@ -189,6 +189,9 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
       file.put(BOM);
       file.put(encodeCells(keys.concat(dataKeys.map(k => `data.${k}`))));
     }
+
+    let jsonBodies = [];
+
     func((data, userData = {}) => {
       switch (format) {
         case "csv":
@@ -203,12 +206,20 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
           break;
         case "json":
           _.each(userData, (v, k) => (data[`data.${k}`] = v));
-          file.put(JSON.stringify(data) + "\n");
+          jsonBodies.push("\t" + JSON.stringify(data));
           break;
         default:
           throw `unknown format: ${format}`;
       }
     });
+
+    if (format === "json" && jsonBodies.length > 0) {
+      jsonBodies = jsonBodies.join(",");
+      file.put("[");
+      file.put(jsonBodies);
+      file.put("\n]");
+    }
+
     file.stop();
   };
 
