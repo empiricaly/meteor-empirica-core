@@ -113,6 +113,9 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     case "/.json":
       format = "json";
       break;
+    case "/.jsonl":
+      format = "jsonl";
+      break;
     case "/.csv":
       format = "csv";
       break;
@@ -190,7 +193,9 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
       file.put(encodeCells(keys.concat(dataKeys.map(k => `data.${k}`))));
     }
 
-    let jsonBodies = [];
+    format === "json" && file.put("[");
+
+    let isFirstLine = true;
 
     func((data, userData = {}) => {
       switch (format) {
@@ -204,21 +209,25 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
           });
           file.put(encodeCells(out));
           break;
+        case "jsonl":
+          _.each(userData, (v, k) => (data[`data.${k}`] = v));
+          file.put(JSON.stringify(data) + "\n");
+          break;
         case "json":
           _.each(userData, (v, k) => (data[`data.${k}`] = v));
-          jsonBodies.push("\t" + JSON.stringify(data));
+          if (isFirstLine) {
+            isFirstLine = false;
+            file.put("\t" + JSON.stringify(data));
+          } else {
+            file.put(",\t" + JSON.stringify(data));
+          }
           break;
         default:
           throw `unknown format: ${format}`;
       }
     });
 
-    if (format === "json" && jsonBodies.length > 0) {
-      jsonBodies = jsonBodies.join(",");
-      file.put("[");
-      file.put(jsonBodies);
-      file.put("\n]");
-    }
+    format === "json" && file.put("\n]");
 
     file.stop();
   };
