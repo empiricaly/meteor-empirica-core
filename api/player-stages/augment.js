@@ -1,4 +1,6 @@
-import { updateGameData } from "../games/methods.js";
+// augment.js
+import { updateGameData, earlyExitGame } from "../games/methods.js";
+import { updateGameLobbyData } from "../game-lobbies/methods";
 import { updatePlayerRoundData } from "../player-rounds/methods";
 import { PlayerRounds } from "../player-rounds/player-rounds";
 import { updatePlayerData, earlyExitPlayer } from "../players/methods.js";
@@ -17,6 +19,17 @@ const gameSet = (gameId, append = false) => (key, value) => {
     noCallback: Meteor.isServer
   });
 };
+
+const gameLobbySet = (gameLobbyId, append = false) => (key, value) => {
+  updateGameLobbyData.call({
+    gameLobbyId,
+    key,
+    value: JSON.stringify(value),
+    append,
+    noCallback: Meteor.isServer
+  });
+};
+
 const playerSet = (playerId, append = false) => (key, value) => {
   updatePlayerData.call({
     playerId,
@@ -61,6 +74,7 @@ const set = (obj, func) => (k, v) => {
   func(k, val);
   obj[k] = val;
 };
+
 const append = (obj, func) => (k, v) => {
   const val = v === undefined ? null : v;
   func(k, val);
@@ -74,13 +88,20 @@ const nullFunc = () => {
   throw "You called .get(...) or .set(...) but there is no data for the player yet. Did the game run for this player?";
 };
 
+export const augmentGameLobby = gameLobby => {
+  gameLobby.get = key => gameLobby.data[key];
+  gameLobby.set = set(gameLobby.data, gameLobbySet(gameLobby._id));
+  gameLobby.append = append(gameLobby.data, gameLobbySet(gameLobby._id, true));
+};
+
 export const augmentPlayer = (player, stage = {}, round = {}, game = {}) => {
   const { _id: playerId } = player;
 
   player.exit = reason =>
     earlyExitPlayer.call({
       playerId,
-      exitReason: reason
+      exitReason: reason,
+      gameId: game._id
     });
   player.get = key => player.data[key];
   player.set = set(player.data, playerSet(playerId));
@@ -159,6 +180,11 @@ export const augmentGameStageRound = (game, stage, round) => {
     game.get = key => game.data[key];
     game.set = set(game.data, gameSet(game._id));
     game.append = append(game.data, gameSet(game._id, true));
+    game.end = endReason =>
+      earlyExitGame.call({
+        gameId: game._id,
+        endReason
+      });
   }
 
   if (stage) {

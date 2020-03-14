@@ -13,7 +13,8 @@ export const statusSchema = new SimpleSchema({
       "finished", // Batch has finished and cannot be restarted
 
       // NOTE(np): cancelled might break a game if it's running at the moment, gotta be careful
-      "cancelled" // Batch was cancelled and cannot be restarted
+      "cancelled", // Batch was cancelled and cannot be restarted
+      "custom" // used for game.end("custom reason")
     ],
     defaultValue: "init",
     index: 1

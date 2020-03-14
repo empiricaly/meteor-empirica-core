@@ -6,6 +6,7 @@ import Admin from "./ui/components/Admin.jsx";
 import Centered from "./ui/components/Centered.jsx";
 import Consent, { ConsentButton } from "./ui/components/Consent.jsx";
 import Login from "./ui/components/Login.jsx";
+import NoBatch from "./ui/components/NoBatch";
 import StageTimeWrapper from "./ui/components/StageTimeWrapper.jsx";
 import { AlertToaster } from "./ui/components/Toasters.jsx";
 import AuthorizedContainer from "./ui/containers/AuthorizedContainer.jsx";
@@ -22,6 +23,10 @@ const config = {
 const Empirica = {
   about(AboutComp) {
     config.About = AboutComp || About;
+  },
+
+  noBatch(NoBatchComp) {
+    config.NoBatch = NoBatchComp || NoBatch;
   },
 
   consent(ConsentComp) {

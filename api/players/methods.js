@@ -5,6 +5,7 @@ import { Batches } from "../batches/batches.js";
 import { GameLobbies } from "../game-lobbies/game-lobbies";
 import { IdSchema } from "../default-schemas.js";
 import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
+import { Games } from "../games/games.js";
 import { Players } from "./players";
 import { exitStatuses } from "./players.js";
 import { weightedRandom } from "../../lib/utils.js";
@@ -376,11 +377,39 @@ export const earlyExitPlayer = new ValidatedMethod({
     playerId: {
       type: String,
       regEx: SimpleSchema.RegEx.Id
+    },
+    gameId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
     }
   }).validator(),
 
-  run({ exitReason, playerId }) {
+  run({ exitReason, playerId, gameId }) {
     if (!Meteor.isServer) {
+      return;
+    }
+
+    const game = Games.findOne(gameId);
+
+    if (!game) {
+      throw new Error("game not found");
+    }
+
+    if (game && game.finishedAt) {
+      if (Meteor.isDevelopment) {
+        console.log("\n\ngame already ended!");
+      }
+
+      return;
+    }
+
+    const currentPlayer = Players.findOne(playerId);
+
+    if (currentPlayer && currentPlayer.exitAt) {
+      if (Meteor.isDevelopment) {
+        console.log("\nplayer already exited!");
+      }
+
       return;
     }
 
@@ -391,6 +420,29 @@ export const earlyExitPlayer = new ValidatedMethod({
         exitReason
       }
     });
+
+    const players = Players.find({ gameId }).fetch();
+    const onlinePlayers = players.filter(player => !player.exitAt);
+
+    if (!onlinePlayers || (onlinePlayers && onlinePlayers.length === 0)) {
+      Games.update(gameId, {
+        $set: {
+          finishedAt: new Date(),
+          status: "custom",
+          endReason: "finished_early"
+        }
+      });
+
+      GameLobbies.update(
+        { gameId },
+        {
+          $set: {
+            status: "custom",
+            endReason: "finished_early"
+          }
+        }
+      );
+    }
   }
 });
 
