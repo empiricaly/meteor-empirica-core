@@ -447,9 +447,18 @@ export const createGameFromLobby = gameLobby => {
   if ((onGameStart || onRoundStart || onStageStart) && firstRoundId) {
     const game = Games.findOne(gameId);
 
-    game.treatment = treatment.factorsObject();
-    game.rounds = game.rounds();
-    game.players = game.players();
+    Object.defineProperties(game, {
+      treatment: {
+        value: treatment.factorsObject()
+      },
+      players: {
+        value: game.players()
+      },
+      rounds: {
+        value: game.rounds()
+      }
+    });
+
     game.rounds.forEach(round => {
       round.stages = Stages.find({ roundId: round._id }).fetch();
     });

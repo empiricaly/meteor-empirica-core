@@ -42,10 +42,20 @@ Cron.add({
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
 
-        game.treatment = treatment.factorsObject();
-        game.rounds = game.rounds();
-        game.players = game.players();
-        game.stages = game.stages();
+        Object.defineProperties(game, {
+          treatment: {
+            value: treatment.factorsObject()
+          },
+          players: {
+            value: game.players()
+          },
+          rounds: {
+            value: game.rounds()
+          },
+          stages: {
+            value: game.stages()
+          }
+        });
 
         botPlayers.forEach(botPlayer => {
           const bot = config.bots[botPlayer.bot];

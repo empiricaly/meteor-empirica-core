@@ -17,9 +17,17 @@ export const endOfStage = stageId => {
   const round = Rounds.findOne(roundId);
   const treatment = Treatments.findOne(game.treatmentId);
 
-  game.treatment = treatment.factorsObject();
-  game.rounds = game.rounds();
-  game.players = game.players();
+  Object.defineProperties(game, {
+    treatment: {
+      value: treatment.factorsObject()
+    },
+    players: {
+      value: game.players()
+    },
+    rounds: {
+      value: game.rounds()
+    }
+  });
 
   game.rounds.forEach(round => {
     round.stages = Stages.find({ roundId: round._id }).fetch();
