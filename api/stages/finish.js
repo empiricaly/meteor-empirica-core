@@ -17,15 +17,37 @@ export const endOfStage = stageId => {
   const round = Rounds.findOne(roundId);
   const treatment = Treatments.findOne(game.treatmentId);
 
+  let gameTreatment = null,
+    gamePlayers = null,
+    gameRounds = null;
+
   Object.defineProperties(game, {
     treatment: {
-      value: treatment.factorsObject()
+      get() {
+        if (gameTreatment) {
+          return gameTreatment;
+        }
+        gameTreatment = treatment.factorsObject();
+        return gameTreatment;
+      }
     },
     players: {
-      value: game.players()
+      get() {
+        if (gamePlayers) {
+          return gamePlayers;
+        }
+        gamePlayers = game.getPlayers();
+        return gamePlayers;
+      }
     },
     rounds: {
-      value: game.rounds()
+      get() {
+        if (gameRounds) {
+          return gameRounds;
+        }
+        gameRounds = game.getRounds();
+        return gameRounds;
+      }
     }
   });
 

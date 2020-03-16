@@ -42,18 +42,47 @@ Cron.add({
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
 
+        let gameTreatment = null,
+          gamePlayers = null,
+          gameRounds = null,
+          gameStages = null;
+
         Object.defineProperties(game, {
           treatment: {
-            value: treatment.factorsObject()
+            get() {
+              if (gameTreatment) {
+                return gameTreatment;
+              }
+              gameTreatment = treatment.factorsObject();
+              return gameTreatment;
+            }
           },
           players: {
-            value: game.players()
+            get() {
+              if (gamePlayers) {
+                return gamePlayers;
+              }
+              gamePlayers = game.getPlayers();
+              return gamePlayers;
+            }
           },
           rounds: {
-            value: game.rounds()
+            get() {
+              if (gameRounds) {
+                return gameRounds;
+              }
+              gameRounds = game.getRounds();
+              return gameRounds;
+            }
           },
           stages: {
-            value: game.stages()
+            get() {
+              if (gameStages) {
+                return gameStages;
+              }
+              gameStages = game.getStages();
+              return gameStages;
+            }
           }
         });
 

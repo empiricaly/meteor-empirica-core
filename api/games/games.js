@@ -20,25 +20,25 @@ class GamesCollection extends Mongo.Collection {
 export const Games = new GamesCollection("games");
 
 Games.helpers({
-  gameLobby() {
+  getGameLobby() {
     return GameLobbies.findOne({ _id: this.gameLobbyId });
   },
-  batch() {
+  getBatch() {
     return Batches.findOne({ _id: this.batchId });
   },
-  players() {
+  getPlayers() {
     return Players.find({ _id: { $in: this.playerIds } }).fetch();
   },
-  currentStage() {
+  getCurrentStage() {
     return Stages.findOne({ _id: this.currentStageId });
   },
-  currentRound() {
+  getCurrentRound() {
     return Rounds.findOne({ gameId: this._id, index: this.index });
   },
-  stages() {
+  getStages() {
     return Stages.find({ gameId: this._id }).fetch();
   },
-  rounds() {
+  getRounds() {
     return Rounds.find({ gameId: this._id }).fetch();
   }
 });
