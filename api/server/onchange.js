@@ -88,43 +88,73 @@ export const callOnChange = params => {
   Object.defineProperties(game, {
     treatment: {
       get() {
-        if (gameTreatment) {
-          return gameTreatment;
+        if (!gameTreatment) {
+          gameTreatment = treatment.factorsObject();
         }
-        gameTreatment = treatment.factorsObject();
+
         return gameTreatment;
       }
     },
     players: {
       get() {
-        if (gamePlayers) {
-          return gamePlayers;
+        if (!gamePlayers) {
+          gamePlayers = game.getPlayers();
+          gamePlayers.forEach(player => {
+            let playerRound = null,
+              playerStage = null;
+
+            Object.defineProperties(player, {
+              round: {
+                get() {
+                  if (!playerRound) {
+                    playerRound = _.extend({}, round);
+                  }
+
+                  return playerRound;
+                }
+              },
+              stage: {
+                get() {
+                  if (!playerStage) {
+                    playerStage = _.extend({}, stage);
+                  }
+
+                  return playerStage;
+                }
+              }
+            });
+
+            augmentPlayerStageRound(player, player.stage, player.round, game);
+          });
         }
-        gamePlayers = game.getPlayers();
+
         return gamePlayers;
       }
     },
     rounds: {
       get() {
-        if (gameRounds) {
-          return gameRounds;
+        if (!gameRounds) {
+          gameRounds = game.getRounds();
+          gameRounds.forEach(round => {
+            let stages = null;
+            Object.defineProperty(round, "stages", {
+              get() {
+                if (!stages) {
+                  stages = Stages.find({ roundId: round._id }).fetch();
+                }
+
+                return stages;
+              }
+            });
+          });
         }
-        gameRounds = game.getRounds();
+
         return gameRounds;
       }
     }
   });
 
-  game.rounds.forEach(round => {
-    round.stages = Stages.find({ roundId: round._id }).fetch();
-  });
-
   augmentGameStageRound(game, stage, round);
-  game.players.forEach(player => {
-    player.stage = _.extend({}, stage);
-    player.round = _.extend({}, round);
-    augmentPlayerStageRound(player, player.stage, player.round, game);
-  });
 
   callbacks.forEach(callback => {
     callback(

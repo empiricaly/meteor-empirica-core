@@ -453,47 +453,78 @@ export const createGameFromLobby = gameLobby => {
     Object.defineProperties(game, {
       treatment: {
         get() {
-          if (gameTreatment) {
-            return gameTreatment;
+          if (!gameTreatment) {
+            gameTreatment = treatment.factorsObject();
           }
-          gameTreatment = treatment.factorsObject();
+
           return gameTreatment;
         }
       },
       players: {
         get() {
-          if (gamePlayers) {
-            return gamePlayers;
+          if (!gamePlayers) {
+            gamePlayers = game.getPlayers();
+            gamePlayers.forEach(player => {
+              let round = null,
+                stage = null;
+
+              Object.defineProperties(player, {
+                round: {
+                  get() {
+                    if (!round) {
+                      round = _.extend({}, nextRound);
+                    }
+
+                    return round;
+                  }
+                },
+                stage: {
+                  get() {
+                    if (!stage) {
+                      stage = _.extend({}, nextStage);
+                    }
+
+                    return stage;
+                  }
+                }
+              });
+
+              augmentPlayerStageRound(player, player.stage, player.round, game);
+            });
           }
-          gamePlayers = game.getPlayers();
+
           return gamePlayers;
         }
       },
       rounds: {
         get() {
-          if (gameRounds) {
-            return gameRounds;
+          if (!gameRounds) {
+            gameRounds = game.getRounds();
+            gameRounds.forEach(round => {
+              let stages = null;
+              Object.defineProperty(round, "stages", {
+                get() {
+                  if (!stages) {
+                    stages = Stages.find({ roundId: round._id }).fetch();
+                  }
+
+                  return stages;
+                }
+              });
+            });
           }
-          gameRounds = game.getRounds();
+
           return gameRounds;
         }
       }
     });
 
-    game.rounds.forEach(round => {
-      round.stages = Stages.find({ roundId: round._id }).fetch();
-    });
     const nextRound = game.rounds.find(r => r._id === firstRoundId);
     const nextStage = nextRound.stages.find(
       s => s._id === params.currentStageId
     );
 
     augmentGameStageRound(game, nextStage, nextRound);
-    game.players.forEach(player => {
-      player.round = _.extend({}, nextRound);
-      player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round, game);
-    });
 
     if (onGameStart) {
       onGameStart(game, game.players);

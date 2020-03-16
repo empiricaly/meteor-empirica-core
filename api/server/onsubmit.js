@@ -41,46 +41,98 @@ export const callOnSubmit = params => {
   Object.defineProperties(game, {
     treatment: {
       get() {
-        if (gameTreatment) {
-          return gameTreatment;
+        if (!gameTreatment) {
+          gameTreatment = treatment.factorsObject();
         }
-        gameTreatment = treatment.factorsObject();
+
         return gameTreatment;
       }
     },
     players: {
       get() {
-        if (gamePlayers) {
-          return gamePlayers;
+        if (!gamePlayers) {
+          gamePlayers = game.getPlayers();
+          gamePlayers.forEach(player => {
+            let gamePlayerRound = null,
+              gamePlayerStage = null;
+
+            Object.defineProperties(player, {
+              round: {
+                get() {
+                  if (!gamePlayerRound) {
+                    gamePlayerRound = _.extend({}, round);
+                  }
+
+                  return gamePlayerRound;
+                }
+              },
+              stage: {
+                get() {
+                  if (!gamePlayerStage) {
+                    gamePlayerStage = _.extend({}, stage);
+                  }
+
+                  return gamePlayerStage;
+                }
+              }
+            });
+
+            augmentPlayerStageRound(player, player.stage, player.round, game);
+          });
         }
-        gamePlayers = game.getPlayers();
+
         return gamePlayers;
       }
     },
     rounds: {
       get() {
-        if (gameRounds) {
-          return gameRounds;
+        if (!gameRounds) {
+          gameRounds = game.getRounds();
+          gameRounds.forEach(round => {
+            let stages = null;
+            Object.defineProperty(round, "stages", {
+              get() {
+                if (!stages) {
+                  stages = Stages.find({ roundId: round._id }).fetch();
+                }
+
+                return stages;
+              }
+            });
+          });
         }
-        gameRounds = game.getRounds();
+
         return gameRounds;
       }
     }
   });
 
-  game.rounds.forEach(round => {
-    round.stages = Stages.find({ roundId: round._id }).fetch();
-  });
-
   augmentGameStageRound(game, stage, round);
-  game.players.forEach(player => {
-    player.stage = _.extend({}, stage);
-    player.round = _.extend({}, round);
-    augmentPlayerStageRound(player, player.stage, player.round, game);
+
+  let playerStageObj = null,
+    playerRoundObj = null;
+
+  Object.defineProperties(player, {
+    stage: {
+      get() {
+        if (!playerStageObj) {
+          player.stage = _.extend({}, stage);
+        }
+
+        return playerStageObj;
+      }
+    },
+    round: {
+      get() {
+        if (!playerRoundObj) {
+          player.round = _.extend({}, round);
+        }
+
+        return playerRoundObj;
+      }
+    }
   });
 
-  player.stage = _.extend({}, stage);
-  player.round = _.extend({}, round);
   augmentPlayerStageRound(player, player.stage, player.round, game);
 
   onSubmit(game, round, stage, player);

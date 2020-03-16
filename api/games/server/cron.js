@@ -50,37 +50,81 @@ Cron.add({
         Object.defineProperties(game, {
           treatment: {
             get() {
-              if (gameTreatment) {
-                return gameTreatment;
+              if (!gameTreatment) {
+                gameTreatment = treatment.factorsObject();
               }
-              gameTreatment = treatment.factorsObject();
+
               return gameTreatment;
             }
           },
           players: {
             get() {
-              if (gamePlayers) {
-                return gamePlayers;
+              if (!gamePlayers) {
+                gamePlayers = game.getPlayers();
+                gamePlayers.forEach(player => {
+                  let playerRound = null,
+                    playerStage = null;
+
+                  Object.defineProperties(player, {
+                    round: {
+                      get() {
+                        if (!playerRound) {
+                          playerRound = _.extend({}, round);
+                        }
+
+                        return playerRound;
+                      }
+                    },
+                    stage: {
+                      get() {
+                        if (!playerStage) {
+                          playerStage = _.extend({}, stage);
+                        }
+
+                        return playerStage;
+                      }
+                    }
+                  });
+
+                  augmentPlayerStageRound(
+                    player,
+                    player.stage,
+                    player.round,
+                    game
+                  );
+                });
               }
-              gamePlayers = game.getPlayers();
+
               return gamePlayers;
             }
           },
           rounds: {
             get() {
-              if (gameRounds) {
-                return gameRounds;
+              if (!gameRounds) {
+                gameRounds = game.getRounds();
+                gameRounds.forEach(round => {
+                  let stages = null;
+                  Object.defineProperty(round, "stages", {
+                    get() {
+                      if (!stages) {
+                        stages = Stages.find({ roundId: round._id }).fetch();
+                      }
+
+                      return stages;
+                    }
+                  });
+                });
               }
-              gameRounds = game.getRounds();
+
               return gameRounds;
             }
           },
           stages: {
             get() {
-              if (gameStages) {
-                return gameStages;
+              if (!gameStages) {
+                gameStages = game.getStages();
               }
-              gameStages = game.getStages();
+
               return gameStages;
             }
           }
@@ -100,14 +144,31 @@ Cron.add({
           }
 
           augmentGameStageRound(game, stage, round);
-          game.players.forEach(player => {
-            player.stage = _.extend({}, stage);
-            player.round = _.extend({}, round);
-            augmentPlayerStageRound(player, player.stage, player.round, game);
+
+          let botPlayerStage = null,
+            botPlayerRound = null;
+
+          Object.defineProperties(botPlayer, {
+            stage: {
+              get() {
+                if (!botPlayerStage) {
+                  botPlayer.stage = _.extend({}, stage);
+                }
+
+                return botPlayerStage;
+              }
+            },
+            round: {
+              get() {
+                if (!botPlayerRound) {
+                  botPlayer.round = _.extend({}, round);
+                }
+
+                return botPlayerRound;
+              }
+            }
           });
 
-          botPlayer.stage = _.extend({}, stage);
-          botPlayer.round = _.extend({}, round);
           augmentPlayerStageRound(
             botPlayer,
             botPlayer.stage,
@@ -116,10 +177,6 @@ Cron.add({
           );
 
           const tick = endTimeAt.diff(now, "seconds");
-
-          game.rounds.forEach(round => {
-            round.stages = game.stages.filter(s => s.roundId === round._id);
-          });
 
           bot.onStageTick(botPlayer, game, round, stage, tick);
         });
