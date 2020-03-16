@@ -30,20 +30,20 @@ export const callOnSubmit = params => {
     return;
   }
 
-  const { gameId, roundId } = stage;
+  const { roundId } = stage;
   const round = Rounds.findOne(roundId);
-  const players = Players.find({ gameId }).fetch();
   const treatment = Treatments.findOne(game.treatmentId);
 
   game.treatment = treatment.factorsObject();
-  game.players = players;
-  game.rounds = Rounds.find({ gameId }).fetch();
+  game.rounds = game.rounds();
+  game.players = game.players();
+
   game.rounds.forEach(round => {
     round.stages = Stages.find({ roundId: round._id }).fetch();
   });
 
   augmentGameStageRound(game, stage, round);
-  players.forEach(player => {
+  game.players.forEach(player => {
     player.stage = _.extend({}, stage);
     player.round = _.extend({}, round);
     augmentPlayerStageRound(player, player.stage, player.round, game);

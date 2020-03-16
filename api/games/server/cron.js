@@ -39,21 +39,19 @@ Cron.add({
           return;
         }
         const botPlayers = Players.find(query);
-        const players = Players.find({ gameId }).fetch();
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
+
         game.treatment = treatment.factorsObject();
-        game.players = players;
-        game.rounds = Rounds.find({ gameId }).fetch();
-        game.stages = Stages.find({ gameId }).fetch();
+        game.rounds = game.rounds();
+        game.players = game.players();
+        game.stages = game.stages();
 
         botPlayers.forEach(botPlayer => {
           const bot = config.bots[botPlayer.bot];
           if (!bot) {
             log.error(
-              `Definition for bot "${
-                botPlayer.bot
-              }" was not found in the server config!`
+              `Definition for bot "${botPlayer.bot}" was not found in the server config!`
             );
             return;
           }
@@ -63,7 +61,7 @@ Cron.add({
           }
 
           augmentGameStageRound(game, stage, round);
-          players.forEach(player => {
+          game.players.forEach(player => {
             player.stage = _.extend({}, stage);
             player.round = _.extend({}, round);
             augmentPlayerStageRound(player, player.stage, player.round, game);
