@@ -9,6 +9,7 @@ import {
   augmentPlayerStageRound,
   augmentGameStageRound
 } from "../../player-stages/augment.js";
+import { augmentGameObject } from "../../games/augment.js";
 import { config } from "../../../server";
 import { endOfStage } from "../../stages/finish.js";
 import Cron from "../../../startup/server/cron.js";
@@ -42,99 +43,15 @@ Cron.add({
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
 
-        let gameTreatment = null,
-          gamePlayers = null,
-          gameRounds = null,
-          gameStages = null;
-
-        Object.defineProperties(game, {
-          treatment: {
-            get() {
-              if (!gameTreatment) {
-                gameTreatment = treatment.factorsObject();
-              }
-
-              return gameTreatment;
-            }
-          },
-          players: {
-            get() {
-              if (!gamePlayers) {
-                gamePlayers = game.getPlayers();
-                gamePlayers.forEach(player => {
-                  let playerRound = null,
-                    playerStage = null;
-
-                  Object.defineProperties(player, {
-                    round: {
-                      get() {
-                        if (!playerRound) {
-                          playerRound = _.extend({}, round);
-                        }
-
-                        return playerRound;
-                      }
-                    },
-                    stage: {
-                      get() {
-                        if (!playerStage) {
-                          playerStage = _.extend({}, stage);
-                        }
-
-                        return playerStage;
-                      }
-                    }
-                  });
-
-                  augmentPlayerStageRound(
-                    player,
-                    player.stage,
-                    player.round,
-                    game
-                  );
-                });
-              }
-
-              return gamePlayers;
-            }
-          },
-          rounds: {
-            get() {
-              if (!gameRounds) {
-                gameRounds = game.getRounds();
-                gameRounds.forEach(round => {
-                  let stages = null;
-                  Object.defineProperty(round, "stages", {
-                    get() {
-                      if (!stages) {
-                        stages = Stages.find({ roundId: round._id }).fetch();
-                      }
-
-                      return stages;
-                    }
-                  });
-                });
-              }
-
-              return gameRounds;
-            }
-          },
-          stages: {
-            get() {
-              if (!gameStages) {
-                gameStages = game.getStages();
-              }
-
-              return gameStages;
-            }
-          }
-        });
+        augmentGameObject(game, treatment);
 
         botPlayers.forEach(botPlayer => {
           const bot = config.bots[botPlayer.bot];
           if (!bot) {
             log.error(
-              `Definition for bot "${botPlayer.bot}" was not found in the server config!`
+              `Definition for bot "${
+                botPlayer.bot
+              }" was not found in the server config!`
             );
             return;
           }
@@ -144,31 +61,14 @@ Cron.add({
           }
 
           augmentGameStageRound(game, stage, round);
-
-          let botPlayerStage = null,
-            botPlayerRound = null;
-
-          Object.defineProperties(botPlayer, {
-            stage: {
-              get() {
-                if (!botPlayerStage) {
-                  botPlayer.stage = _.extend({}, stage);
-                }
-
-                return botPlayerStage;
-              }
-            },
-            round: {
-              get() {
-                if (!botPlayerRound) {
-                  botPlayer.round = _.extend({}, round);
-                }
-
-                return botPlayerRound;
-              }
-            }
+          game.players.forEach(player => {
+            player.stage = _.extend({}, stage);
+            player.round = _.extend({}, round);
+            augmentPlayerStageRound(player, player.stage, player.round, game);
           });
 
+          botPlayer.stage = _.extend({}, stage);
+          botPlayer.round = _.extend({}, round);
           augmentPlayerStageRound(
             botPlayer,
             botPlayer.stage,
@@ -177,6 +77,10 @@ Cron.add({
           );
 
           const tick = endTimeAt.diff(now, "seconds");
+
+          game.rounds.forEach(round => {
+            round.stages = game.stages.filter(s => s.roundId === round._id);
+          });
 
           bot.onStageTick(botPlayer, game, round, stage, tick);
         });

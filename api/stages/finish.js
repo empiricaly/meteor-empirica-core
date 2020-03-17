@@ -5,6 +5,7 @@ import {
   augmentGameStageRound,
   augmentPlayerStageRound
 } from "../player-stages/augment.js";
+import { augmentGameObject } from "../games/augment.js";
 import { Players } from "../players/players.js";
 import { Rounds } from "../rounds/rounds.js";
 import { Treatments } from "../treatments/treatments.js";
@@ -17,80 +18,14 @@ export const endOfStage = stageId => {
   const round = Rounds.findOne(roundId);
   const treatment = Treatments.findOne(game.treatmentId);
 
-  let gameTreatment = null,
-    gamePlayers = null,
-    gameRounds = null;
-
-  Object.defineProperties(game, {
-    treatment: {
-      get() {
-        if (!gameTreatment) {
-          gameTreatment = treatment.factorsObject();
-        }
-
-        return gameTreatment;
-      }
-    },
-    players: {
-      get() {
-        if (!gamePlayers) {
-          gamePlayers = game.getPlayers();
-          gamePlayers.forEach(player => {
-            let playerRound = null,
-              playerStage = null;
-
-            Object.defineProperties(player, {
-              round: {
-                get() {
-                  if (!playerRound) {
-                    playerRound = _.extend({}, round);
-                  }
-
-                  return playerRound;
-                }
-              },
-              stage: {
-                get() {
-                  if (!playerStage) {
-                    playerStage = _.extend({}, stage);
-                  }
-
-                  return playerStage;
-                }
-              }
-            });
-
-            augmentPlayerStageRound(player, player.stage, player.round, game);
-          });
-        }
-
-        return gamePlayers;
-      }
-    },
-    rounds: {
-      get() {
-        if (!gameRounds) {
-          gameRounds = game.getRounds();
-          gameRounds.forEach(round => {
-            let stages = null;
-            Object.defineProperty(round, "stages", {
-              get() {
-                if (!stages) {
-                  stages = Stages.find({ roundId: round._id }).fetch();
-                }
-
-                return stages;
-              }
-            });
-          });
-        }
-
-        return gameRounds;
-      }
-    }
-  });
+  augmentGameObject(game, treatment);
 
   augmentGameStageRound(game, stage, round);
+  game.players.forEach(player => {
+    player.round = _.extend({}, round);
+    player.stage = _.extend({}, stage);
+    augmentPlayerStageRound(player, player.stage, player.round, game);
+  });
 
   const { onStageEnd, onRoundEnd, onRoundStart, onStageStart } = config;
   if (onStageEnd) {

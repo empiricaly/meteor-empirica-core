@@ -14,6 +14,7 @@ import {
   augmentPlayerStageRound,
   augmentGameStageRound
 } from "../player-stages/augment.js";
+import { augmentGameObject } from "../games/augment.js";
 import { config } from "../../server";
 import { weightedRandom } from "../../lib/utils.js";
 import log from "../../lib/log.js";
@@ -446,78 +447,8 @@ export const createGameFromLobby = gameLobby => {
   const { onRoundStart, onGameStart, onStageStart } = config;
   if ((onGameStart || onRoundStart || onStageStart) && firstRoundId) {
     const game = Games.findOne(gameId);
-    let gameTreatment = null,
-      gamePlayers = null,
-      gameRounds = null;
 
-    Object.defineProperties(game, {
-      treatment: {
-        get() {
-          if (!gameTreatment) {
-            gameTreatment = treatment.factorsObject();
-          }
-
-          return gameTreatment;
-        }
-      },
-      players: {
-        get() {
-          if (!gamePlayers) {
-            gamePlayers = game.getPlayers();
-            gamePlayers.forEach(player => {
-              let round = null,
-                stage = null;
-
-              Object.defineProperties(player, {
-                round: {
-                  get() {
-                    if (!round) {
-                      round = _.extend({}, nextRound);
-                    }
-
-                    return round;
-                  }
-                },
-                stage: {
-                  get() {
-                    if (!stage) {
-                      stage = _.extend({}, nextStage);
-                    }
-
-                    return stage;
-                  }
-                }
-              });
-
-              augmentPlayerStageRound(player, player.stage, player.round, game);
-            });
-          }
-
-          return gamePlayers;
-        }
-      },
-      rounds: {
-        get() {
-          if (!gameRounds) {
-            gameRounds = game.getRounds();
-            gameRounds.forEach(round => {
-              let stages = null;
-              Object.defineProperty(round, "stages", {
-                get() {
-                  if (!stages) {
-                    stages = Stages.find({ roundId: round._id }).fetch();
-                  }
-
-                  return stages;
-                }
-              });
-            });
-          }
-
-          return gameRounds;
-        }
-      }
-    });
+    augmentGameObject(game, treatment);
 
     const nextRound = game.rounds.find(r => r._id === firstRoundId);
     const nextStage = nextRound.stages.find(
@@ -525,6 +456,11 @@ export const createGameFromLobby = gameLobby => {
     );
 
     augmentGameStageRound(game, nextStage, nextRound);
+    game.players.forEach(player => {
+      player.round = _.extend({}, nextRound);
+      player.stage = _.extend({}, nextStage);
+      augmentPlayerStageRound(player, player.stage, player.round, game);
+    });
 
     if (onGameStart) {
       onGameStart(game, game.players);
