@@ -1,6 +1,14 @@
 import { Stages } from "../stages/stages";
+import { augmentPlayerStageRound } from "../player-stages/augment";
 
-export const augmentGameObject = (game, treatment) => {
+export const augmentGameObject = ({
+  game,
+  treatment,
+  round = undefined,
+  stage = undefined,
+  firstRoundId = undefined,
+  currentStageId = undefined
+}) => {
   let gameTreatment = null,
     gamePlayers = null,
     gameRounds = null,
@@ -20,6 +28,17 @@ export const augmentGameObject = (game, treatment) => {
       get() {
         if (!gamePlayers) {
           gamePlayers = game.getPlayers();
+
+          if (firstRoundId) {
+            round = game.getRounds().find(r => r._id === firstRoundId);
+            stage = round.stages.find(s => s._id === currentStageId);
+          }
+
+          gamePlayers.forEach(player => {
+            player.round = _.extend({}, round);
+            player.stage = _.extend({}, stage);
+            augmentPlayerStageRound(player, player.stage, player.round, game);
+          });
         }
 
         return gamePlayers;

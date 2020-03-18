@@ -82,14 +82,9 @@ export const callOnChange = params => {
   round = round || Rounds.findOne(roundId);
   const treatment = Treatments.findOne(game.treatmentId);
 
-  augmentGameObject(game, treatment);
+  augmentGameObject({ game, treatment, round, stage });
 
   augmentGameStageRound(game, stage, round);
-  game.players.forEach(player => {
-    player.stage = _.extend({}, stage);
-    player.round = _.extend({}, round);
-    augmentPlayerStageRound(player, player.stage, player.round, game);
-  });
 
   callbacks.forEach(callback => {
     callback(

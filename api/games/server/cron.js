@@ -43,7 +43,7 @@ Cron.add({
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
 
-        augmentGameObject(game, treatment);
+        augmentGameObject({ game, treatment, round, stage });
 
         botPlayers.forEach(botPlayer => {
           const bot = config.bots[botPlayer.bot];
@@ -61,11 +61,6 @@ Cron.add({
           }
 
           augmentGameStageRound(game, stage, round);
-          game.players.forEach(player => {
-            player.stage = _.extend({}, stage);
-            player.round = _.extend({}, round);
-            augmentPlayerStageRound(player, player.stage, player.round, game);
-          });
 
           botPlayer.stage = _.extend({}, stage);
           botPlayer.round = _.extend({}, round);

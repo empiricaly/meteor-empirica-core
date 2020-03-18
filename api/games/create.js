@@ -448,7 +448,12 @@ export const createGameFromLobby = gameLobby => {
   if ((onGameStart || onRoundStart || onStageStart) && firstRoundId) {
     const game = Games.findOne(gameId);
 
-    augmentGameObject(game, treatment);
+    augmentGameObject({
+      game,
+      treatment,
+      firstRoundId,
+      currentStageId: params.currentStageId
+    });
 
     const nextRound = game.rounds.find(r => r._id === firstRoundId);
     const nextStage = nextRound.stages.find(
@@ -456,20 +461,15 @@ export const createGameFromLobby = gameLobby => {
     );
 
     augmentGameStageRound(game, nextStage, nextRound);
-    game.players.forEach(player => {
-      player.round = _.extend({}, nextRound);
-      player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round, game);
-    });
 
     if (onGameStart) {
-      onGameStart(game, game.players);
+      onGameStart(game);
     }
     if (onRoundStart) {
-      onRoundStart(game, nextRound, game.players);
+      onRoundStart(game, nextRound);
     }
     if (onStageStart) {
-      onStageStart(game, nextRound, nextStage, game.players);
+      onStageStart(game, nextRound, nextStage);
     }
   }
 

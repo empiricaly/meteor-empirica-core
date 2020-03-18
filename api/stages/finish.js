@@ -18,24 +18,19 @@ export const endOfStage = stageId => {
   const round = Rounds.findOne(roundId);
   const treatment = Treatments.findOne(game.treatmentId);
 
-  augmentGameObject(game, treatment);
+  augmentGameObject({ game, treatment, round, stage });
 
   augmentGameStageRound(game, stage, round);
-  game.players.forEach(player => {
-    player.round = _.extend({}, round);
-    player.stage = _.extend({}, stage);
-    augmentPlayerStageRound(player, player.stage, player.round, game);
-  });
 
   const { onStageEnd, onRoundEnd, onRoundStart, onStageStart } = config;
   if (onStageEnd) {
-    onStageEnd(game, round, stage, game.players);
+    onStageEnd(game, round, stage);
   }
 
   const nextStage = Stages.findOne({ gameId, index: index + 1 });
 
   if ((onRoundEnd && !nextStage) || stage.roundId !== nextStage.roundId) {
-    onRoundEnd(game, round, game.players);
+    onRoundEnd(game, round);
   }
 
   if (nextStage && (onRoundStart || onStageStart)) {
@@ -48,11 +43,11 @@ export const endOfStage = stageId => {
     });
 
     if (onRoundStart && stage.roundId !== nextStage.roundId) {
-      onRoundStart(game, nextRound, game.players);
+      onRoundStart(game, nextRound);
     }
 
     if (onStageStart) {
-      onStageStart(game, nextRound, nextStage, game.players);
+      onStageStart(game, nextRound, nextStage);
     }
   }
 
@@ -71,7 +66,7 @@ export const endOfStage = stageId => {
   } else {
     const onGameEnd = config.onGameEnd;
     if (onGameEnd) {
-      onGameEnd(game, game.players);
+      onGameEnd(game);
     }
     Players.update(
       {
