@@ -22,6 +22,10 @@ const handleCallbackFuncParameters = func => {
         (key === "stage" && index === 2)
       ) {
         return;
+      } else if (key === "players") {
+        throw new Error(
+          `the "players" argument has been deprecated, use "game.players" instead`
+        );
       } else {
         throw new Error(`"${key}" property is not allowed on this callback`);
       }
@@ -52,57 +56,33 @@ const Empirica = {
   },
 
   onGameStart(func) {
-    config.onGameStart = function() {
-      const results = func.apply(null, arguments);
-      handleCallbackFuncParameters(func);
-
-      return results;
-    };
+    handleCallbackFuncParameters(func);
+    config.onGameStart = func;
   },
 
   onRoundStart(func) {
-    config.onRoundStart = function() {
-      const results = func.apply(null, arguments);
-      handleCallbackFuncParameters(func);
-
-      return results;
-    };
+    handleCallbackFuncParameters(func);
+    config.onRoundStart = func;
   },
 
   onStageStart(func) {
-    config.onStageStart = function() {
-      const results = func.apply(null, arguments);
-      handleCallbackFuncParameters(func);
-
-      return results;
-    };
+    handleCallbackFuncParameters(func);
+    config.onStageStart = func;
   },
 
   onStageEnd(func) {
-    config.onStageEnd = function() {
-      const results = func.apply(null, arguments);
-      handleCallbackFuncParameters(func);
-
-      return results;
-    };
+    handleCallbackFuncParameters(func);
+    config.onStageEnd = func;
   },
 
   onRoundEnd(func) {
-    config.onRoundEnd = function() {
-      const results = func.apply(null, arguments);
-      handleCallbackFuncParameters(func);
-
-      return results;
-    };
+    handleCallbackFuncParameters(func);
+    config.onRoundEnd = func;
   },
 
   onGameEnd(func) {
-    config.onGameEnd = function() {
-      const results = func.apply(null, arguments);
-      handleCallbackFuncParameters(func);
-
-      return results;
-    };
+    handleCallbackFuncParameters(func);
+    config.onGameEnd = func;
   },
 
   onSet(func) {
