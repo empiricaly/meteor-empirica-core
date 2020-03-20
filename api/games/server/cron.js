@@ -9,6 +9,7 @@ import {
   augmentPlayerStageRound,
   augmentGameStageRound
 } from "../../player-stages/augment.js";
+import { augmentGameObject } from "../../games/augment.js";
 import { config } from "../../../server";
 import { endOfStage } from "../../stages/finish.js";
 import Cron from "../../../startup/server/cron.js";
@@ -39,13 +40,10 @@ Cron.add({
           return;
         }
         const botPlayers = Players.find(query);
-        const players = Players.find({ gameId }).fetch();
         const treatment = Treatments.findOne(game.treatmentId);
         const round = Rounds.findOne(stage.roundId);
-        game.treatment = treatment.factorsObject();
-        game.players = players;
-        game.rounds = Rounds.find({ gameId }).fetch();
-        game.stages = Stages.find({ gameId }).fetch();
+
+        augmentGameObject({ game, treatment, round, stage });
 
         botPlayers.forEach(botPlayer => {
           const bot = config.bots[botPlayer.bot];
@@ -63,11 +61,6 @@ Cron.add({
           }
 
           augmentGameStageRound(game, stage, round);
-          players.forEach(player => {
-            player.stage = _.extend({}, stage);
-            player.round = _.extend({}, round);
-            augmentPlayerStageRound(player, player.stage, player.round, game);
-          });
 
           botPlayer.stage = _.extend({}, stage);
           botPlayer.round = _.extend({}, round);
