@@ -14,6 +14,7 @@ import {
   augmentPlayerStageRound,
   augmentGameStageRound
 } from "../player-stages/augment.js";
+import { augmentGameObject } from "../games/augment.js";
 import { config } from "../../server";
 import { weightedRandom } from "../../lib/utils.js";
 import log from "../../lib/log.js";
@@ -446,35 +447,29 @@ export const createGameFromLobby = gameLobby => {
   const { onRoundStart, onGameStart, onStageStart } = config;
   if ((onGameStart || onRoundStart || onStageStart) && firstRoundId) {
     const game = Games.findOne(gameId);
-    const players = Players.find({
-      _id: { $in: params.playerIds }
-    }).fetch();
-    game.treatment = treatment.factorsObject();
-    game.players = players;
-    game.rounds = Rounds.find({ gameId }).fetch();
-    game.rounds.forEach(round => {
-      round.stages = Stages.find({ roundId: round._id }).fetch();
+
+    augmentGameObject({
+      game,
+      treatment,
+      firstRoundId,
+      currentStageId: params.currentStageId
     });
+
     const nextRound = game.rounds.find(r => r._id === firstRoundId);
     const nextStage = nextRound.stages.find(
       s => s._id === params.currentStageId
     );
 
     augmentGameStageRound(game, nextStage, nextRound);
-    players.forEach(player => {
-      player.round = _.extend({}, nextRound);
-      player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round, game);
-    });
 
     if (onGameStart) {
-      onGameStart(game, players);
+      onGameStart(game);
     }
     if (onRoundStart) {
-      onRoundStart(game, nextRound, players);
+      onRoundStart(game, nextRound);
     }
     if (onStageStart) {
-      onStageStart(game, nextRound, nextStage, players);
+      onStageStart(game, nextRound, nextStage);
     }
   }
 

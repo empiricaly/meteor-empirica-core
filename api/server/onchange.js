@@ -8,6 +8,7 @@ import {
   augmentGameStageRound,
   augmentPlayerStageRound
 } from "../player-stages/augment.js";
+import { augmentGameObject } from "../games/augment.js";
 import { config } from "../../server";
 
 const targets = {
@@ -77,24 +78,13 @@ export const callOnChange = params => {
     return;
   }
 
-  const { gameId, roundId } = stage;
+  const { roundId } = stage;
   round = round || Rounds.findOne(roundId);
-  const players = Players.find({ gameId }).fetch();
   const treatment = Treatments.findOne(game.treatmentId);
 
-  game.treatment = treatment.factorsObject();
-  game.players = players;
-  game.rounds = Rounds.find({ gameId }).fetch();
-  game.rounds.forEach(round => {
-    round.stages = Stages.find({ roundId: round._id }).fetch();
-  });
+  augmentGameObject({ game, treatment, round, stage });
 
   augmentGameStageRound(game, stage, round);
-  players.forEach(player => {
-    player.stage = _.extend({}, stage);
-    player.round = _.extend({}, round);
-    augmentPlayerStageRound(player, player.stage, player.round, game);
-  });
 
   callbacks.forEach(callback => {
     callback(
