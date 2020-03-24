@@ -10,6 +10,7 @@ import { PlayerStages } from "../player-stages/player-stages";
 import { Players } from "../players/players";
 import { Rounds } from "../rounds/rounds";
 import { Stages } from "../stages/stages";
+import { earlyExitGameLobby } from "../game-lobbies/methods";
 import {
   augmentPlayerStageRound,
   augmentGameStageRound
@@ -125,7 +126,17 @@ export const createGameFromLobby = gameLobby => {
       };
     }
   };
-  config.gameInit(gameCollector, factors, players);
+
+  try {
+    config.gameInit(gameCollector, factors);
+  } catch (err) {
+    console.error(`fatal error encounter calling Empirica.gameInit:`);
+    console.error(err);
+    earlyExitGameLobby.call({
+      exitReason: "gameError",
+      gameLobbyId: gameLobby._id
+    });
+  }
 
   if (!params.rounds || params.rounds.length === 0) {
     throw "at least one round must be added per game";

@@ -10,6 +10,29 @@ import shared from "./shared";
 import log from "./lib/log";
 import { getFunctionParameters } from "./lib/utils";
 
+const safeCallback = function(name, func) {
+  try {
+    switch (name) {
+      case "onGameStart":
+      case "onRoundStart":
+      case "onStageStart":
+      case "onStageEnd":
+      case "onRoundEnd":
+      case "onGameEnd":
+        handleCallbackFuncParameters(func);
+        break;
+
+      default:
+        break;
+    }
+
+    return func.apply(this, arguments);
+  } catch (err) {
+    console.error(`Fatal error encounter calling Empirica.${name}:`);
+    console.error(err);
+  }
+};
+
 const handleCallbackFuncParameters = func => {
   const parameters = getFunctionParameters(func);
   const handler = {
@@ -52,53 +75,47 @@ const Empirica = {
     if (config.bots[name]) {
       throw `Bot "${name}" was declared twice!`;
     }
-    config.bots[name] = func;
+    config.bots[name] = () => safeCallback("bot", func);
   },
 
   onGameStart(func) {
-    handleCallbackFuncParameters(func);
-    config.onGameStart = func;
+    config.onGameStart = () => safeCallback("onGameStart", func);
   },
 
   onRoundStart(func) {
-    handleCallbackFuncParameters(func);
-    config.onRoundStart = func;
+    config.onRoundStart = () => safeCallback("onRoundStart", func);
   },
 
   onStageStart(func) {
-    handleCallbackFuncParameters(func);
-    config.onStageStart = func;
+    config.onStageStart = () => safeCallback("onStageStart", func);
   },
 
   onStageEnd(func) {
-    handleCallbackFuncParameters(func);
-    config.onStageEnd = func;
+    config.onStageEnd = () => safeCallback("onStageEnd", func);
   },
 
   onRoundEnd(func) {
-    handleCallbackFuncParameters(func);
-    config.onRoundEnd = func;
+    config.onRoundEnd = () => safeCallback("onRoundEnd", func);
   },
 
   onGameEnd(func) {
-    handleCallbackFuncParameters(func);
-    config.onGameEnd = func;
+    config.onGameEnd = () => safeCallback("onGameEnd", func);
   },
 
   onSet(func) {
-    config.onSet = func;
+    config.onSet = () => safeCallback("onSet", func);
   },
 
   onAppend(func) {
-    config.onAppend = func;
+    config.onAppend = () => safeCallback("onAppend", func);
   },
 
   onChange(func) {
-    config.onChange = func;
+    config.onChange = () => safeCallback("onChange", func);
   },
 
   onSubmit(func) {
-    config.onSubmit = func;
+    config.onSubmit = () => safeCallback("onSubmit", func);
   }
 };
 

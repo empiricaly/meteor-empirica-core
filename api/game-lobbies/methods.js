@@ -3,6 +3,8 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import SimpleSchema from "simpl-schema";
 
 import { GameLobbies } from "./game-lobbies";
+import { Players } from "../players/players";
+import { Batches } from "../batches/batches.js";
 
 export const updateGameLobbyData = new ValidatedMethod({
   name: "GameLobbies.methods.updateData",
@@ -58,5 +60,60 @@ export const updateGameLobbyData = new ValidatedMethod({
         append
       });
     }
+  }
+});
+
+export const earlyExitGameLobby = new ValidatedMethod({
+  name: "GameLobbies.methods.earlyExit",
+
+  validate: new SimpleSchema({
+    exitReason: {
+      label: "Reason for Exit",
+      type: String,
+      regEx: /[a-zA-Z0-9_]+/
+    },
+    gameLobbyId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+
+  run({ exitReason, gameLobbyId }) {
+    if (!Meteor.isServer) {
+      return;
+    }
+
+    const gameLobby = GameLobbies.findOne(gameLobbyId);
+    if (!gameLobby) {
+      throw new Error("gameLobby not found");
+    }
+
+    Players.update(
+      { gameLobbyId },
+      {
+        $set: {
+          exitAt: new Date(),
+          exitStatus: "custom",
+          exitReason
+        }
+      }
+    );
+
+    GameLobbies.update(gameLobbyId, {
+      $set: {
+        status: "custom",
+        endReason: exitReason
+      }
+    });
+
+    Batches.update(
+      { gameLobbyIds: gameLobbyId },
+      {
+        $set: {
+          status: "cancelled",
+          finishedAt: new Date()
+        }
+      }
+    );
   }
 });
