@@ -50,6 +50,10 @@ const Empirica = {
     config.Breadcrumb = BreadcrumbComp;
   },
 
+  preAssignmentIntroSteps(func) {
+    config.preAssignmentIntroSteps = func;
+  },
+
   introSteps(func) {
     if (!_.isFunction(func)) {
       throw new Error("Empirica.introSteps() requires a function");

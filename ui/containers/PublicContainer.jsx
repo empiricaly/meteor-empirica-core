@@ -27,7 +27,7 @@ const withStageDependencies = withTracker(({ loading, game, ...rest }) => {
   const stages =
     stage && Stages.find({ gameId, roundId: stage.roundId }).fetch();
   const round = stage && Rounds.findOne({ gameId, _id: stage.roundId });
-
+  console.log("ini loading PublicContainer 1 ", loading || !sub.ready());
   return {
     loading: loading || !sub.ready(),
     game,
@@ -42,16 +42,21 @@ const withStageDependencies = withTracker(({ loading, game, ...rest }) => {
 
 const withGameDependencies = withTracker(
   ({ loading, game, gameLobby, ...rest }) => {
+    console.log("ini loading PublicContainer 2 ", loading);
     if (loading) {
       return { loading: true };
     }
+    console.log("ini loading PublicContainer 3 ", loading);
 
     const gameId = game && game._id;
     const sub = Meteor.subscribe("gameDependencies", { gameId });
     const treatmentId =
       (game && game.treatmentId) || (gameLobby && gameLobby.treatmentId);
     const subTreatment = Meteor.subscribe("treatment", treatmentId);
-
+    console.log(
+      "ini loading PublicContainer 4 ",
+      !sub.ready() || !subTreatment.ready()
+    );
     return {
       loading: !sub.ready() || !subTreatment.ready(),
       game,
@@ -63,16 +68,17 @@ const withGameDependencies = withTracker(
 
 export default withTracker(({ loading, player, playerId, ...rest }) => {
   ActivityMonitor.start();
-
+  console.log("ini loading PublicContainer 5 ", loading);
   if (loading) {
     return { loading: true };
   }
+  console.log("ini loading PublicContainer 6 ", loading);
 
   const subBatches = Meteor.subscribe("runningBatches", { playerId });
   const subLobby = Meteor.subscribe("gameLobby", { playerId });
   const subGame = Meteor.subscribe("game", { playerId });
   loading = !subBatches.ready() || !subLobby.ready() || !subGame.ready();
-
+  console.log("ini loading PublicContainer 7 ", loading);
   // Are there non-full batches left
   const batchAvailable = Batches.find({ full: false }).count() > 0;
 
@@ -86,6 +92,8 @@ export default withTracker(({ loading, player, playerId, ...rest }) => {
     return { loading: true };
   }
 
+  console.log("ini loading PublicContainer 8 ", loading);
+
   // Check if playerId parameter is required, make sure it's present.
   const { playerIdParam, playerIdParamExclusive } = Meteor.settings.public;
   const playerIdParamRequired = playerIdParam && playerIdParamExclusive;
@@ -97,6 +105,7 @@ export default withTracker(({ loading, player, playerId, ...rest }) => {
   // fulfilled, or a game lobby, or a game assigned.
   const renderPublic = (batchAvailable && playerIdParamOk) || gameLobby || game;
 
+  console.log("ini loading PublicContainer 9 ", loading);
   return {
     batchAvailable,
     renderPublic,

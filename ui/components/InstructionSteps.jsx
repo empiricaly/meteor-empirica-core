@@ -1,8 +1,10 @@
+// InstructionSteps
 import React from "react";
 import Loading from "./Loading.jsx";
+import { playerUpdateIntroStepIndex } from "../../api/players/methods.js";
 
 export default class InstructionSteps extends React.Component {
-  state = { current: 0 };
+  state = {};
   componentWillMount() {
     const { introSteps, treatment, onDone } = this.props;
 
@@ -19,31 +21,42 @@ export default class InstructionSteps extends React.Component {
   }
 
   onNext = () => {
-    let { onDone } = this.props;
-    let { steps, current } = this.state;
-    current = current + 1;
-    if (current >= steps.length) {
-      onDone();
-      return;
+    const { player, type, onDone } = this.props;
+    const { steps } = this.state;
+    if (steps.length - 1 > player.introStepIndex) {
+      playerUpdateIntroStepIndex.call({
+        playerId: player.id,
+        introStepIndex: player.introStepIndex + 1,
+        type
+      });
     }
-    this.setState({ current });
+    if (player.introStepIndex === steps.length - 1) {
+      onDone();
+    }
   };
 
   onPrev = () => {
-    this.setState({ current: this.state.current - 1 });
+    const { player, type } = this.props;
+    if (player.introStepIndex > 0) {
+      playerUpdateIntroStepIndex.call({
+        playerId: player.id,
+        introStepIndex: player.introStepIndex - 1,
+        type
+      });
+    }
   };
 
   render() {
     const { treatment, player } = this.props;
-    const { steps, current, noInstruction } = this.state;
+    const { steps, noInstruction } = this.state;
 
     if (noInstruction) {
       return <Loading />;
     }
 
-    const Step = steps[current];
-    const hasNext = steps.length - 1 > current;
-    const hasPrev = current > 0;
+    const Step = steps[player.introStepIndex];
+    const hasNext = steps.length > player.introStepIndex;
+    const hasPrev = player.introStepIndex > 0;
     const conds = treatment.factorsObject();
     return (
       <div className="introduction-steps">

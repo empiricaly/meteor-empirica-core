@@ -1,8 +1,9 @@
+// Game.jsx
 import React from "react";
 import { addPlayerInput } from "../../api/player-inputs/methods.js";
 import {
   markPlayerExitStepDone,
-  playerReady
+  introStepsDone
 } from "../../api/players/methods.js";
 import GameLobby from "../components/GameLobby.jsx";
 import GameLobbyContainer from "../containers/GameLobbyContainer.jsx";
@@ -31,6 +32,7 @@ export default class Game extends React.Component {
       Lobby,
       exitSteps,
       introSteps,
+      preAssignmentIntroSteps,
       ...rest
     } = this.props;
     const { started, timedOut, game, player, round, stage } = rest;
@@ -88,16 +90,39 @@ export default class Game extends React.Component {
         );
       }
 
-      return (
-        <InstructionSteps
-          introSteps={introSteps}
-          treatment={treatment}
-          player={player}
-          onDone={() => {
-            playerReady.call({ _id: player._id });
-          }}
-        />
-      );
+      if (!player.preAssignStepsDone && preAssignmentIntroSteps) {
+        return (
+          <InstructionSteps
+            type="preAssign"
+            introSteps={preAssignmentIntroSteps}
+            treatment={treatment}
+            player={player}
+            onDone={() => {
+              introStepsDone.call({ _id: player._id, type: "preAssign" });
+            }}
+          />
+        );
+      } else if (!player.preAssignStepsDone) {
+        introStepsDone.call({ _id: player._id, type: "preAssign" });
+      }
+
+      if (!player.introStepsDone && introSteps) {
+        return (
+          <InstructionSteps
+            type="intro"
+            introSteps={introSteps}
+            treatment={treatment}
+            player={player}
+            onDone={() => {
+              introStepsDone.call({ _id: player._id, type: "intro" });
+            }}
+          />
+        );
+      } else if (!player.introStepsDone) {
+        introStepsDone.call({ _id: player._id, type: "intro" });
+      }
+
+      return <Loading />;
     }
 
     let content;

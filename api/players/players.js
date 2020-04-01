@@ -13,6 +13,7 @@ export const Players = new PlayersCollection("players");
 
 export const exitStatuses = [
   "gameFull",
+  "noBatchesLeft",
   "gameCancelled",
   "gameLobbyTimedOut",
   "playerEndedLobbyWait",
@@ -93,6 +94,30 @@ Players.schema = new SimpleSchema({
     type: SimpleSchema.Integer,
     optional: true,
     min: 1
+  },
+
+  introStepIndex: {
+    label: "Intro step the player is current at",
+    type: SimpleSchema.Integer,
+    defaultValue: 0
+  },
+
+  introStepsDone: {
+    label: "Intro steps are finished",
+    type: Date,
+    optional: true
+  },
+
+  preAssignStepIndex: {
+    label: "Pre assignment step the player is current at",
+    type: SimpleSchema.Integer,
+    defaultValue: 0
+  },
+
+  preAssignStepsDone: {
+    label: "Pre assignment steps are finished",
+    type: Date,
+    optional: true
   },
 
   exitStepsDone: {

@@ -73,6 +73,7 @@ export default class Public extends React.Component {
     const AboutComp = About || AboutOriginal;
     const NoBatchComp = NoBatch || NoBatchOriginal;
 
+    console.log("ini loading public ", loading);
     if (loading) {
       return <Loading />;
     }

@@ -55,6 +55,14 @@ const Empirica = {
     config.bots[name] = func;
   },
 
+  onAssign(func) {
+    config.onAssign = func;
+  },
+
+  onPreGameInit(func) {
+    config.onPreGameInit = func;
+  },
+
   onGameStart(func) {
     handleCallbackFuncParameters(func);
     config.onGameStart = func;

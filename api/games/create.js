@@ -11,6 +11,7 @@ import { Players } from "../players/players";
 import { Rounds } from "../rounds/rounds";
 import { Stages } from "../stages/stages";
 import {
+  augmentPlayer,
   augmentPlayerStageRound,
   augmentGameStageRound
 } from "../player-stages/augment.js";
@@ -32,7 +33,179 @@ e.g.: round.addStage({
 
 `;
 
-export const createGameFromLobby = gameLobby => {
+const defaultOnPreGameInit = (game, batches, isLobbyTimeout) => {
+  // We will try to reassign players that were not yet ready to a new game in
+  // the same or subsequent batch, with the same treatment.
+  for (player of game.notReadyPlayers) {
+    let assigned = false;
+    for (batch of batches) {
+      // First we only want to reassign to games with the same treatment
+      const possibleGames = batch.games.filter(g =>
+        _.isEqual(game.treatment, g.treatment)
+      );
+
+      // If no game with the same treatment, go to next batch
+      if (possibleGames.length === 0) {
+        continue;
+      }
+
+      // Let's try to find games for which their assigned players isn't above
+      // the number of expected players
+      let availableGames = possibleGames.filter(
+        g => g.treatment.playerCount > g.players.length
+      );
+
+      // If no games still have "availability", just fill any game
+      if (availableGames.length === 0) {
+        availableGames = batch.games;
+      }
+
+      // Try to assign proportially to total expected playerCount
+      const gamesPool = [];
+      for (const game of availableGames) {
+        for (let i = 0; i < game.treatment.playerCount; i++) {
+          gamesPool.push(game);
+        }
+      }
+      const game = _.sample(gamesPool);
+
+      // In this assignment model, we always assign to the first batch, in any of
+      // the remaining unstarted games, with over-assignment.
+      // In other assignment models, you could try to go through multiple batches
+      // and never do over-assigning.
+      game.assign();
+      assigned = true;
+      break;
+    }
+
+    if (!assigned) {
+      player.exit("gameFull");
+    }
+  }
+
+  game.start();
+};
+
+const runPreGameInit = (
+  gameLobby,
+  players,
+  batch,
+  treatment,
+  factors,
+  isLobbyTimeout
+) => {
+  const notReadyPlayerIds = _.difference(
+    gameLobby.queuedPlayerIds,
+    gameLobby.playerIds
+  );
+  const notReadyPlayers = Players.find({
+    _id: { $in: notReadyPlayerIds }
+  }).fetch();
+
+  for (player of notReadyPlayers) {
+    augmentPlayer(player);
+  }
+
+  // Get all batches still running
+  const runningBatches = Batches.find(
+    { status: "running", full: false },
+    { sort: { runningAt: 1 } }
+  ).fetch();
+
+  // If not batches running, lead player to exit
+  if (runningBatches.length === 0) {
+    Players.update(_id, {
+      $set: {
+        exitAt: new Date(),
+        exitStatus: "noBatchesLeft"
+      }
+    });
+    return;
+  }
+
+  // We will only collect batches that still have unstarted games
+  const batches = [];
+
+  // We will go through each batch and collect non-running games
+  for (const batch of runningBatches) {
+    // We only grab lobbies (games) that haven't started yet
+    const lobbies = GameLobbies.find({
+      _id: { $ne: gameLobby._id },
+      treatmentId: treatment._id,
+      batchId: batch._id,
+      status: "running",
+      timedOutAt: { $exists: false },
+      gameId: { $exists: false }
+    }).fetch();
+
+    // If there are none, we will be skipping this batch entirely
+    if (lobbies.length === 0) {
+      continue;
+    }
+
+    let assigned = false;
+    for (const lobby of lobbies) {
+      lobby.treatment = factors;
+
+      lobby.assign = player => {
+        // Adding the player to specified lobby queue
+        GameLobbies.update(lobby._id, {
+          $addToSet: {
+            queuedPlayerIds: player._id
+          }
+        });
+        Players.update(player._id, {
+          $set: { gameLobbyId: lobby._id }
+        });
+        lobby.players.push(player);
+      };
+
+      lobby.players = Players.find({
+        _id: { $in: lobby.queuedPlayerIds }
+      }).fetch();
+    }
+
+    // We masquarade lobbies as games at this stage
+    // TODO add get/set to lobby as game
+    batch.games = lobbies;
+
+    // There are games available in this batch, add to batches
+    batches.push(batch);
+  }
+
+  // TODO add get/set support
+  let shouldStartGame = false;
+  const game = {
+    players,
+    notReadyPlayers,
+    batch,
+    treatment: factors,
+    start() {
+      if (shouldStartGame) {
+        console.warn(
+          "game.start() in onPreGameInit should not be called more than once"
+        );
+      }
+      shouldStartGame = true;
+    }
+  };
+
+  console.log("test pak eko");
+
+  if (config && config.onPreGameInit) {
+    console.log("ada onPreGameInit");
+    config.onPreGameInit(game, batches, isLobbyTimeout);
+  } else {
+    console.log("tidak onPreGameInit");
+    defaultOnPreGameInit(game, batches, isLobbyTimeout);
+  }
+
+  return shouldStartGame;
+};
+
+export const createGameFromLobby = (gameLobby, isLobbyTimeout = false) => {
+  console.log("creating game from lobby");
+  // Make sure this isn't called twice
   if (Games.find({ gameLobbyId: gameLobby._id }).count() > 0) {
     return;
   }
@@ -45,18 +218,24 @@ export const createGameFromLobby = gameLobby => {
   const { batchId, treatmentId, status, debugMode } = gameLobby;
 
   players.forEach(player => {
-    player.data = player.data || {};
-    player.set = (key, value) => {
-      player.data[key] = value;
-    };
-    player.get = key => {
-      return player.data[key];
-    };
+    augmentPlayer(player);
   });
 
-  // Ask (experimenter designer) init function to configure this game
+  const shouldCreate = runPreGameInit(
+    gameLobby,
+    players,
+    batch,
+    treatment,
+    factors,
+    isLobbyTimeout
+  );
+  if (!shouldCreate) {
+    return;
+  }
+
+  // Ask (experiment designer) init function to configure this game
   // given the factors and players given.
-  const params = { data: { ...gameLobby.data }, rounds: [], players };
+  const params = { data: {}, rounds: [], players };
   var gameCollector = {
     players,
     treatment: factors,
@@ -150,7 +329,7 @@ export const createGameFromLobby = gameLobby => {
 
   // We need to create/configure stuff associated with the game before we
   // create it so we generate the id early
-  const gameId = gameLobby._id;
+  const gameId = Random.id();
   params._id = gameId;
   params.gameLobbyId = gameLobby._id;
   // We also add a few related objects
@@ -187,152 +366,69 @@ export const createGameFromLobby = gameLobby => {
   let stageIndex = 0;
   let totalDuration = 0;
   let firstRoundId;
-
-  const insertOption = {
-    autoConvert: false,
-    filter: false,
-    validate: false,
-    trimStrings: false,
-    removeEmptyStrings: false
-  };
-
-  let StagesUpdateOp = Stages.rawCollection().initializeUnorderedBulkOp();
-  let RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
-  let StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
-  let roundsOpResult;
-  let stagesOpResult;
-
-  params.rounds.forEach((round, index) =>
-    RoundsOp.insert(
-      _.extend(
-        {
-          gameId,
-          index,
-          _id: Random.id(),
-          createdAt: new Date(),
-          data: {}
-        },
-        round
-      ),
-      insertOption
-    )
-  );
-
-  roundsOpResult = Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
-
-  const roundIds = roundsOpResult.getInsertedIds().map(ids => ids._id);
-  RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
-
-  params.rounds.forEach((round, index) => {
-    const roundId = roundIds[index];
-    const { players } = params;
-
-    StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
-    let PlayerStagesOp = PlayerStages.rawCollection().initializeUnorderedBulkOp();
-    let PlayerRoundsOp = PlayerRounds.rawCollection().initializeUnorderedBulkOp();
-
-    round.stages.forEach(stage => {
+  params.roundIds = params.rounds.map((round, index) => {
+    const roundId = Rounds.insert(_.extend({ gameId, index }, round), {
+      autoConvert: false,
+      filter: false,
+      validate: false,
+      trimStrings: false,
+      removeEmptyStrings: false
+    });
+    const stageIds = round.stages.map(stage => {
       if (batch.debugMode) {
         stage.durationInSeconds = 60 * 60; // Stage time in debugMode is 1h
       }
-
       totalDuration += stage.durationInSeconds;
-
-      const sParams = _.extend(
-        {
-          gameId,
-          roundId,
-          index: stageIndex,
-          _id: Random.id(),
-          createdAt: new Date(),
-          data: {}
-        },
-        stage
-      );
-
-      StagesOp.insert(sParams, insertOption);
-
+      const sParams = _.extend({ gameId, roundId, index: stageIndex }, stage);
+      const stageId = Stages.insert(sParams, {
+        autoConvert: false,
+        filter: false,
+        validate: false,
+        trimStrings: false,
+        removeEmptyStrings: false
+      });
       stageIndex++;
-    });
-
-    stagesOpResult = Meteor.wrapAsync(StagesOp.execute, StagesOp)();
-    const stageIds = stagesOpResult.getInsertedIds().map(ids => ids._id);
-
-    stageIds.forEach(stageId => {
       if (!params.currentStageId) {
         firstRoundId = roundId;
         params.currentStageId = stageId;
       }
-
-      players.forEach(({ _id: playerId }) =>
-        PlayerStagesOp.insert({
+      const playerStageIds = params.players.map(({ _id: playerId }) => {
+        return PlayerStages.insert({
           playerId,
           stageId,
           roundId,
           gameId,
-          batchId,
-          _id: Random.id(),
-          createdAt: new Date(),
-          data: {}
-        })
-      );
+          batchId
+        });
+      });
+      Stages.update(stageId, { $set: { playerStageIds } });
+      return stageId;
     });
-
-    const playerStagesResult = Meteor.wrapAsync(
-      PlayerStagesOp.execute,
-      PlayerStagesOp
-    )();
-    const playerStageIds = playerStagesResult
-      .getInsertedIds()
-      .map(ids => ids._id);
-
-    stageIds.forEach(stageId =>
-      StagesUpdateOp.find({ _id: stageId })
-        .upsert()
-        .updateOne({ $set: { playerStageIds, updatedAt: new Date() } })
-    );
-
-    players.forEach(({ _id: playerId }) =>
-      PlayerRoundsOp.insert({
+    const playerRoundIds = params.players.map(({ _id: playerId }) => {
+      return PlayerRounds.insert({
         playerId,
         roundId,
         gameId,
-        batchId,
-        _id: Random.id(),
-        data: {},
-        createdAt: new Date()
-      })
-    );
-
-    const playerRoundIdsResult = Meteor.wrapAsync(
-      PlayerRoundsOp.execute,
-      PlayerRoundsOp
-    )();
-    const playerRoundIds = playerRoundIdsResult
-      .getInsertedIds()
-      .map(ids => ids._id);
-
-    RoundsOp.find({ _id: roundId })
-      .upsert()
-      .updateOne({ $set: { stageIds, playerRoundIds, updatedAt: new Date() } });
+        batchId
+      });
+    });
+    Rounds.update(roundId, { $set: { stageIds, playerRoundIds } });
+    return roundId;
   });
 
-  Meteor.wrapAsync(StagesUpdateOp.execute, StagesUpdateOp)();
-  Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
-
-  // An estimation of the finish time to help querying.
-  // At the moment, this will 100% break with pausing the game/batch.
-  params.estFinishedTime = moment()
-    // Give it an extra 24h (86400s) window for the inter-stage sync buffer.
-    // It was 5 min and that failed on an experiment with many rounds.
-    // This value is not extremely useful, it's main purpose is currently
-    // to stop querying games indefinitely in the update game background job.
-    // It was also meant to be an approximate estimate for when the game could
-    // end at the maximum, that we could show in the admin, but it can no longer
-    // work, and it is questionable if the "stop querying" "feature" is still
-    // adequate.
-    .add(totalDuration + 86400, "seconds")
-    .toDate();
+  // // An estimation of the finish time to help querying.
+  // // At the moment, this will 100% break with pausing the game/batch.
+  // params.estFinishedTime = moment()
+  //   // Give it an extra 24h (86400s) window for the inter-stage sync buffer.
+  //   // It was 5 min and that failed on an experiment with many rounds.
+  //   // This value is not extremely useful, it's main purpose is currently
+  //   // to stop querying games indefinitely in the update game background job.
+  //   // It was also meant to be an approximate estimate for when the game could
+  //   // end at the maximum, that we could show in the admin, but it can no longer
+  //   // work, and it is questionable if the "stop querying" "feature" is still
+  //   // adequate.
+  //   .add(totalDuration + 86400, "seconds")
+  //   .toDate();
 
   // We're no longer filtering out unspecified fields on insert because of a
   // simpleschema bug, so we need to remove invalid params now.
@@ -353,92 +449,92 @@ export const createGameFromLobby = gameLobby => {
   // Let Game Lobby know Game ID
   GameLobbies.update(gameLobby._id, { $set: { gameId } });
 
-  //
-  // Overbooking
-  //
+  // //
+  // // Overbooking
+  // //
 
-  // Overbooked players that did not finish the intro and won't be in this game
-  const failedPlayerIds = _.difference(
-    gameLobby.queuedPlayerIds,
-    gameLobby.playerIds
-  );
+  // // Overbooked players that did not finish the intro and won't be in this game
+  // const failedPlayerIds = _.difference(
+  //   gameLobby.queuedPlayerIds,
+  //   gameLobby.playerIds
+  // );
 
-  // Find other lobbies that are not full yet with the same treatment
-  const runningBatches = Batches.find(
-    {
-      _id: { $ne: batchId },
-      status: "running"
-    },
-    { sort: { runningAt: 1 } }
-  );
-  const lobbiesGroups = runningBatches.map(() => []);
-  const runningBatcheIds = runningBatches.map(b => b._id);
-  lobbiesGroups.push([]);
-  const possibleLobbies = GameLobbies.find({
-    _id: { $ne: gameLobby._id },
-    status: "running",
-    timedOutAt: { $exists: false },
-    gameId: { $exists: false },
-    treatmentId
-  }).fetch();
-  possibleLobbies.forEach(lobby => {
-    if (lobby.batchId === batchId) {
-      lobbiesGroups[0].push(lobby);
-    } else {
-      lobbiesGroups[runningBatcheIds.indexOf(lobby.batchId) + 1].push(lobby);
-    }
-  });
+  // // Find other lobbies that are not full yet with the same treatment
+  // const runningBatches = Batches.find(
+  //   {
+  //     _id: { $ne: batchId },
+  //     status: "running"
+  //   },
+  //   { sort: { runningAt: 1 } }
+  // );
+  // const lobbiesGroups = runningBatches.map(() => []);
+  // const runningBatcheIds = runningBatches.map(b => b._id);
+  // lobbiesGroups.push([]);
+  // const possibleLobbies = GameLobbies.find({
+  //   _id: { $ne: gameLobby._id },
+  //   status: "running",
+  //   timedOutAt: { $exists: false },
+  //   gameId: { $exists: false },
+  //   treatmentId
+  // }).fetch();
+  // possibleLobbies.forEach(lobby => {
+  //   if (lobby.batchId === batchId) {
+  //     lobbiesGroups[0].push(lobby);
+  //   } else {
+  //     lobbiesGroups[runningBatcheIds.indexOf(lobby.batchId) + 1].push(lobby);
+  //   }
+  // });
 
-  // If no lobbies left, lead players to exit
-  if (possibleLobbies.length === 0) {
-    Players.update(
-      { _id: { $in: failedPlayerIds } },
-      {
-        $set: {
-          exitAt: new Date(),
-          exitStatus: "gameFull"
-        }
-      },
-      { multi: true }
-    );
-  } else {
-    for (let i = 0; i < lobbiesGroups.length; i++) {
-      const lobbies = lobbiesGroups[i];
+  // // If no lobbies left, lead players to exit
+  // if (possibleLobbies.length === 0) {
+  //   Players.update(
+  //     { _id: { $in: failedPlayerIds } },
+  //     {
+  //       $set: {
+  //         exitAt: new Date(),
+  //         exitStatus: "gameFull"
+  //       }
+  //     },
+  //     { multi: true }
+  //   );
+  // } else {
+  //   for (let i = 0; i < lobbiesGroups.length; i++) {
+  //     const lobbies = lobbiesGroups[i];
 
-      if (lobbies.length === 0) {
-        continue;
-      }
+  //     if (lobbies.length === 0) {
+  //       continue;
+  //     }
 
-      // If there are lobbies remaining, distribute them across the lobbies
-      // proportinally to the initial playerCount
-      const weigthedLobbyPool = weightedRandom(
-        lobbies.map(lobby => {
-          return {
-            value: lobby,
-            weight: lobby.availableCount
-          };
-        })
-      );
+  //     // If there are lobbies remaining, distribute them across the lobbies
+  //     // proportinally to the initial playerCount
+  //     const weigthedLobbyPool = weightedRandom(
+  //       lobbies.map(lobby => {
+  //         return {
+  //           value: lobby,
+  //           weight: lobby.availableCount
+  //         };
+  //       })
+  //     );
 
-      for (let i = 0; i < failedPlayerIds.length; i++) {
-        const playerId = failedPlayerIds[i];
-        const lobby = weigthedLobbyPool();
+  //     for (let i = 0; i < failedPlayerIds.length; i++) {
+  //       const playerId = failedPlayerIds[i];
+  //       const lobby = weigthedLobbyPool();
 
-        // Adding the player to specified lobby queue
-        const $addToSet = { queuedPlayerIds: playerId };
-        if (gameLobby.playerIds.includes(playerId)) {
-          $addToSet.playerIds = playerId;
-        }
-        GameLobbies.update(lobby._id, {
-          $addToSet
-        });
+  //       // Adding the player to specified lobby queue
+  //       const $addToSet = { queuedPlayerIds: playerId };
+  //       if (gameLobby.playerIds.includes(playerId)) {
+  //         $addToSet.playerIds = playerId;
+  //       }
+  //       GameLobbies.update(lobby._id, {
+  //         $addToSet
+  //       });
 
-        Players.update(playerId, { $set: { gameLobbyId: lobby._id } });
-      }
+  //       Players.update(playerId, { $set: { gameLobbyId: lobby._id } });
+  //     }
 
-      break;
-    }
-  }
+  //     break;
+  //   }
+  // }
 
   //
   // Call the callbacks
