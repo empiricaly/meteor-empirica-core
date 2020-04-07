@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.1...v1.4.2) (2020-04-07)
+
+
+### Features
+
+* add chat in lobby ([#87](https://github.com/empiricaly/meteor-empirica-core/issues/87)) ([b1b74be](https://github.com/empiricaly/meteor-empirica-core/commit/b1b74be6e6829812bdef1f3e773e82225f619222))
+* add game helpers [#94](https://github.com/empiricaly/meteor-empirica-core/issues/94) ([#103](https://github.com/empiricaly/meteor-empirica-core/issues/103)) ([4ca78b3](https://github.com/empiricaly/meteor-empirica-core/commit/4ca78b376513c419dc01059ca295891ff1aab495))
+* add game.end() method [#75](https://github.com/empiricaly/meteor-empirica-core/issues/75) ([#99](https://github.com/empiricaly/meteor-empirica-core/issues/99)) ([6a7f1ec](https://github.com/empiricaly/meteor-empirica-core/commit/6a7f1ec21a7fe3b95e826d493da451f5a77e7219))
+* custom no batch component [#38](https://github.com/empiricaly/meteor-empirica-core/issues/38) ([#101](https://github.com/empiricaly/meteor-empirica-core/issues/101)) ([33248bb](https://github.com/empiricaly/meteor-empirica-core/commit/33248bbf0890bce707dc3c203d9ff0f3fd831c11))
+
+
+### Bug Fixes
+
+* catch error on game cb [#106](https://github.com/empiricaly/meteor-empirica-core/issues/106) ([#108](https://github.com/empiricaly/meteor-empirica-core/issues/108)) ([3e89595](https://github.com/empiricaly/meteor-empirica-core/commit/3e89595f8c12485deb41714aa81415f71f19e5cb))
+* game end when last player exit [#74](https://github.com/empiricaly/meteor-empirica-core/issues/74) ([#100](https://github.com/empiricaly/meteor-empirica-core/issues/100)) ([f36a629](https://github.com/empiricaly/meteor-empirica-core/commit/f36a629af85e96775976953a062086fcb35af4f9))
+* improve json export [#21](https://github.com/empiricaly/meteor-empirica-core/issues/21) ([#102](https://github.com/empiricaly/meteor-empirica-core/issues/102)) ([c70d50c](https://github.com/empiricaly/meteor-empirica-core/commit/c70d50ca3fac0b8e14f11a22351f2b8d9bbb99ec))
+* make sure automatic factor names aren't too long ([3263bd8](https://github.com/empiricaly/meteor-empirica-core/commit/3263bd879c41b2d3bcfd8ab2010d5b4d16c34970))
+* remove throw on stage submitted twice [#68](https://github.com/empiricaly/meteor-empirica-core/issues/68) ([#98](https://github.com/empiricaly/meteor-empirica-core/issues/98)) ([f015343](https://github.com/empiricaly/meteor-empirica-core/commit/f01534363748d403d55c5a6ad28d67bb7fddc145))
+
+
 ### 1.4.1 (2020-03-05)
 
 
