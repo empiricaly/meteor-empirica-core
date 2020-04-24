@@ -19,14 +19,15 @@ export default class AdminExport extends React.Component {
 
   render() {
     const { format, exporting } = this.state;
+
     return (
       <div className="export">
         <AdminPageHeader icon={IconNames.EXPORT}>Export</AdminPageHeader>
 
         <p>
-          The export function dumps all the app data as multiple CSV or JSON
-          files zipped, one for each data type. You can reassociate the data
-          pieces through IDs.
+          The export function dumps all the app data as multiple CSV / JSON /
+          JSON Line files zipped, one for each data type. You can reassociate
+          the data pieces through IDs.
         </p>
 
         <FormGroup>
@@ -34,7 +35,7 @@ export default class AdminExport extends React.Component {
             id="format"
             name="format"
             value={format}
-            options={["CSV", "JSON"]}
+            options={["CSV", "JSON", "JSONL"]}
             onChange={this.handleChange}
           />{" "}
           <Button
@@ -44,6 +45,17 @@ export default class AdminExport extends React.Component {
             onClick={this.handleExport}
           />
         </FormGroup>
+        {format === "CSV" && <p>Each file is a CSV file</p>}
+        {format === "JSON" && <p>Each file is a single large JSON object</p>}
+        {format === "JSONL" && (
+          <p>
+            Each file contains{" "}
+            <a target="blank" href="http://jsonlines.org">
+              JSON Lines
+            </a>
+            , where each line is a object.
+          </p>
+        )}
       </div>
     );
   }

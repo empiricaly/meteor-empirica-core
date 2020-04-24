@@ -2,33 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## 1.4.0 (2019-12-12)
+### [1.4.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.1...v1.4.3) (2020-04-07)
+
+
+### Features
+
+* add chat in lobby ([#87](https://github.com/empiricaly/meteor-empirica-core/issues/87)) ([b1b74be](https://github.com/empiricaly/meteor-empirica-core/commit/b1b74be6e6829812bdef1f3e773e82225f619222))
+* add game helpers [#94](https://github.com/empiricaly/meteor-empirica-core/issues/94) ([#103](https://github.com/empiricaly/meteor-empirica-core/issues/103)) ([4ca78b3](https://github.com/empiricaly/meteor-empirica-core/commit/4ca78b376513c419dc01059ca295891ff1aab495))
+* add game.end() method [#75](https://github.com/empiricaly/meteor-empirica-core/issues/75) ([#99](https://github.com/empiricaly/meteor-empirica-core/issues/99)) ([6a7f1ec](https://github.com/empiricaly/meteor-empirica-core/commit/6a7f1ec21a7fe3b95e826d493da451f5a77e7219))
+* custom no batch component [#38](https://github.com/empiricaly/meteor-empirica-core/issues/38) ([#101](https://github.com/empiricaly/meteor-empirica-core/issues/101)) ([33248bb](https://github.com/empiricaly/meteor-empirica-core/commit/33248bbf0890bce707dc3c203d9ff0f3fd831c11))
 
 
 ### Bug Fixes
 
-* ensure stage is created with a seconds as a number ([6b3a7af](https://github.com/empiricaly/meteor-empirica-core/commit/6b3a7af))
-* Include logged variable name in export ([3b79b7c](https://github.com/empiricaly/meteor-empirica-core/commit/3b79b7c)), closes [#78](https://github.com/empiricaly/meteor-empirica-core/issues/78)
+* catch error on game cb [#106](https://github.com/empiricaly/meteor-empirica-core/issues/106) ([#108](https://github.com/empiricaly/meteor-empirica-core/issues/108)) ([3e89595](https://github.com/empiricaly/meteor-empirica-core/commit/3e89595f8c12485deb41714aa81415f71f19e5cb))
+* game end when last player exit [#74](https://github.com/empiricaly/meteor-empirica-core/issues/74) ([#100](https://github.com/empiricaly/meteor-empirica-core/issues/100)) ([f36a629](https://github.com/empiricaly/meteor-empirica-core/commit/f36a629af85e96775976953a062086fcb35af4f9))
+* improve json export [#21](https://github.com/empiricaly/meteor-empirica-core/issues/21) ([#102](https://github.com/empiricaly/meteor-empirica-core/issues/102)) ([c70d50c](https://github.com/empiricaly/meteor-empirica-core/commit/c70d50ca3fac0b8e14f11a22351f2b8d9bbb99ec))
+* make sure automatic factor names aren't too long ([3263bd8](https://github.com/empiricaly/meteor-empirica-core/commit/3263bd879c41b2d3bcfd8ab2010d5b4d16c34970))
+* remove throw on stage submitted twice [#68](https://github.com/empiricaly/meteor-empirica-core/issues/68) ([#98](https://github.com/empiricaly/meteor-empirica-core/issues/98)) ([f015343](https://github.com/empiricaly/meteor-empirica-core/commit/f01534363748d403d55c5a6ad28d67bb7fddc145))
 
-### 1.3.4 (2019-11-25)
+
+### 1.4.1 (2020-03-05)
 
 
 ### Bug Fixes
 
+* add missing player attribute onSubmit [#93](https://github.com/empiricaly/meteor-empirica-core/issues/93) ([#97](https://github.com/empiricaly/meteor-empirica-core/issues/97)) ([5657c21](https://github.com/empiricaly/meteor-empirica-core/commit/5657c21))
 * do not depend on playerIdConn; update meteor version ([cf75d01](https://github.com/empiricaly/meteor-empirica-core/commit/cf75d01))
-
-### 1.3.3 (2019-11-25)
-
-### 1.3.2 (2019-11-25)
-
-### 1.3.1 (2019-11-23)
-
-
-### Bug Fixes
-
+* ensure stage is created with a seconds as a number ([6b3a7af](https://github.com/empiricaly/meteor-empirica-core/commit/6b3a7af))
+* fixed exitSteps undefined (fixes [#85](https://github.com/empiricaly/meteor-empirica-core/issues/85)) ([f01ca69](https://github.com/empiricaly/meteor-empirica-core/commit/f01ca69))
+* Include logged variable name in export ([3b79b7c](https://github.com/empiricaly/meteor-empirica-core/commit/3b79b7c)), closes [#78](https://github.com/empiricaly/meteor-empirica-core/issues/78)
 * remove unnecessary player connection check on player.exit method ([f2cb4e6](https://github.com/empiricaly/meteor-empirica-core/commit/f2cb4e6)), closes [#73](https://github.com/empiricaly/meteor-empirica-core/issues/73)
-
-## 1.3.0 (2019-11-05)
 
 
 ### Features

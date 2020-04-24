@@ -1,5 +1,4 @@
 import SimpleSchema from "simpl-schema";
-
 import { BelongsTo, TimestampSchema } from "../default-schemas.js";
 import { FactorTypes } from "../factor-types/factor-types.js";
 
@@ -84,7 +83,7 @@ Factors.schema = new SimpleSchema({
     type: String,
     autoValue() {
       if (!this.isSet && (this.isInsert || Meteor.isClient)) {
-        return String(this.field("value").value);
+        return String(this.field("value").value).slice(0, 32);
       }
     },
     max: 256,

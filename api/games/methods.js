@@ -3,6 +3,8 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import SimpleSchema from "simpl-schema";
 
 import { Games } from "./games.js";
+import { GameLobbies } from "../game-lobbies/game-lobbies.js";
+import { Players } from "../players/players.js";
 
 export const updateGameData = new ValidatedMethod({
   name: "Games.methods.updateData",
@@ -58,5 +60,69 @@ export const updateGameData = new ValidatedMethod({
         append
       });
     }
+  }
+});
+
+export const earlyExitGame = new ValidatedMethod({
+  name: "Games.methods.earlyExitGame",
+
+  validate: new SimpleSchema({
+    gameId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    },
+    endReason: {
+      label: "Reason for End",
+      type: String,
+      regEx: /[a-zA-Z0-9_]+/
+    }
+  }).validator(),
+
+  run({ gameId, endReason }) {
+    if (this.connection) {
+      throw new Error("not allowed");
+    }
+
+    const game = Games.findOne(gameId);
+
+    if (!game) {
+      throw new Error("game not found");
+    }
+
+    if (game && game.finishedAt) {
+      if (Meteor.isDevelopment) {
+        console.log("\n\ngame already ended!");
+      }
+
+      return;
+    }
+
+    Games.update(gameId, {
+      $set: {
+        finishedAt: new Date(),
+        status: "custom",
+        endReason
+      }
+    });
+
+    GameLobbies.update(
+      { gameId },
+      {
+        $set: {
+          status: "custom",
+          endReason
+        }
+      }
+    );
+
+    game.playerIds.forEach(playerId =>
+      Players.update(playerId, {
+        $set: {
+          exitAt: new Date(),
+          exitStatus: "custom",
+          exitReason: endReason
+        }
+      })
+    );
   }
 });

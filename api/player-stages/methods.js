@@ -83,7 +83,11 @@ export const submitPlayerStage = new ValidatedMethod({
     // TODO check can update this record playerStage
 
     if (playerStage.submittedAt) {
-      throw new Error("not permitted");
+      if (Meteor.isDevelopment) {
+        console.log("stage already submitted");
+      }
+
+      return;
     }
 
     PlayerStages.update(playerStageId, { $set: { submittedAt: new Date() } });

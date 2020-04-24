@@ -1,3 +1,5 @@
+// create.js
+
 import moment from "moment";
 
 import { Batches } from "../batches/batches.js";
@@ -8,10 +10,12 @@ import { PlayerStages } from "../player-stages/player-stages";
 import { Players } from "../players/players";
 import { Rounds } from "../rounds/rounds";
 import { Stages } from "../stages/stages";
+import { earlyExitGameLobby } from "../game-lobbies/methods";
 import {
   augmentPlayerStageRound,
   augmentGameStageRound
 } from "../player-stages/augment.js";
+import { augmentGameObject } from "../games/augment.js";
 import { config } from "../../server";
 import { weightedRandom } from "../../lib/utils.js";
 import log from "../../lib/log.js";
@@ -53,7 +57,7 @@ export const createGameFromLobby = gameLobby => {
 
   // Ask (experimenter designer) init function to configure this game
   // given the factors and players given.
-  const params = { data: {}, rounds: [], players };
+  const params = { data: { ...gameLobby.data }, rounds: [], players };
   var gameCollector = {
     players,
     treatment: factors,
@@ -122,7 +126,17 @@ export const createGameFromLobby = gameLobby => {
       };
     }
   };
-  config.gameInit(gameCollector, factors, players);
+
+  try {
+    config.gameInit(gameCollector, factors);
+  } catch (err) {
+    console.error(`fatal error encounter calling Empirica.gameInit:`);
+    console.error(err);
+    earlyExitGameLobby.call({
+      exitReason: "gameError",
+      gameLobbyId: gameLobby._id
+    });
+  }
 
   if (!params.rounds || params.rounds.length === 0) {
     throw "at least one round must be added per game";
@@ -147,7 +161,7 @@ export const createGameFromLobby = gameLobby => {
 
   // We need to create/configure stuff associated with the game before we
   // create it so we generate the id early
-  const gameId = Random.id();
+  const gameId = gameLobby._id;
   params._id = gameId;
   params.gameLobbyId = gameLobby._id;
   // We also add a few related objects
@@ -184,55 +198,138 @@ export const createGameFromLobby = gameLobby => {
   let stageIndex = 0;
   let totalDuration = 0;
   let firstRoundId;
-  params.roundIds = params.rounds.map((round, index) => {
-    const roundId = Rounds.insert(_.extend({ gameId, index }, round), {
-      autoConvert: false,
-      filter: false,
-      validate: false,
-      trimStrings: false,
-      removeEmptyStrings: false
-    });
-    const stageIds = round.stages.map(stage => {
+
+  const insertOption = {
+    autoConvert: false,
+    filter: false,
+    validate: false,
+    trimStrings: false,
+    removeEmptyStrings: false
+  };
+
+  let StagesUpdateOp = Stages.rawCollection().initializeUnorderedBulkOp();
+  let RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
+  let StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
+  let roundsOpResult;
+  let stagesOpResult;
+
+  params.rounds.forEach((round, index) =>
+    RoundsOp.insert(
+      _.extend(
+        {
+          gameId,
+          index,
+          _id: Random.id(),
+          createdAt: new Date(),
+          data: {}
+        },
+        round
+      ),
+      insertOption
+    )
+  );
+
+  roundsOpResult = Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
+
+  const roundIds = roundsOpResult.getInsertedIds().map(ids => ids._id);
+  RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
+
+  params.rounds.forEach((round, index) => {
+    const roundId = roundIds[index];
+    const { players } = params;
+
+    StagesOp = Stages.rawCollection().initializeUnorderedBulkOp();
+    let PlayerStagesOp = PlayerStages.rawCollection().initializeUnorderedBulkOp();
+    let PlayerRoundsOp = PlayerRounds.rawCollection().initializeUnorderedBulkOp();
+
+    round.stages.forEach(stage => {
       if (batch.debugMode) {
         stage.durationInSeconds = 60 * 60; // Stage time in debugMode is 1h
       }
+
       totalDuration += stage.durationInSeconds;
-      const sParams = _.extend({ gameId, roundId, index: stageIndex }, stage);
-      const stageId = Stages.insert(sParams, {
-        autoConvert: false,
-        filter: false,
-        validate: false,
-        trimStrings: false,
-        removeEmptyStrings: false
-      });
+
+      const sParams = _.extend(
+        {
+          gameId,
+          roundId,
+          index: stageIndex,
+          _id: Random.id(),
+          createdAt: new Date(),
+          data: {}
+        },
+        stage
+      );
+
+      StagesOp.insert(sParams, insertOption);
+
       stageIndex++;
+    });
+
+    stagesOpResult = Meteor.wrapAsync(StagesOp.execute, StagesOp)();
+    const stageIds = stagesOpResult.getInsertedIds().map(ids => ids._id);
+
+    stageIds.forEach(stageId => {
       if (!params.currentStageId) {
         firstRoundId = roundId;
         params.currentStageId = stageId;
       }
-      const playerStageIds = params.players.map(({ _id: playerId }) => {
-        return PlayerStages.insert({
+
+      players.forEach(({ _id: playerId }) =>
+        PlayerStagesOp.insert({
           playerId,
           stageId,
           roundId,
           gameId,
-          batchId
-        });
-      });
-      Stages.update(stageId, { $set: { playerStageIds } });
-      return stageId;
+          batchId,
+          _id: Random.id(),
+          createdAt: new Date(),
+          data: {}
+        })
+      );
     });
-    const playerRoundIds = params.players.map(({ _id: playerId }) => {
-      return PlayerRounds.insert({
+
+    const playerStagesResult = Meteor.wrapAsync(
+      PlayerStagesOp.execute,
+      PlayerStagesOp
+    )();
+    const playerStageIds = playerStagesResult
+      .getInsertedIds()
+      .map(ids => ids._id);
+
+    stageIds.forEach(stageId =>
+      StagesUpdateOp.find({ _id: stageId })
+        .upsert()
+        .updateOne({ $set: { playerStageIds, updatedAt: new Date() } })
+    );
+
+    players.forEach(({ _id: playerId }) =>
+      PlayerRoundsOp.insert({
         playerId,
         roundId,
         gameId,
-        batchId
-      });
-    });
-    Rounds.update(roundId, { $set: { stageIds, playerRoundIds } });
-    return roundId;
+        batchId,
+        _id: Random.id(),
+        data: {},
+        createdAt: new Date()
+      })
+    );
+
+    const playerRoundIdsResult = Meteor.wrapAsync(
+      PlayerRoundsOp.execute,
+      PlayerRoundsOp
+    )();
+    const playerRoundIds = playerRoundIdsResult
+      .getInsertedIds()
+      .map(ids => ids._id);
+
+    RoundsOp.find({ _id: roundId })
+      .upsert()
+      .updateOne({ $set: { stageIds, playerRoundIds, updatedAt: new Date() } });
   });
+
+  Meteor.wrapAsync(StagesUpdateOp.execute, StagesUpdateOp)();
+  Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
 
   // An estimation of the finish time to help querying.
   // At the moment, this will 100% break with pausing the game/batch.
@@ -361,35 +458,29 @@ export const createGameFromLobby = gameLobby => {
   const { onRoundStart, onGameStart, onStageStart } = config;
   if ((onGameStart || onRoundStart || onStageStart) && firstRoundId) {
     const game = Games.findOne(gameId);
-    const players = Players.find({
-      _id: { $in: params.playerIds }
-    }).fetch();
-    game.treatment = treatment.factorsObject();
-    game.players = players;
-    game.rounds = Rounds.find({ gameId }).fetch();
-    game.rounds.forEach(round => {
-      round.stages = Stages.find({ roundId: round._id }).fetch();
+
+    augmentGameObject({
+      game,
+      treatment,
+      firstRoundId,
+      currentStageId: params.currentStageId
     });
+
     const nextRound = game.rounds.find(r => r._id === firstRoundId);
     const nextStage = nextRound.stages.find(
       s => s._id === params.currentStageId
     );
 
     augmentGameStageRound(game, nextStage, nextRound);
-    players.forEach(player => {
-      player.round = _.extend({}, nextRound);
-      player.stage = _.extend({}, nextStage);
-      augmentPlayerStageRound(player, player.stage, player.round, game);
-    });
 
     if (onGameStart) {
-      onGameStart(game, players);
+      onGameStart(game);
     }
     if (onRoundStart) {
-      onRoundStart(game, nextRound, players);
+      onRoundStart(game, nextRound);
     }
     if (onStageStart) {
-      onStageStart(game, nextRound, nextStage, players);
+      onStageStart(game, nextRound, nextStage);
     }
   }
 
