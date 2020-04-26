@@ -9,7 +9,6 @@ import { updateRoundData } from "../rounds/methods.js";
 import { updateStageData } from "../stages/methods.js";
 import { submitPlayerStage, updatePlayerStageData } from "./methods";
 import { PlayerStages } from "./player-stages";
-import log from "../../lib/log.js";
 
 
 const gameSet = (gameId, append = false) => (key, value) => {
@@ -194,8 +193,6 @@ export const augmentGameStageRound = (game, stage, round) => {
       return stage.data[key];
     };
     stage.set = set(stage.data, (key, value) => {
-      
-
       updateStageData.call({
         stageId: stage._id,
         key,
