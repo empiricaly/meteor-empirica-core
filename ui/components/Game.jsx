@@ -83,7 +83,6 @@ export default class Game extends React.Component {
             ) : (
               <DelayedGameLobby {...gameLobbyProps} />
             )}
-            }
           </GameLobbyContainer>
         );
       }
