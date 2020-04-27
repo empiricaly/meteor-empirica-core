@@ -431,7 +431,8 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "stageId",
     "roundId",
     "gameId",
-    "createdAt"
+    "createdAt",
+    "submittedAt"
   ];
   const playerStageDataFields = getDataKeys(PlayerStages);
   saveFile(
