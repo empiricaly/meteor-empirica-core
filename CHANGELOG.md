@@ -2,12 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.4.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.1...v1.4.3) (2020-04-07)
+### [1.4.4](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.1...v1.4.4) (2020-04-30)
 
 
 ### Features
 
 * add chat in lobby ([#87](https://github.com/empiricaly/meteor-empirica-core/issues/87)) ([b1b74be](https://github.com/empiricaly/meteor-empirica-core/commit/b1b74be6e6829812bdef1f3e773e82225f619222))
+* add elapsedTime output prop to StageTimeWrapper ([#116](https://github.com/empiricaly/meteor-empirica-core/issues/116)) ([44d1bfc](https://github.com/empiricaly/meteor-empirica-core/commit/44d1bfcde9ef4151b12b63b908c51418aa13b844)), closes [/github.com/amaatouq/guess-the-correlation/blob/master/client/game/TaskResponse.jsx#L24](https://github.com/empiricaly//github.com/amaatouq/guess-the-correlation/blob/master/client/game/TaskResponse.jsx/issues/L24)
+* add export of stage.submittedAt ([#117](https://github.com/empiricaly/meteor-empirica-core/issues/117)) ([9290325](https://github.com/empiricaly/meteor-empirica-core/commit/92903252bdda34ddd62aade459a580517dc87565))
 * add game helpers [#94](https://github.com/empiricaly/meteor-empirica-core/issues/94) ([#103](https://github.com/empiricaly/meteor-empirica-core/issues/103)) ([4ca78b3](https://github.com/empiricaly/meteor-empirica-core/commit/4ca78b376513c419dc01059ca295891ff1aab495))
 * add game.end() method [#75](https://github.com/empiricaly/meteor-empirica-core/issues/75) ([#99](https://github.com/empiricaly/meteor-empirica-core/issues/99)) ([6a7f1ec](https://github.com/empiricaly/meteor-empirica-core/commit/6a7f1ec21a7fe3b95e826d493da451f5a77e7219))
 * custom no batch component [#38](https://github.com/empiricaly/meteor-empirica-core/issues/38) ([#101](https://github.com/empiricaly/meteor-empirica-core/issues/101)) ([33248bb](https://github.com/empiricaly/meteor-empirica-core/commit/33248bbf0890bce707dc3c203d9ff0f3fd831c11))
@@ -16,10 +18,13 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * catch error on game cb [#106](https://github.com/empiricaly/meteor-empirica-core/issues/106) ([#108](https://github.com/empiricaly/meteor-empirica-core/issues/108)) ([3e89595](https://github.com/empiricaly/meteor-empirica-core/commit/3e89595f8c12485deb41714aa81415f71f19e5cb))
+* empty arguments on game hooks [#119](https://github.com/empiricaly/meteor-empirica-core/issues/119) ([#121](https://github.com/empiricaly/meteor-empirica-core/issues/121)) ([0f89874](https://github.com/empiricaly/meteor-empirica-core/commit/0f89874f019d74b952ceb48126afc39cab743964))
 * game end when last player exit [#74](https://github.com/empiricaly/meteor-empirica-core/issues/74) ([#100](https://github.com/empiricaly/meteor-empirica-core/issues/100)) ([f36a629](https://github.com/empiricaly/meteor-empirica-core/commit/f36a629af85e96775976953a062086fcb35af4f9))
 * improve json export [#21](https://github.com/empiricaly/meteor-empirica-core/issues/21) ([#102](https://github.com/empiricaly/meteor-empirica-core/issues/102)) ([c70d50c](https://github.com/empiricaly/meteor-empirica-core/commit/c70d50ca3fac0b8e14f11a22351f2b8d9bbb99ec))
 * make sure automatic factor names aren't too long ([3263bd8](https://github.com/empiricaly/meteor-empirica-core/commit/3263bd879c41b2d3bcfd8ab2010d5b4d16c34970))
 * remove throw on stage submitted twice [#68](https://github.com/empiricaly/meteor-empirica-core/issues/68) ([#98](https://github.com/empiricaly/meteor-empirica-core/issues/98)) ([f015343](https://github.com/empiricaly/meteor-empirica-core/commit/f01534363748d403d55c5a6ad28d67bb7fddc145))
+* try catch index creation [#118](https://github.com/empiricaly/meteor-empirica-core/issues/118) ([#122](https://github.com/empiricaly/meteor-empirica-core/issues/122)) ([3fc63f5](https://github.com/empiricaly/meteor-empirica-core/commit/3fc63f5f67cf853e1644bdadda20f522db5493b5))
+
 
 
 ### 1.4.1 (2020-03-05)
