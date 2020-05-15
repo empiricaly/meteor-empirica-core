@@ -31,65 +31,69 @@ Meteor.startup(() => {
         return;
       }
 
-      const name = inflection.titleize(coll._name);
-      log.debug("Adding indexes to", name);
+      try {
+        const name = inflection.titleize(coll._name);
+        log.debug("Adding indexes to", name);
 
-      for (const key in coll.schema._schema) {
-        if (coll.schema._schema.hasOwnProperty(key)) {
-          const def = coll.schema._schema[key];
+        for (const key in coll.schema._schema) {
+          if (coll.schema._schema.hasOwnProperty(key)) {
+            const def = coll.schema._schema[key];
 
-          const desc = `"${name}" – { ${key}: { index: ${def.index} } }`;
+            const desc = `"${name}" – { ${key}: { index: ${def.index} } }`;
 
-          // No index wanted
-          if (def.index === undefined) {
-            continue;
-          }
-
-          // Wanting index to be removed, not supported
-          if (def.index === false) {
-            log.warn(`{ index: false } not supported on ${desc}`);
-            continue;
-          }
-
-          // Only 1, -1 and true values supported
-          if (!(def.index === true || def.index === 1 || def.index === -1)) {
-            log.warn(`unknown index value on ${desc}`);
-            continue;
-          }
-
-          // Add opts supported by SimpleSchema:index
-          const opts = {};
-          if (def.sparse === true) {
-            options.sparse = true;
-          }
-          if (def.unique === true) {
-            opts.unique = true;
-          }
-
-          let index = {};
-          switch (def.index) {
-            case 1:
-            case true:
-              index = { [key]: 1 };
-              break;
-            case -1:
-              index = { [key]: -1 };
-              break;
-          }
-
-          log.debug(
-            `  - createIndex(${JSON.stringify(index)}, ${JSON.stringify(opts)})`
-          );
-
-          coll.rawCollection().createIndex(index, opts, (err, res) => {
-            if (err) {
-              log.error(
-                `can't create index: ${name}/${JSON.stringify(index)}. ${err}`
-              );
+            // No index wanted
+            if (def.index === undefined) {
+              continue;
             }
-          });
+
+            // Wanting index to be removed, not supported
+            if (def.index === false) {
+              log.warn(`{ index: false } not supported on ${desc}`);
+              continue;
+            }
+
+            // Only 1, -1 and true values supported
+            if (!(def.index === true || def.index === 1 || def.index === -1)) {
+              log.warn(`unknown index value on ${desc}`);
+              continue;
+            }
+
+            // Add opts supported by SimpleSchema:index
+            const opts = {};
+            if (def.sparse === true) {
+              options.sparse = true;
+            }
+            if (def.unique === true) {
+              opts.unique = true;
+            }
+
+            let index = {};
+            switch (def.index) {
+              case 1:
+              case true:
+                index = { [key]: 1 };
+                break;
+              case -1:
+                index = { [key]: -1 };
+                break;
+            }
+
+            log.debug(
+              `  - createIndex(${JSON.stringify(index)}, ${JSON.stringify(
+                opts
+              )})`
+            );
+
+            coll.rawCollection().createIndex(index, opts, (err, res) => {
+              if (err) {
+                log.error(
+                  `can't create index: ${name}/${JSON.stringify(index)}. ${err}`
+                );
+              }
+            });
+          }
         }
-      }
+      } catch (error) {}
     });
   }, 1000);
 });
