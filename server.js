@@ -71,13 +71,11 @@ const Empirica = {
     config.gameInit = func;
   },
 
-  bot(name, func) {
+  bot(name, obj) {
     if (config.bots[name]) {
       throw `Bot "${name}" was declared twice!`;
     }
-    config.bots[name] = function() {
-      return safeCallback("bot", func, arguments);
-    };
+    config.bots[name] = obj;
   },
 
   onGameStart(func) {
