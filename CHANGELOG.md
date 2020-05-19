@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.3...v1.5.0) (2020-04-30)
+
+
+### Features
+
+* add elapsedTime output prop to StageTimeWrapper ([#116](https://github.com/empiricaly/meteor-empirica-core/issues/116)) ([44d1bfc](https://github.com/empiricaly/meteor-empirica-core/commit/44d1bfcde9ef4151b12b63b908c51418aa13b844)), closes [/github.com/amaatouq/guess-the-correlation/blob/master/client/game/TaskResponse.jsx#L24](https://github.com/empiricaly//github.com/amaatouq/guess-the-correlation/blob/master/client/game/TaskResponse.jsx/issues/L24)
+* add export of stage.submittedAt ([#117](https://github.com/empiricaly/meteor-empirica-core/issues/117)) ([9290325](https://github.com/empiricaly/meteor-empirica-core/commit/92903252bdda34ddd62aade459a580517dc87565))
+
+
+### Bug Fixes
+
+* empty arguments on game hooks [#119](https://github.com/empiricaly/meteor-empirica-core/issues/119) ([#121](https://github.com/empiricaly/meteor-empirica-core/issues/121)) ([0f89874](https://github.com/empiricaly/meteor-empirica-core/commit/0f89874f019d74b952ceb48126afc39cab743964))
+* try catch index creation [#118](https://github.com/empiricaly/meteor-empirica-core/issues/118) ([#122](https://github.com/empiricaly/meteor-empirica-core/issues/122)) ([3fc63f5](https://github.com/empiricaly/meteor-empirica-core/commit/3fc63f5f67cf853e1644bdadda20f522db5493b5))
+
+
 ### [1.4.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.1...v1.4.3) (2020-04-07)
 
 
