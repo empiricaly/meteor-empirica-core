@@ -94,7 +94,8 @@ export const createGameFromLobby = gameLobby => {
               )}
 `
             );
-            throw "gameInit error";
+            return;
+            // throw "gameInit error";
           }
 
           const durationInSecondsAsInt = parseInt(durationInSeconds);
@@ -105,6 +106,7 @@ export const createGameFromLobby = gameLobby => {
             console.error(
               `Error in addStage call: durationInSeconds must be an number > 0 (name: ${name})`
             );
+            return;
           }
 
           const stage = {
@@ -151,7 +153,8 @@ export const createGameFromLobby = gameLobby => {
       // This should never happen as we already verified it above.
       if (!name || !displayName || !durationInSeconds) {
         log.error(addStageErrMsg);
-        throw "invalid stage";
+        return;
+        // throw "invalid stage";
       }
     });
   });
