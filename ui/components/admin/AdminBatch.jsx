@@ -105,7 +105,11 @@ export default class AdminBatch extends React.Component {
       );
     }
 
-    if (batch.status === "finished" || batch.status === "cancelled") {
+    if (
+      batch.status === "finished" ||
+      batch.status === "cancelled" ||
+      batch.status === "failed"
+    ) {
       actions.push(
         <Button
           text={archived ? "Unarchive" : "Archive"}
@@ -170,6 +174,7 @@ export default class AdminBatch extends React.Component {
         statusMinimal = true;
         break;
       case "stopped":
+      case "failed":
       case "cancelled":
         statusIntent = Intent.DANGER;
         statusMinimal = true;

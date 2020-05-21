@@ -93,7 +93,7 @@ export const earlyExitGameLobby = new ValidatedMethod({
       {
         $set: {
           exitAt: new Date(),
-          exitStatus: "custom",
+          exitStatus: "failed",
           exitReason
         }
       }
@@ -101,7 +101,7 @@ export const earlyExitGameLobby = new ValidatedMethod({
 
     GameLobbies.update(gameLobbyId, {
       $set: {
-        status: "custom",
+        status: "failed",
         endReason: exitReason
       }
     });
@@ -110,7 +110,7 @@ export const earlyExitGameLobby = new ValidatedMethod({
       { gameLobbyIds: gameLobbyId },
       {
         $set: {
-          status: "cancelled",
+          status: "failed",
           finishedAt: new Date()
         }
       }
