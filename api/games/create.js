@@ -84,46 +84,50 @@ export const createGameFromLobby = gameLobby => {
         },
 
         addStage({ name, displayName, durationInSeconds, data = {} }) {
-          if (!name || !displayName || !durationInSeconds) {
-            log.error(addStageErrMsg);
-            log.error(
-              `Got: ${JSON.stringify(
-                { name, displayName, durationInSeconds },
-                null,
-                "  "
-              )}
-`
-            );
-            return;
-            // throw "gameInit error";
-          }
-
-          const durationInSecondsAsInt = parseInt(durationInSeconds);
-          if (
-            Number.isNaN(durationInSecondsAsInt) ||
-            durationInSecondsAsInt < 1
-          ) {
-            console.error(
-              `Error in addStage call: durationInSeconds must be an number > 0 (name: ${name})`
-            );
-            return;
-          }
-
-          const stage = {
-            name,
-            displayName,
-            durationInSeconds: durationInSecondsAsInt
-          };
-          round.stages.push({ ...stage, data });
-          return {
-            ...stage,
-            get(k) {
-              return data[k];
-            },
-            set(k, v) {
-              data[k] = v;
+          try {
+            if (!name || !displayName || !durationInSeconds) {
+              log.error(addStageErrMsg);
+              log.error(
+                `Got: ${JSON.stringify(
+                  { name, displayName, durationInSeconds },
+                  null,
+                  "  "
+                )}`
+              );
+              throw "gameInit error";
             }
-          };
+
+            const durationInSecondsAsInt = parseInt(durationInSeconds);
+            if (
+              Number.isNaN(durationInSecondsAsInt) ||
+              durationInSecondsAsInt < 1
+            ) {
+              console.error(
+                `Error in addStage call: durationInSeconds must be an number > 0 (name: ${name})`
+              );
+            }
+
+            const stage = {
+              name,
+              displayName,
+              durationInSeconds: durationInSecondsAsInt
+            };
+            round.stages.push({ ...stage, data });
+            return {
+              ...stage,
+              get(k) {
+                return data[k];
+              },
+              set(k, v) {
+                data[k] = v;
+              }
+            };
+          } catch (error) {
+            earlyExitGameLobby.call({
+              exitReason: "initError",
+              gameLobbyId: gameLobby._id
+            });
+          }
         }
       };
     }
@@ -153,8 +157,7 @@ export const createGameFromLobby = gameLobby => {
       // This should never happen as we already verified it above.
       if (!name || !displayName || !durationInSeconds) {
         log.error(addStageErrMsg);
-        return;
-        // throw "invalid stage";
+        throw "invalid stage";
       }
     });
   });
