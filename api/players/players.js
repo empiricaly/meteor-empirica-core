@@ -18,6 +18,7 @@ export const exitStatuses = [
   "playerEndedLobbyWait",
   "playerLobbyTimedOut",
   "finished",
+  "failed",
   "custom"
 ];
 

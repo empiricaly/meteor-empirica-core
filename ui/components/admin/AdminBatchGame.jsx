@@ -50,6 +50,10 @@ export default class AdminBatchGame extends React.Component {
       statusIntent = Intent.DANGER;
       statusMinimal = true;
       statusMsg = "batch cancelled";
+    } else if (batch.status === "failed") {
+      statusIntent = Intent.DANGER;
+      statusMinimal = true;
+      statusMsg = "failed";
     } else if (batch.status === "stopped") {
       statusIntent = Intent.DANGER;
       statusMinimal = true;
