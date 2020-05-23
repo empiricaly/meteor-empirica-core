@@ -59,7 +59,9 @@ Batches.after.insert(function(userId, batch) {
         throw "Trying to create a game with more bots than players";
       }
       if (botsCount === l.availableCount) {
-        throw "Creating a game with only bots...";
+        //throw "Creating a game with only bots...";
+        //Would be good to display a message "Are you sure you want to create a game with only bots?"
+        console.log("Warning: Creating a game with only bots!")
       }
       const botNames = config.bots && _.keys(config.bots);
       if (!config.bots || botNames.length === 0) {

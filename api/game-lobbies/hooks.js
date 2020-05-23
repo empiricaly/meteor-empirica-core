@@ -25,7 +25,9 @@ GameLobbies.after.update(function(
 // Start the game if lobby full
 GameLobbies.after.update(
   function(userId, doc, fieldNames, modifier, options) {
-    if (!fieldNames.includes("playerIds")) {
+    if (!( fieldNames.includes("playerIds") ||
+           (fieldNames.includes("status") && doc.status == "running" )
+         )){
       return;
     }
 
