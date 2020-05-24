@@ -183,7 +183,8 @@ export const augmentGameStageRound = (game, stage, round) => {
     game.end = endReason =>
       earlyExitGame.call({
         gameId: game._id,
-        endReason
+        endReason,
+        status: "custom"
       });
   }
 

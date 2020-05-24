@@ -6,6 +6,7 @@ SimpleSchema.debug = true;
 import { playerIdForConn } from "./startup/server/connections.js";
 import { callOnChange } from "./api/server/onchange.js";
 import { callOnSubmit } from "./api/server/onsubmit.js";
+import { earlyExitGame } from "./api/games/methods.js";
 import shared from "./shared";
 import log from "./lib/log";
 import { getFunctionParameters } from "./lib/utils";
@@ -30,6 +31,13 @@ const safeCallback = function(name, func, arguments) {
   } catch (err) {
     console.error(`Fatal error encounter calling Empirica.${name}:`);
     console.error(err);
+    const game = arguments[0];
+
+    earlyExitGame.call({
+      gameId: game._id,
+      endReason: `Failed on ${name} callback`,
+      status: "failed"
+    });
   }
 };
 
