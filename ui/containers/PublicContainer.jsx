@@ -6,6 +6,7 @@ import { PlayerRounds } from "../../api/player-rounds/player-rounds.js";
 import { PlayerStages } from "../../api/player-stages/player-stages.js";
 import { Rounds } from "../../api/rounds/rounds.js";
 import { Stages } from "../../api/stages/stages.js";
+import { Players } from "../../api/players/players.js";
 import { ActivityMonitor } from "../../lib/monitor.js";
 import Public from "../components/Public";
 
@@ -48,12 +49,15 @@ const withGameDependencies = withTracker(
 
     const gameId = game && game._id;
     const sub = Meteor.subscribe("gameDependencies", { gameId });
+    const subGameLobby = Meteor.subscribe("gameLobbyDependencies", {
+      gameLobbyId: gameLobby._id
+    });
     const treatmentId =
       (game && game.treatmentId) || (gameLobby && gameLobby.treatmentId);
     const subTreatment = Meteor.subscribe("treatment", treatmentId);
 
     return {
-      loading: !sub.ready() || !subTreatment.ready(),
+      loading: !sub.ready() || !subTreatment.ready() || !subGameLobby.ready(),
       game,
       gameLobby,
       ...rest

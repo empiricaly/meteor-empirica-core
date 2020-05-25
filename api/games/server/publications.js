@@ -17,6 +17,14 @@ Meteor.publish("gameDependencies", function({ gameId }) {
   return [Players.find({ gameId })];
 });
 
+Meteor.publish("gameLobbyDependencies", function({ gameLobbyId }) {
+  if (!gameLobbyId) {
+    return [];
+  }
+
+  return [Players.find({ gameLobbyId })];
+});
+
 Meteor.publish("gameCurrentRoundStage", function({ gameId, stageId }) {
   if (!gameId || !stageId) {
     return [];
