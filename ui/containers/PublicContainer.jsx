@@ -48,9 +48,10 @@ const withGameDependencies = withTracker(
     }
 
     const gameId = game && game._id;
+    const gameLobbyId = gameLobby && gameLobby._id;
     const sub = Meteor.subscribe("gameDependencies", { gameId });
     const subGameLobby = Meteor.subscribe("gameLobbyDependencies", {
-      gameLobbyId: gameLobby._id
+      gameLobbyId
     });
     const treatmentId =
       (game && game.treatmentId) || (gameLobby && gameLobby.treatmentId);
