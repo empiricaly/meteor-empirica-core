@@ -75,11 +75,16 @@ export const earlyExitGame = new ValidatedMethod({
       label: "Reason for End",
       type: String,
       regEx: /[a-zA-Z0-9_]+/
+    },
+    status: {
+      label: "status for games and players after exit",
+      type: String,
+      regEx: /[a-zA-Z0-9_]+/
     }
   }).validator(),
 
-  run({ gameId, endReason }) {
-    if (this.connection) {
+  run({ gameId, endReason, status }) {
+    if (!this.connection) {
       throw new Error("not allowed");
     }
 
@@ -100,7 +105,7 @@ export const earlyExitGame = new ValidatedMethod({
     Games.update(gameId, {
       $set: {
         finishedAt: new Date(),
-        status: "custom",
+        status,
         endReason
       }
     });
@@ -109,7 +114,7 @@ export const earlyExitGame = new ValidatedMethod({
       { gameId },
       {
         $set: {
-          status: "custom",
+          status,
           endReason
         }
       }
@@ -119,7 +124,7 @@ export const earlyExitGame = new ValidatedMethod({
       Players.update(playerId, {
         $set: {
           exitAt: new Date(),
-          exitStatus: "custom",
+          exitStatus: status,
           exitReason: endReason
         }
       })
