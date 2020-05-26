@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/empiricaly/meteor-empirica-core/compare/v1.5.0...v1.5.1) (2020-05-26)
+
+
+* allow all-bot games ([6d43a6b](https://github.com/empiricaly/meteor-empirica-core/commit/6d43a6b300aaff90014eb6806fef0a58c328b1f4))
+* bot callback passthrough ([#128](https://github.com/empiricaly/meteor-empirica-core/issues/128)) ([33fea16](https://github.com/empiricaly/meteor-empirica-core/commit/33fea16fd3571948000aee9d41a652785b3328f3))
+* fail game with callback throw [#133](https://github.com/empiricaly/meteor-empirica-core/issues/133) ([#134](https://github.com/empiricaly/meteor-empirica-core/issues/134)) ([20491ba](https://github.com/empiricaly/meteor-empirica-core/commit/20491bad20b2a0343110fd4a3dc697671707628a))
+* remove gameInit throw [#125](https://github.com/empiricaly/meteor-empirica-core/issues/125) ([#129](https://github.com/empiricaly/meteor-empirica-core/issues/129)) ([30636e5](https://github.com/empiricaly/meteor-empirica-core/commit/30636e56ef386d1b1ef175e41f6bddf693306aa9))
+* return all players on lobby [#131](https://github.com/empiricaly/meteor-empirica-core/issues/131) ([#135](https://github.com/empiricaly/meteor-empirica-core/issues/135)) ([9f727be](https://github.com/empiricaly/meteor-empirica-core/commit/9f727be3f37c47cfdcf0799253de72067d6ac0be))
+* undefined gameLobbyId onSub [#131](https://github.com/empiricaly/meteor-empirica-core/issues/131) ([#136](https://github.com/empiricaly/meteor-empirica-core/issues/136)) ([67fdfff](https://github.com/empiricaly/meteor-empirica-core/commit/67fdfffe3b3f69963ab37aa641e24226c58446ab))
+
 ## [1.5.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.4.3...v1.5.0) (2020-04-30)
 
 
