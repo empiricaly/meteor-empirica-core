@@ -1,6 +1,6 @@
 {
   "name": "meteor-empirica-core",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Core Meteor package for the experiment Empirica platform.",
   "main": "server.js",
   "repository": "git@github.com:empiricaly/meteor-empirica-core.git",
