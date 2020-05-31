@@ -7,7 +7,7 @@ Package.describe({
 });
 
 Package.onUse(function(api) {
-  api.versionsFrom("1.7.0.5");
+  api.versionsFrom("1.10.2");
 
   api.use([
     "meteor-base",
@@ -20,12 +20,12 @@ Package.onUse(function(api) {
     "reactive-var",
     "tracker",
 
-    "aldeed:collection2@3.0.0", // Attach a SimpleSchema to a Mongo.Collection
+    "aldeed:collection2@3.0.6", // Attach a SimpleSchema to a Mongo.Collection
     "aldeed:schema-deny@3.0.0", // deny update
     "aldeed:schema-index@3.0.0", // indexes
     "dburles:collection-helpers@1.1.0", // Add helper methods to Collection objects
-    "reywood:publish-composite@1.6.0", // When publishes need to be reactive on multiple levels of data
-    "matb33:collection-hooks@0.8.4", // Add before/after hooks on insert, update...
+    "reywood:publish-composite@1.7.3", // When publishes need to be reactive on multiple levels of data
+    "matb33:collection-hooks@0.9.1", // Add before/after hooks on insert, update...
 
     // React
     "react-meteor-data@0.2.16", // Connects the meteor reactive model to react
@@ -36,7 +36,7 @@ Package.onUse(function(api) {
     "random",
     "dynamic-import",
     "accounts-password",
-    "mizzao:timesync@0.1.6",
+    "mizzao:timesync@0.5.1",
     "underscore"
     // "tmeasday:check-npm-versions@0.3.2"
   ]);
