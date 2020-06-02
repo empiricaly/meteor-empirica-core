@@ -12,7 +12,7 @@ Package.onUse(function(api) {
   api.use([
     "meteor-base",
     "ecmascript",
-    "less",
+    "less@3.0.1",
 
     // Core Meteor. Needed?
     "es5-shim",
