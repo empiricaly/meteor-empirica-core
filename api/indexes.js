@@ -10,7 +10,6 @@
 //
 
 import inflection from "inflection";
-
 import log from "../lib/log.js";
 import { collections } from "./collections.js";
 
@@ -85,7 +84,7 @@ Meteor.startup(() => {
             );
 
             coll.rawCollection().createIndex(index, opts, (err, res) => {
-              if (err) {
+              if (err && err.codeName !== "IndexOptionsConflict") {
                 log.error(
                   `can't create index: ${name}/${JSON.stringify(index)}. ${err}`
                 );
