@@ -1,6 +1,6 @@
 Package.describe({
   name: "empirica:core",
-  version: "1.5.1",
+  version: "1.6.0",
   summary: "Core Meteor package for the experiment Empirica platform.",
   git: "https://github.com/empiricaly/meteor-empirica-core.git",
   documentation: "README.md"
@@ -12,7 +12,7 @@ Package.onUse(function(api) {
   api.use([
     "meteor-base",
     "ecmascript",
-    "less",
+    "less@3.0.1",
 
     // Core Meteor. Needed?
     "es5-shim",
