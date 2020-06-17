@@ -3,7 +3,11 @@ import { updateGameData, earlyExitGame } from "../games/methods.js";
 import { updateGameLobbyData } from "../game-lobbies/methods";
 import { updatePlayerRoundData } from "../player-rounds/methods";
 import { PlayerRounds } from "../player-rounds/player-rounds";
-import { updatePlayerData, earlyExitPlayer } from "../players/methods.js";
+import {
+  updatePlayerData,
+  earlyExitPlayer,
+  earlyExitPlayerLobby
+} from "../players/methods.js";
 import { playerLog } from "../player-logs/methods.js";
 import { updateRoundData } from "../rounds/methods.js";
 import { updateStageData } from "../stages/methods.js";
@@ -92,6 +96,35 @@ export const augmentGameLobby = gameLobby => {
   gameLobby.get = key => gameLobby.data[key];
   gameLobby.set = set(gameLobby.data, gameLobbySet(gameLobby._id));
   gameLobby.append = append(gameLobby.data, gameLobbySet(gameLobby._id, true));
+};
+
+export const augmentPlayerLobby = (
+  player,
+  round = {},
+  stage = {},
+  gameLobby = {}
+) => {
+  const { _id: playerId } = player;
+
+  player.exit = reason =>
+    earlyExitPlayerLobby.call({
+      playerId,
+      exitReason: reason,
+      gameLobbyId: gameLobby._id
+    });
+  player.get = key => player.data[key];
+  player.set = set(player.data, playerSet(playerId));
+  player.append = append(player.data, playerSet(playerId, true));
+  player.log = (name, data) => {
+    playerLog.call({
+      playerId,
+      name,
+      jsonData: JSON.stringify(data),
+      stageId: stage._id,
+      roundId: round._id,
+      gameLobbyId: gameLobby._id
+    });
+  };
 };
 
 export const augmentPlayer = (player, stage = {}, round = {}, game = {}) => {
