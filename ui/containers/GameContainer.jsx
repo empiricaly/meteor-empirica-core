@@ -7,6 +7,7 @@ import { PlayerRounds } from "../../api/player-rounds/player-rounds";
 import {
   augmentGameStageRound,
   augmentPlayer,
+  augmentPlayerLobby,
   augmentPlayerStageRound,
   augmentGameLobby
 } from "../../api/player-stages/augment";
@@ -146,10 +147,10 @@ export default withTracker(({ player, gameLobby, game, ...rest }) => {
       _id: { $in: gameLobby.playerIds }
     }).fetch();
 
-    gameLobby.players.forEach(p => augmentPlayer(p));
+    gameLobby.players.forEach(p => augmentPlayerLobby(p, {}, {}, gameLobby));
 
     augmentGameLobby(gameLobby);
-    augmentPlayer(player);
+    augmentPlayerLobby(player, {}, {}, gameLobby);
 
     return {
       ...rest,
