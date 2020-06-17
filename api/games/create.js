@@ -238,6 +238,7 @@ export const createGameFromLobby = gameLobby => {
   roundsOpResult = Meteor.wrapAsync(RoundsOp.execute, RoundsOp)();
 
   const roundIds = roundsOpResult.getInsertedIds().map(ids => ids._id);
+  params.roundIds = roundIds;
   RoundsOp = Rounds.rawCollection().initializeUnorderedBulkOp();
 
   params.rounds.forEach((round, index) => {
