@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+## [1.7.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.6.0...v1.7.0) (2020-06-18)
+
+
+### Bug Fixes
+
+* missing roundIds on games [#146](https://github.com/empiricaly/meteor-empirica-core/issues/146) ([#148](https://github.com/empiricaly/meteor-empirica-core/issues/148)) ([62d584d](https://github.com/empiricaly/meteor-empirica-core/commit/62d584d))
+* splitting params on callback [#142](https://github.com/empiricaly/meteor-empirica-core/issues/142) ([#143](https://github.com/empiricaly/meteor-empirica-core/issues/143)) ([03de6e6](https://github.com/empiricaly/meteor-empirica-core/commit/03de6e6))
+
+
+### Features
+
+* add  support for player.exit() before game start [#144](https://github.com/empiricaly/meteor-empirica-core/issues/144) ([#145](https://github.com/empiricaly/meteor-empirica-core/issues/145)) ([baa89b5](https://github.com/empiricaly/meteor-empirica-core/commit/baa89b5))
+
+
 ## [1.6.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.5.1...v1.6.0) (2020-06-02)
 
 
