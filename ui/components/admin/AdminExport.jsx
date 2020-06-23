@@ -52,8 +52,7 @@ export default class AdminExport extends React.Component {
           />
           <Checkbox
             checked={includePii}
-            label="Remove Personal Identity Information (includes the player ID, URL
-                parameters, and IP address)"
+            label="Add Personal Identity Information (includes the player ID, URL parameters, and IP address)"
             onChange={this.handleChange}
             name="includePii"
           />
