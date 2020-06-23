@@ -338,11 +338,8 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     gameDataFields
   );
 
-  const playerFields = ["_id"];
-  if (req.query.remove_pii === "false") {
-    playerFields.push("id", "urlParams", "lastLogin");
-  }
-  playerFields.push(
+  const playerFields = [
+    "_id",
     "bot",
     "readyAt",
     "timeoutStartedAt",
@@ -353,7 +350,11 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "retiredAt",
     "retiredReason",
     "createdAt"
-  );
+  ];
+  if (req.query.include_pii === "true") {
+    playerFields.splice(1, 0, "id", "urlParams");
+    playerFields.splice(playerFields.length, 0, "lastLogin");
+  }
 
   const playerDataFields = getDataKeys(Players);
   saveFile(
@@ -467,21 +468,19 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     playerInputDataFields
   );
 
-  if (req.query.remove_pii === "false") {
-    const playerLogFields = [
-      "_id",
-      "playerId",
-      "gameId",
-      "roundId",
-      "stageId",
-      "name",
-      "jsonData",
-      "createdAt"
-    ];
-    saveFile("player-logs", playerLogFields, puts => {
-      batch(PlayerLogs)(p => puts(_.pick(p, playerLogFields)));
-    });
-  }
+  const playerLogFields = [
+    "_id",
+    "playerId",
+    "gameId",
+    "roundId",
+    "stageId",
+    "name",
+    "jsonData",
+    "createdAt"
+  ];
+  saveFile("player-logs", playerLogFields, puts => {
+    batch(PlayerLogs)(p => puts(_.pick(p, playerLogFields)));
+  });
 
   archive.finalize();
   requestFinished = true;

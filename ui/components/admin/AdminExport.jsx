@@ -12,7 +12,7 @@ import { IconNames } from "@blueprintjs/icons";
 import { AdminPageHeader } from "./AdminHeading.jsx";
 
 export default class AdminExport extends React.Component {
-  state = { format: "CSV", exporting: false, removePii: true };
+  state = { format: "CSV", exporting: false, includePii: false };
 
   handleChange = event => {
     const { name, value, type } = event.currentTarget;
@@ -25,12 +25,12 @@ export default class AdminExport extends React.Component {
   };
 
   handleExport = () => {
-    const { removePii } = this.state;
-    document.location = `/admin/export.${this.state.format.toLowerCase()}?remove_pii=${removePii}`;
+    const { includePii } = this.state;
+    document.location = `/admin/export.${this.state.format.toLowerCase()}?include_pii=${includePii}`;
   };
 
   render() {
-    const { format, exporting, removePii } = this.state;
+    const { format, exporting, includePii } = this.state;
 
     return (
       <div className="export">
@@ -51,11 +51,11 @@ export default class AdminExport extends React.Component {
             onChange={this.handleChange}
           />
           <Checkbox
-            checked={removePii}
+            checked={includePii}
             label="Remove Personal Identity Information (includes the player ID, URL
                 parameters, and IP address)"
             onChange={this.handleChange}
-            name="removePii"
+            name="includePii"
           />
         </FormGroup>
         <FormGroup>
