@@ -106,17 +106,17 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
   //
 
   let format;
-  switch (req.url) {
-    case "/":
+  switch (true) {
+    case req.url === "/":
       next();
       return;
-    case "/.json":
+    case req.url.includes("/.json"):
       format = "json";
       break;
-    case "/.jsonl":
+    case req.url.includes("/.jsonl"):
       format = "jsonl";
       break;
-    case "/.csv":
+    case req.url.includes("/.csv"):
       format = "csv";
       break;
     default:
@@ -338,10 +338,11 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     gameDataFields
   );
 
-  const playerFields = [
-    "_id",
-    "id",
-    "urlParams",
+  const playerFields = ["_id"];
+  if (req.query.remove_pii === "false") {
+    playerFields.push("id", "urlParams", "lastLogin");
+  }
+  playerFields.push(
     "bot",
     "readyAt",
     "timeoutStartedAt",
@@ -352,7 +353,8 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "retiredAt",
     "retiredReason",
     "createdAt"
-  ];
+  );
+
   const playerDataFields = getDataKeys(Players);
   saveFile(
     "players",
@@ -465,19 +467,21 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     playerInputDataFields
   );
 
-  const playerLogFields = [
-    "_id",
-    "playerId",
-    "gameId",
-    "roundId",
-    "stageId",
-    "name",
-    "jsonData",
-    "createdAt"
-  ];
-  saveFile("player-logs", playerLogFields, puts => {
-    batch(PlayerLogs)(p => puts(_.pick(p, playerLogFields)));
-  });
+  if (req.query.remove_pii === "false") {
+    const playerLogFields = [
+      "_id",
+      "playerId",
+      "gameId",
+      "roundId",
+      "stageId",
+      "name",
+      "jsonData",
+      "createdAt"
+    ];
+    saveFile("player-logs", playerLogFields, puts => {
+      batch(PlayerLogs)(p => puts(_.pick(p, playerLogFields)));
+    });
+  }
 
   archive.finalize();
   requestFinished = true;

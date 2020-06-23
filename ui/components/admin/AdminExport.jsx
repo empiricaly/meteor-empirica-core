@@ -1,24 +1,36 @@
 import React from "react";
 
-import { Button, FormGroup, HTMLSelect, Icon, Intent } from "@blueprintjs/core";
+import {
+  Button,
+  FormGroup,
+  HTMLSelect,
+  Intent,
+  Checkbox
+} from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
 import { AdminPageHeader } from "./AdminHeading.jsx";
 
 export default class AdminExport extends React.Component {
-  state = { format: "CSV", exporting: false };
+  state = { format: "CSV", exporting: false, removePii: true };
 
   handleChange = event => {
-    const { name, value } = event.currentTarget;
+    const { name, value, type } = event.currentTarget;
+    if (type === "checkbox") {
+      this.setState({ [name]: event.currentTarget.checked });
+      return;
+    }
+
     this.setState({ [name]: value });
   };
 
   handleExport = () => {
-    document.location = `/admin/export.${this.state.format.toLowerCase()}`;
+    const { removePii } = this.state;
+    document.location = `/admin/export.${this.state.format.toLowerCase()}?remove_pii=${removePii}`;
   };
 
   render() {
-    const { format, exporting } = this.state;
+    const { format, exporting, removePii } = this.state;
 
     return (
       <div className="export">
@@ -37,7 +49,16 @@ export default class AdminExport extends React.Component {
             value={format}
             options={["CSV", "JSON", "JSONL"]}
             onChange={this.handleChange}
-          />{" "}
+          />
+          <Checkbox
+            checked={removePii}
+            label="Remove Personal Identity Information (includes the player ID, URL
+                parameters, and IP address)"
+            onChange={this.handleChange}
+            name="removePii"
+          />
+        </FormGroup>
+        <FormGroup>
           <Button
             text="Export All"
             loading={exporting}
