@@ -106,17 +106,17 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
   //
 
   let format;
-  switch (req.url) {
-    case "/":
+  switch (true) {
+    case req.url === "/":
       next();
       return;
-    case "/.json":
+    case req.url.includes("/.json"):
       format = "json";
       break;
-    case "/.jsonl":
+    case req.url.includes("/.jsonl"):
       format = "jsonl";
       break;
-    case "/.csv":
+    case req.url.includes("/.csv"):
       format = "csv";
       break;
     default:
@@ -340,8 +340,6 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
 
   const playerFields = [
     "_id",
-    "id",
-    "urlParams",
     "bot",
     "readyAt",
     "timeoutStartedAt",
@@ -353,6 +351,11 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "retiredReason",
     "createdAt"
   ];
+  if (req.query.include_pii === "true") {
+    playerFields.splice(1, 0, "id", "urlParams");
+    playerFields.splice(playerFields.length, 0, "lastLogin");
+  }
+
   const playerDataFields = getDataKeys(Players);
   saveFile(
     "players",
