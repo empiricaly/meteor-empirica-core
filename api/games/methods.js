@@ -5,6 +5,7 @@ import SimpleSchema from "simpl-schema";
 import { Games } from "./games.js";
 import { GameLobbies } from "../game-lobbies/game-lobbies.js";
 import { Players } from "../players/players.js";
+import { Stages } from "../stages/stages.js";
 
 export const updateGameData = new ValidatedMethod({
   name: "Games.methods.updateData",
@@ -84,8 +85,8 @@ export const earlyExitGame = new ValidatedMethod({
   }).validator(),
 
   run({ gameId, endReason, status }) {
-    if (!this.connection) {
-      throw new Error("not allowed");
+    if (!Meteor.isServer) {
+      return;
     }
 
     const game = Games.findOne(gameId);
