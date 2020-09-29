@@ -8,8 +8,8 @@ import { callOnChange } from "./api/server/onchange.js";
 import { callOnSubmit } from "./api/server/onsubmit.js";
 import { earlyExitGame } from "./api/games/methods.js";
 import shared from "./shared";
-import log from "./lib/log";
 import { getFunctionParameters } from "./lib/utils";
+import { Games } from "./api/games/games.js";
 
 const safeCallback = function(name, func, arguments) {
   try {
@@ -25,6 +25,13 @@ const safeCallback = function(name, func, arguments) {
 
       default:
         break;
+    }
+
+    const game = Games.findOne(arguments[0]._id);
+
+    if (game.finishedAt) {
+      console.log("safeCallback: game already ended.");
+      return;
     }
 
     return func.apply(this, arguments);
