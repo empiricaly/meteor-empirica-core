@@ -21,13 +21,13 @@
     }
   },
   "devDependencies": {
-    "@commitlint/cli": "^9.0.1",
+    "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^7.1.2",
     "cz-conventional-changelog": "2.1.0",
     "husky": "^1.2.0",
     "lint-staged": "^8.1.0",
     "prettier": "^1.15.2",
-    "standard-version": "^8.0.1"
+    "standard-version": "^9.0.0"
   },
   "config": {
     "commitizen": {
