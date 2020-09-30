@@ -25,7 +25,7 @@ Again, defining this up front means less work for you. If someone ignores your g
 # Ground Rules
 
 All members of our community are expected to follow our
-[Code of Conduct](code_of_conduct). Please make sure you are welcoming and
+[Code of Conduct](CODE_OF_CONDUCT.md). Please make sure you are welcoming and
 friendly in all of our spaces.
 
 ## Responsibilities
