@@ -132,15 +132,11 @@ Nicolas Paton, & Abdullah Almaatouq. (2018, November 15). Empirica: Open-Source,
 
 ### Bibtex entry:
 ```
-@misc{nicolas_paton_2018_1488413,
-  author       = {Nicolas Paton and
-                  Abdullah Almaatouq},
-  title        = {Empirica: Open-Source, Real-Time, Synchronous, 
-                   Virtual Lab Framework},
-  month        = nov,
-  year         = 2018,
-  doi          = {10.5281/zenodo.1488413},
-  url          = {https://doi.org/10.5281/zenodo.1488413}
+@article{almaatouq2020empirica,
+  title={Empirica: a virtual lab for high-throughput macro-level experiments},
+  author={Almaatouq, Abdullah and Becker, Joshua and Houghton, James P and Paton, Nicolas and Watts, Duncan J and Whiting, Mark E},
+  journal={arXiv preprint arXiv:2006.11398},
+  year={2020}
 }
 ```
 
