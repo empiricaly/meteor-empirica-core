@@ -128,7 +128,7 @@ For more information on how to contribute please take a look at our
 ## Citing Empirica
 If you use Empirica in a scientific publication, we would appreciate citing the following:
 
-Nicolas Paton, & Abdullah Almaatouq. (2018, November 15). Empirica: Open-Source, Real-Time, Synchronous, Virtual Lab Framework (Version v0.0.5). Zenodo. http://doi.org/10.5281/zenodo.1488413
+Almaatouq, A., Becker, J., Houghton, J. P., Paton, N., Watts, D. J., & Whiting, M. E. (2020). Empirica: a virtual lab for high-throughput macro-level experiments. arXiv preprint arXiv:2006.11398.
 
 ### Bibtex entry:
 ```
