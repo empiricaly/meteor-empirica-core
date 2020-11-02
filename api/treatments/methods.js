@@ -2,6 +2,8 @@ import { ValidatedMethod } from "meteor/mdg:validated-method";
 import SimpleSchema from "simpl-schema";
 
 import { IdSchema } from "../default-schemas.js";
+import { FactorTypes } from "../factor-types/factor-types.js";
+import { Factors } from "../factors/factors.js";
 import { Treatments } from "./treatments";
 
 export const createTreatment = new ValidatedMethod({
@@ -25,6 +27,29 @@ export const createTreatment = new ValidatedMethod({
   run(treatment) {
     if (!this.userId) {
       throw new Error("unauthorized");
+    }
+
+    // Validate the required factor types
+    const requiredFactorTypes = FactorTypes.find({ required: true }).fetch();
+
+    if (requiredFactorTypes.length > 0) {
+      const createdFactors = Factors.find({
+        _id: { $in: treatment.factorIds }
+      }).fetch();
+      const createdFactorTypes = FactorTypes.find({
+        $and: [
+          {
+            _id: {
+              $in: createdFactors.map(f => f.factorTypeId)
+            }
+          },
+          { required: true }
+        ]
+      }).fetch();
+
+      if (requiredFactorTypes.length !== createdFactorTypes.length) {
+        throw new Error("Fill all required factors!");
+      }
     }
 
     Treatments.insert(treatment);
