@@ -68,7 +68,6 @@ export default class AdminBatch extends React.Component {
 
   render() {
     const { loading, batch, treatments, archived } = this.props;
-    console.log("batch ", batch);
     const { detailsVisible } = this.state;
 
     if (loading) {
