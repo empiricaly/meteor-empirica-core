@@ -17,8 +17,11 @@ import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
 import AboutOriginal from "./About.jsx";
 import NoBatchOriginal from "./NoBatch.jsx";
 import { CoreWrapper } from "./Helpers.jsx";
+import { AlertToaster } from "./Toasters.jsx";
 import Loading from "./Loading.jsx";
-import NewPlayer from "./NewPlayer.jsx";
+import NewPlayerOriginal from "./NewPlayer.jsx";
+import { createPlayer } from "../../api/players/methods";
+import { setPlayerId } from "../containers/IdentifiedContainer.jsx";
 
 const loadDocTitle = document.title;
 
@@ -59,12 +62,38 @@ export default class Public extends React.Component {
     }
   };
 
+  handleNewPlayer = (event, id) => {
+    event.preventDefault();
+
+    if (!id || !id.trim()) {
+      AlertToaster.show({ message: "Player Identifier cannot be empty!" });
+      return;
+    }
+
+    const urlParams = {};
+    const searchParams = new URL(document.location).searchParams;
+    for (var pair of searchParams.entries()) {
+      urlParams[pair[0]] = pair[1];
+    }
+
+    createPlayer.call({ id, urlParams }, (err, _id) => {
+      if (err) {
+        console.error(err);
+        AlertToaster.show({ message: String(err) });
+        return;
+      }
+
+      setPlayerId(_id);
+    });
+  };
+
   render() {
     const {
       loading,
       renderPublic,
       playerIdKey,
       Header,
+      NewPlayer,
       About,
       NoBatch,
       ...rest
@@ -72,6 +101,7 @@ export default class Public extends React.Component {
     const { player } = rest;
     const AboutComp = About || AboutOriginal;
     const NoBatchComp = NoBatch || NoBatchOriginal;
+    const NewPlayerComp = NewPlayer || NewPlayerOriginal;
 
     if (loading) {
       return <Loading />;
@@ -85,7 +115,7 @@ export default class Public extends React.Component {
     if (!player) {
       content = (
         <CoreWrapper>
-          <NewPlayer {...rest} />
+          <NewPlayerComp {...rest} handleNewPlayer={this.handleNewPlayer} />
         </CoreWrapper>
       );
     } else {

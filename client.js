@@ -6,6 +6,7 @@ import Admin from "./ui/components/Admin.jsx";
 import Centered from "./ui/components/Centered.jsx";
 import Consent, { ConsentButton } from "./ui/components/Consent.jsx";
 import Login from "./ui/components/Login.jsx";
+import NewPlayer from "./ui/components/NewPlayer.jsx";
 import NoBatch from "./ui/components/NoBatch";
 import StageTimeWrapper from "./ui/components/StageTimeWrapper.jsx";
 import { AlertToaster } from "./ui/components/Toasters.jsx";
@@ -31,6 +32,10 @@ const Empirica = {
 
   consent(ConsentComp) {
     config.Consent = ConsentComp || Consent;
+  },
+
+  newPlayer(NewPlayerComp) {
+    config.NewPlayer = NewPlayerComp || NewPlayer;
   },
 
   round(RoundComp) {
