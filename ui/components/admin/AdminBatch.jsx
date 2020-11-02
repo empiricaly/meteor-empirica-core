@@ -68,6 +68,7 @@ export default class AdminBatch extends React.Component {
 
   render() {
     const { loading, batch, treatments, archived } = this.props;
+    console.log("batch ", batch);
     const { detailsVisible } = this.state;
 
     if (loading) {
@@ -206,8 +207,8 @@ export default class AdminBatch extends React.Component {
             </Tag>
           </td>
           <td className="numeric">{batch.gameCount()}</td>
-          <td title={moment(batch.createdAt).format()}>
-            {moment(batch.createdAt).fromNow()}
+          <td title={moment(batch.runningAt).format()}>
+            {batch.runningAt ? moment(batch.runningAt).fromNow() : ""}
           </td>
           <td>{assignmentTypes[batch.assignment]}</td>
           <td>{config}</td>
