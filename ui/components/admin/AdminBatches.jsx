@@ -93,7 +93,7 @@ export default class AdminBatches extends React.Component {
                 <th>#</th>
                 <th>Status</th>
                 <th>Game Count</th>
-                <th>Running At</th>
+                <th>Started At</th>
                 <th>Assignment</th>
                 <th>Configuration</th>
                 <th>{/* Actions */}</th>
