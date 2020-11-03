@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## [1.9.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.8.0...v1.9.0) (2020-11-03)
+
+
+### Features
+
+* add custom new player page [#165](https://github.com/empiricaly/meteor-empirica-core/issues/165) ([#169](https://github.com/empiricaly/meteor-empirica-core/issues/169)) ([74cc064](https://github.com/empiricaly/meteor-empirica-core/commit/74cc064d4288c69341662c2a246fab54e6679892))
+* add option for pii inside lastLogin player [#170](https://github.com/empiricaly/meteor-empirica-core/issues/170) ([#171](https://github.com/empiricaly/meteor-empirica-core/issues/171)) ([6b63641](https://github.com/empiricaly/meteor-empirica-core/commit/6b6364172a7db9bc843c000c5925eea378d2501a))
+
+### Bug Fixes
+
+
+* change createdAt into runningAt on admin UI [#164](https://github.com/empiricaly/meteor-empirica-core/issues/164) ; sort batches in admin UI ([#168](https://github.com/empiricaly/meteor-empirica-core/issues/168)) ([a30b9f3](https://github.com/empiricaly/meteor-empirica-core/commit/a30b9f3aedc94f66d61fd117bdc11e969a24bc40))
+
 ### [1.8.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.7.0...v1.8.0) (2020-09-29)
 
 
