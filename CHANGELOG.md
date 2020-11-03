@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+### [1.8.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.7.0...v1.8.0) (2020-09-29)
+
+
+### Features
+
+* **export:** add checkbox to enable export of PII [#141](https://github.com/empiricaly/meteor-empirica-core/issues/141) ([#151](https://github.com/empiricaly/meteor-empirica-core/issues/151)) ([fb72e8c](https://github.com/empiricaly/meteor-empirica-core/commit/fb72e8cd9fb167179b1317f113021c1324b960db))
+
+
+### Bug Fixes
+
+* fix stage should not continue when all players exit [#158](https://github.com/empiricaly/meteor-empirica-core/issues/158) ([#161](https://github.com/empiricaly/meteor-empirica-core/issues/161)) ([ac409c9](https://github.com/empiricaly/meteor-empirica-core/commit/ac409c95448a71e6c8fff5633235eaa064e865b7))
+* fix game.end() error [#159](https://github.com/empiricaly/meteor-empirica-core/issues/159) ([#160](https://github.com/empiricaly/meteor-empirica-core/issues/160)) ([fc07ace](https://github.com/empiricaly/meteor-empirica-core/commit/fc07ace05455d801712653ffafceffab88c69122))
+
+
 ## [1.7.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.6.0...v1.7.0) (2020-06-18)
 
 
