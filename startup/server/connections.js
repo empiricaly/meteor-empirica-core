@@ -21,13 +21,16 @@ export const playerIdForConn = conn => {
 export const savePlayerId = (conn, playerId) => {
   connections[conn.id] = playerId;
 
+  const pii = Meteor.settings.collectPII
+    ? { ip: conn.clientAddress, userAgent: conn.httpHeaders["user-agent"] }
+    : {};
+
   Players.update(playerId, {
     $set: {
       online: true,
       lastLogin: {
         at: new Date(),
-        ip: conn.clientAddress,
-        userAgent: conn.httpHeaders["user-agent"]
+        ...pii
       }
     }
   });
