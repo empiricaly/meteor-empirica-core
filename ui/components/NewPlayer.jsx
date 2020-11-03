@@ -45,27 +45,6 @@ export default class NewPlayer extends React.Component {
     this.setState({ [name]: value });
   };
 
-  handleForm = event => {
-    event.preventDefault();
-    const { id } = this.state;
-
-    const urlParams = {};
-    const searchParams = new URL(document.location).searchParams;
-    for (var pair of searchParams.entries()) {
-      urlParams[pair[0]] = pair[1];
-    }
-
-    createPlayer.call({ id, urlParams }, (err, _id) => {
-      if (err) {
-        console.error(err);
-        AlertToaster.show({ message: String(err) });
-        return;
-      }
-
-      setPlayerId(_id);
-    });
-  };
-
   handleConsent = () => {
     this.setState({ consented: true });
     this.playerFromIdParam();
@@ -115,7 +94,7 @@ export default class NewPlayer extends React.Component {
     return (
       <Centered>
         <div className="new-player">
-          <form onSubmit={this.handleForm}>
+          <form onSubmit={e => this.props.handleNewPlayer(e, id)}>
             <h1>Identification</h1>
 
             <FormGroup
