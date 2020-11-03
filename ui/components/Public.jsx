@@ -17,11 +17,8 @@ import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
 import AboutOriginal from "./About.jsx";
 import NoBatchOriginal from "./NoBatch.jsx";
 import { CoreWrapper } from "./Helpers.jsx";
-import { AlertToaster } from "./Toasters.jsx";
 import Loading from "./Loading.jsx";
-import NewPlayerOriginal from "./NewPlayer.jsx";
-import { createPlayer } from "../../api/players/methods";
-import { setPlayerId } from "../containers/IdentifiedContainer.jsx";
+import NewPlayer from "./NewPlayer.jsx";
 
 const loadDocTitle = document.title;
 
@@ -62,38 +59,13 @@ export default class Public extends React.Component {
     }
   };
 
-  handleNewPlayer = (event, id) => {
-    event.preventDefault();
-
-    if (!id || !id.trim()) {
-      AlertToaster.show({ message: "Player Identifier cannot be empty!" });
-      return;
-    }
-
-    const urlParams = {};
-    const searchParams = new URL(document.location).searchParams;
-    for (var pair of searchParams.entries()) {
-      urlParams[pair[0]] = pair[1];
-    }
-
-    createPlayer.call({ id, urlParams }, (err, _id) => {
-      if (err) {
-        console.error(err);
-        AlertToaster.show({ message: String(err) });
-        return;
-      }
-
-      setPlayerId(_id);
-    });
-  };
-
   render() {
     const {
       loading,
       renderPublic,
       playerIdKey,
       Header,
-      NewPlayer,
+      NewPlayer: CustomNewPlayer,
       About,
       NoBatch,
       ...rest
@@ -115,7 +87,7 @@ export default class Public extends React.Component {
     if (!player) {
       content = (
         <CoreWrapper>
-          <NewPlayerComp {...rest} handleNewPlayer={this.handleNewPlayer} />
+          <NewPlayer {...rest} CustomNewPlayer={CustomNewPlayer} />
         </CoreWrapper>
       );
     } else {

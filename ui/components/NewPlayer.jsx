@@ -50,6 +50,31 @@ export default class NewPlayer extends React.Component {
     this.playerFromIdParam();
   };
 
+  handleNewPlayer = (event, id) => {
+    event.preventDefault();
+
+    if (!id || !id.trim()) {
+      AlertToaster.show({ message: "Player Identifier cannot be empty!" });
+      return;
+    }
+
+    const urlParams = {};
+    const searchParams = new URL(document.location).searchParams;
+    for (var pair of searchParams.entries()) {
+      urlParams[pair[0]] = pair[1];
+    }
+
+    createPlayer.call({ id, urlParams }, (err, _id) => {
+      if (err) {
+        console.error(err);
+        AlertToaster.show({ message: String(err) });
+        return;
+      }
+
+      setPlayerId(_id);
+    });
+  };
+
   playerFromIdParam() {
     const { playerIdParam } = Meteor.settings.public;
 
@@ -76,7 +101,7 @@ export default class NewPlayer extends React.Component {
     }
   }
   render() {
-    const { Consent } = this.props;
+    const { Consent, CustomNewPlayer } = this.props;
     const { id, consented, attemptingAutoLogin } = this.state;
 
     if (attemptingAutoLogin) {
@@ -91,10 +116,19 @@ export default class NewPlayer extends React.Component {
       );
     }
 
+    if (CustomNewPlayer) {
+      return (
+        <CustomNewPlayer
+          {...this.props}
+          handleNewPlayer={this.handleNewPlayer}
+        />
+      );
+    }
+
     return (
       <Centered>
         <div className="new-player">
-          <form onSubmit={e => this.props.handleNewPlayer(e, id)}>
+          <form onSubmit={e => this.handleNewPlayer(e, id)}>
             <h1>Identification</h1>
 
             <FormGroup
