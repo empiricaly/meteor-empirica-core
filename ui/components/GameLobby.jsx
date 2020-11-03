@@ -35,7 +35,7 @@ export default class GameLobby extends React.Component {
             <NonIdealState
               icon={IconNames.PLAY}
               title="Game loading..."
-              description="You game will be starting shortly, get ready!"
+              description="Your game will be starting shortly, get ready!"
             />
           </div>
         </CoreWrapper>
