@@ -20,9 +20,12 @@ export default withTracker(props => {
     {}
   ).ready();
 
-  const batches = Batches.find({
-    archivedAt: { $exists: Boolean(archived) }
-  }).fetch();
+  const batches = Batches.find(
+    {
+      archivedAt: { $exists: Boolean(archived) }
+    },
+    { sort: { index: 1 } }
+  ).fetch();
   const sortedBatches = [];
 
   if (batches.length > 0) {

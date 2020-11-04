@@ -12,9 +12,12 @@ export default withTracker(props => {
   return {
     loading,
     retired,
-    players: Players.find({
-      archivedAt: { $exists: Boolean(retired) }
-    }).fetch(),
+    players: Players.find(
+      {
+        archivedAt: { $exists: Boolean(retired) }
+      },
+      { sort: { index: 1 } }
+    ).fetch(),
     ...props
   };
 })(AdminPlayers);
