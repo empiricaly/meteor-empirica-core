@@ -9,7 +9,8 @@ import {
   Intent,
   NonIdealState,
   Tag,
-  HTMLTable
+  HTMLTable,
+  Classes
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 
@@ -19,7 +20,28 @@ import { retireGameFullPlayers } from "../../../api/players/methods";
 import { exitStatuses } from "../../../api/players/players.js";
 
 export default class AdminPlayers extends React.Component {
-  state = { retiredReason: exitStatuses[0] };
+  state = {
+    retiredReason: exitStatuses[0],
+    players: [],
+    searchParam: { id: "", createdAt: "", status: "" }
+  };
+
+  componentDidMount() {
+    const { players } = this.props;
+    this.setState({
+      players: players
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    const { players } = this.props;
+
+    if (prevProps.players.length !== players.length) {
+      this.setState({
+        players: players
+      });
+    }
+  }
 
   handleChange = event => {
     const retiredReason = event.currentTarget.value;
@@ -40,16 +62,76 @@ export default class AdminPlayers extends React.Component {
     });
   };
 
+  handleColumnHeaderChange = (event, key) => {
+    const value = event.currentTarget.value;
+
+    this.setState(
+      {
+        searchParam: { ...this.state.searchParam, [key]: value }
+      },
+      this.filterPlayers
+    );
+  };
+
+  filterPlayers = () => {
+    const {
+      searchParam: { createdAt, id, status }
+    } = this.state;
+    const { players } = this.props;
+
+    this.setState({
+      players: players
+        .filter(p => {
+          // Filter id
+          if (!id) {
+            return true;
+          }
+
+          return p.id.includes(id);
+        })
+        .filter(p => {
+          // Filter status
+          if (!status) {
+            return true;
+          }
+
+          switch (status) {
+            case "online":
+              return p.online && p.idle === false;
+
+            case "offline":
+              return !p.online;
+
+            case "idle":
+              return p.idle;
+
+            default:
+              return true;
+          }
+        })
+        .filter(p => {
+          // Filter createdAt
+          if (!createdAt) {
+            return true;
+          }
+
+          const fromNow = moment(p.createdAt).fromNow();
+          return fromNow.includes(createdAt);
+        })
+    });
+  };
+
   render() {
-    const { players, retired } = this.props;
-    const { retiredReason } = this.state;
+    const { retired } = this.props;
+    const { retiredReason, players, searchParam } = this.state;
+
     return (
       <div className="players">
         <AdminPageHeader icon={IconNames.PERSON}>
           {retired ? "Retired Players" : "Players"}
         </AdminPageHeader>
 
-        {players.length === 0 ? (
+        {this.props.players.length === 0 ? (
           <p>{retired ? "No retired players." : "No players yet."}</p>
         ) : (
           <HTMLTable striped>
@@ -57,10 +139,34 @@ export default class AdminPlayers extends React.Component {
               <tr>
                 <th>#</th>
                 <th>
-                  <em>ID</em>
+                  <input
+                    className={Classes.INPUT}
+                    value={searchParam.id}
+                    type="text"
+                    placeholder="ID"
+                    onChange={e => this.handleColumnHeaderChange(e, "id")}
+                  />
                 </th>
-                <th>Status</th>
-                <th>First Registered</th>
+                <th>
+                  <input
+                    className={Classes.INPUT}
+                    value={searchParam.status}
+                    type="text"
+                    placeholder="Status"
+                    onChange={e => this.handleColumnHeaderChange(e, "status")}
+                  />
+                </th>
+                <th>
+                  <input
+                    className={Classes.INPUT}
+                    value={searchParam.createdAt}
+                    type="text"
+                    placeholder="First Registered"
+                    onChange={e =>
+                      this.handleColumnHeaderChange(e, "createdAt")
+                    }
+                  />
+                </th>
               </tr>
             </thead>
             <tbody>
