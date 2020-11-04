@@ -1,12 +1,9 @@
 import React from "react";
 
-import { Button, Classes, FormGroup } from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
-
 import { AlertToaster } from "./Toasters.jsx";
 import { createPlayer } from "../../api/players/methods";
 import { setPlayerId } from "../containers/IdentifiedContainer.jsx";
-import Centered from "./Centered.jsx";
+import NewPlayerForm from "./NewPlayerForm.jsx";
 
 import Loading from "./Loading.jsx";
 const { playerIdParam } = Meteor.settings.public;
@@ -14,7 +11,7 @@ const { playerIdParam } = Meteor.settings.public;
 export const ConsentButtonContext = React.createContext(null);
 
 export default class NewPlayer extends React.Component {
-  state = { id: "", consented: false };
+  state = { consented: false };
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.consented && !prevState.consented) {
@@ -40,14 +37,34 @@ export default class NewPlayer extends React.Component {
     }
   }
 
-  handleUpdate = event => {
-    const { value, name } = event.currentTarget;
-    this.setState({ [name]: value });
-  };
-
   handleConsent = () => {
     this.setState({ consented: true });
     this.playerFromIdParam();
+  };
+
+  handleNewPlayer = (event, id) => {
+    event.preventDefault();
+
+    if (!id || !id.trim()) {
+      AlertToaster.show({ message: "Player Identifier cannot be empty!" });
+      return;
+    }
+
+    const urlParams = {};
+    const searchParams = new URL(document.location).searchParams;
+    for (var pair of searchParams.entries()) {
+      urlParams[pair[0]] = pair[1];
+    }
+
+    createPlayer.call({ id, urlParams }, (err, _id) => {
+      if (err) {
+        console.error(err);
+        AlertToaster.show({ message: String(err) });
+        return;
+      }
+
+      setPlayerId(_id);
+    });
   };
 
   playerFromIdParam() {
@@ -75,9 +92,11 @@ export default class NewPlayer extends React.Component {
       }
     }
   }
+
   render() {
-    const { Consent } = this.props;
-    const { id, consented, attemptingAutoLogin } = this.state;
+    const { Consent, CustomNewPlayer } = this.props;
+    const { consented, attemptingAutoLogin } = this.state;
+    const Form = CustomNewPlayer || NewPlayerForm;
 
     if (attemptingAutoLogin) {
       return <Loading />;
@@ -91,44 +110,6 @@ export default class NewPlayer extends React.Component {
       );
     }
 
-    return (
-      <Centered>
-        <div className="new-player">
-          <form onSubmit={e => this.props.handleNewPlayer(e, id)}>
-            <h1>Identification</h1>
-
-            <FormGroup
-              label="Player ID"
-              labelFor="id"
-              helperText={
-                <>
-                  Enter your player identification{" "}
-                  <span className="bp3-text-muted">
-                    (provided ID, MTurk ID, etc.)
-                  </span>
-                </>
-              }
-            >
-              <input
-                className={Classes.INPUT}
-                dir="auto"
-                type="text"
-                name="id"
-                id="id"
-                value={id}
-                onChange={this.handleUpdate}
-                placeholder="e.g. john@example.com"
-                required
-                autoComplete="off"
-              />
-            </FormGroup>
-
-            <FormGroup>
-              <Button type="submit" text="Submit" icon={IconNames.KEY_ENTER} />
-            </FormGroup>
-          </form>
-        </div>
-      </Centered>
-    );
+    return <Form {...this.props} handleNewPlayer={this.handleNewPlayer} />;
   }
 }
