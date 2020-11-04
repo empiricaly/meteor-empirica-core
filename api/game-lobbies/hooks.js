@@ -25,20 +25,31 @@ GameLobbies.after.update(function(
 // Start the game if lobby full
 GameLobbies.after.update(
   function(userId, doc, fieldNames, modifier, options) {
-    if (!( fieldNames.includes("playerIds") ||
-           (fieldNames.includes("status") && doc.status == "running" )
-         )){
+    if (
+      !(
+        fieldNames.includes("playerIds") ||
+        (fieldNames.includes("status") && doc.status == "running")
+      )
+    ) {
       return;
     }
 
     const gameLobby = this.transform();
+    const humanPlayers = [];
+
+    if (gameLobby.playerIds && gameLobby.playerIds.length > 0) {
+      const players = Players.find({
+        _id: { $in: gameLobby.playerIds }
+      }).fetch();
+      humanPlayers.push(...players.filter(p => !p.bot));
+    }
 
     const readyPlayersCount = gameLobby.playerIds.length;
 
     // If the lobby timeout it hasn't started yet and the lobby isn't full yet
     // (single player), try to start the timeout timer.
     if (
-      readyPlayersCount > 0 &&
+      humanPlayers.length > 0 &&
       gameLobby.availableCount != 1 &&
       !gameLobby.timeoutStartedAt
     ) {
@@ -52,7 +63,7 @@ GameLobbies.after.update(
 
     // If the readyPlayersCount went to 0 (disconnections for example), reset the
     // lobby timeout.
-    if (readyPlayersCount === 0 && gameLobby.timeoutStartedAt) {
+    if (humanPlayers.length === 0 && gameLobby.timeoutStartedAt) {
       const lobbyConfig = LobbyConfigs.findOne(gameLobby.lobbyConfigId);
       if (lobbyConfig.timeoutType === "lobby") {
         GameLobbies.update(gameLobby._id, {
