@@ -63,7 +63,7 @@ GameLobbies.after.update(
 
     // If the readyPlayersCount went to 0 (disconnections for example), reset the
     // lobby timeout.
-    if (readyPlayersCount === 0 && gameLobby.timeoutStartedAt) {
+    if (humanPlayers.length === 0 && gameLobby.timeoutStartedAt) {
       const lobbyConfig = LobbyConfigs.findOne(gameLobby.lobbyConfigId);
       if (lobbyConfig.timeoutType === "lobby") {
         GameLobbies.update(gameLobby._id, {
