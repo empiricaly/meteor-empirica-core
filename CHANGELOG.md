@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## [1.10.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.9.0...v1.10.0) (2020-11-04)
+
+
+### Features
+
+
+* add custom new player page [#165](https://github.com/empiricaly/meteor-empirica-core/issues/165) ([#169](https://github.com/empiricaly/meteor-empirica-core/issues/169)) ([74cc064](https://github.com/empiricaly/meteor-empirica-core/commit/74cc064d4288c69341662c2a246fab54e6679892))
+* filter players from admin UI [#111](https://github.com/empiricaly/meteor-empirica-core/issues/111) ([#175](https://github.com/empiricaly/meteor-empirica-core/issues/175)) ([be096a9](https://github.com/empiricaly/meteor-empirica-core/commit/be096a957ba21b20282a37e367f40fcd388f2f61))
+
+
+### Bug Fixes
+
+* rework on custom newPlayer page [#173](https://github.com/empiricaly/meteor-empirica-core/issues/173) ([#174](https://github.com/empiricaly/meteor-empirica-core/issues/174)) ([0d0db40](https://github.com/empiricaly/meteor-empirica-core/commit/0d0db40db187e26ddee389eb62a15026d902a69a))
+* sort batches and players based on index [#112](https://github.com/empiricaly/meteor-empirica-core/issues/112) ([#176](https://github.com/empiricaly/meteor-empirica-core/issues/176)) ([23e369d](https://github.com/empiricaly/meteor-empirica-core/commit/23e369d9c810ba8f359094cbd89b3994b3181c3f))
+
+
 ## [1.9.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.8.0...v1.9.0) (2020-11-03)
 
 
