@@ -177,6 +177,7 @@ export default class AdminNewBatch extends React.Component {
       }
 
       this.setState({
+        assignment: "simple",
         simpleTreatments: [],
         completeTreatments: [],
         simpleGamesCount: 1,
