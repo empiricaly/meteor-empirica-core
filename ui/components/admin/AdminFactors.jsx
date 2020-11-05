@@ -34,7 +34,6 @@ export default class AdminFactors extends React.Component {
 
   render() {
     const { loading, archived, factors, factorTypes } = this.props;
-
     if (loading) {
       return <Loading />;
     }
@@ -132,11 +131,16 @@ export default class AdminFactors extends React.Component {
                       <tr>
                         <th>Name</th>
                         <th>Value</th>
+                        <th />
                       </tr>
                     </thead>
                     <tbody>
                       {t.factors.map(factor => (
-                        <AdminFactor key={factor._id} factor={factor} />
+                        <AdminFactor
+                          key={factor._id}
+                          factor={factor}
+                          archived={archived}
+                        />
                       ))}
                     </tbody>
                   </HTMLTable>
