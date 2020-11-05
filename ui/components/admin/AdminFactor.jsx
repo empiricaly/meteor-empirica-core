@@ -1,4 +1,5 @@
-import { EditableText } from "@blueprintjs/core";
+import { EditableText, Button } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import React from "react";
 import { AlertToaster } from "../Toasters.jsx";
 
@@ -42,7 +43,7 @@ export default class AdminFactor extends React.Component {
   };
 
   render() {
-    const { factor } = this.props;
+    const { factor, archived } = this.props;
     const { name } = this.state;
     return (
       <tr key={factor._id}>
@@ -54,6 +55,16 @@ export default class AdminFactor extends React.Component {
           />
         </td>
         <td>{String(factor.value)}</td>
+        <td>
+          <Button
+            text={archived ? `Unarchive ${t.name}` : ""}
+            intent={archived ? Intent.SUCCESS : null}
+            icon={IconNames.BOX}
+            onClick={() =>
+              updateFactor.call({ _id: factor._id, name, archived: !archived })
+            }
+          />
+        </td>
       </tr>
     );
   }

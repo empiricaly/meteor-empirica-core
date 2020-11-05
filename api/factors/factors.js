@@ -1,5 +1,9 @@
 import SimpleSchema from "simpl-schema";
-import { BelongsTo, TimestampSchema } from "../default-schemas.js";
+import {
+  ArchivedSchema,
+  BelongsTo,
+  TimestampSchema
+} from "../default-schemas.js";
 import { FactorTypes } from "../factor-types/factor-types.js";
 
 export const Factors = new Mongo.Collection("factors");
@@ -109,6 +113,7 @@ Factors.schema = new SimpleSchema({
 });
 
 Factors.schema.addValidator(valueValidation);
+Factors.schema.extend(ArchivedSchema);
 Factors.schema.extend(BelongsTo("FactorTypes"));
 Factors.schema.extend(TimestampSchema);
 Factors.attachSchema(Factors.schema);

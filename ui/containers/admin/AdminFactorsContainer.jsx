@@ -14,7 +14,10 @@ export default withTracker(props => {
   return {
     loading: treatmentsLoading || factorsLoading || typesLoading,
     treatments: Treatments.find().fetch(),
-    factors: Factors.find({}, { sort: { value: 1 } }).fetch(),
+    factors: Factors.find(
+      { archivedAt: { $exists: Boolean(archived) } },
+      { sort: { value: 1 } }
+    ).fetch(),
     factorTypes: FactorTypes.find({
       archivedAt: { $exists: Boolean(archived) }
     }).fetch(),

@@ -1,4 +1,5 @@
 import { ValidatedMethod } from "meteor/mdg:validated-method";
+import SimpleSchema from "simpl-schema";
 
 import { Factors } from "./factors.js";
 import { FactorTypes } from "../factor-types/factor-types.js";
@@ -33,13 +34,63 @@ export const updateFactor = new ValidatedMethod({
   validate: Factors.schema
     .pick("name")
     .extend(IdSchema)
+    .extend(
+      new SimpleSchema({
+        archived: {
+          type: Boolean,
+          optional: true
+        }
+      })
+    )
     .validator(),
 
-  run({ _id, name }) {
+  run({ _id, name, archived }) {
     if (!this.userId) {
       throw new Error("unauthorized");
     }
 
-    Factors.update(_id, { $set: { name } });
+    const factor = Factors.findOne(_id);
+    if (!factor) {
+      throw new Error("not found");
+    }
+
+    const $set = {},
+      $unset = {};
+    if (name !== undefined) {
+      $set.name = name;
+    }
+
+    if (archived !== undefined) {
+      if (archived) {
+        if (factor.archivedAt) {
+          throw new Error("not found");
+        }
+
+        $set.archivedAt = new Date();
+        $set.archivedById = this.userId;
+      }
+
+      if (!archived) {
+        if (!factor.archivedAt) {
+          throw new Error("not found");
+        }
+
+        $unset.archivedAt = true;
+        $unset.archivedById = true;
+      }
+    }
+
+    const modifier = {};
+    if (Object.keys($set).length > 0) {
+      modifier.$set = $set;
+    }
+    if (Object.keys($unset).length > 0) {
+      modifier.$unset = $unset;
+    }
+    if (Object.keys(modifier).length === 0) {
+      return;
+    }
+
+    Factors.update(_id, modifier);
   }
 });
