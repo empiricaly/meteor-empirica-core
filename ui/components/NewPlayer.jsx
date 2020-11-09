@@ -42,9 +42,7 @@ export default class NewPlayer extends React.Component {
     this.playerFromIdParam();
   };
 
-  handleNewPlayer = (event, id) => {
-    event.preventDefault();
-
+  handleNewPlayer = id => {
     if (!id || !id.trim()) {
       AlertToaster.show({ message: "Player Identifier cannot be empty!" });
       return;
