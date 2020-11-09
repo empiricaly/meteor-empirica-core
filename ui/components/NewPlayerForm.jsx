@@ -13,14 +13,19 @@ export default class NewPlayerForm extends React.Component {
     this.setState({ [name]: value });
   };
 
-  render() {
+  handleSubmit = event => {
+    event.preventDefault();
+
     const { handleNewPlayer } = this.props;
     const { id } = this.state;
+    handleNewPlayer(id);
+  };
 
+  render() {
     return (
       <Centered>
         <div className="new-player">
-          <form onSubmit={e => handleNewPlayer(e, id)}>
+          <form onSubmit={this.handleSubmit}>
             <h1>Identification</h1>
 
             <FormGroup
