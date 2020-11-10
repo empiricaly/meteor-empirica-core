@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## [1.11.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.10.0...v1.11.0) (2020-11-09)
+
+
+### Features
+
+* add option for pii inside lastLogin player [#170](https://github.com/empiricaly/meteor-empirica-core/issues/170) ([#171](https://github.com/empiricaly/meteor-empirica-core/issues/171)) ([6b63641](https://github.com/empiricaly/meteor-empirica-core/commit/6b6364172a7db9bc843c000c5925eea378d2501a))
+
+
+### Bug Fixes
+
+* remove event from handleNewPlayer [#182](https://github.com/empiricaly/meteor-empirica-core/issues/182) ([#183](https://github.com/empiricaly/meteor-empirica-core/issues/183)) ([a9985ab](https://github.com/empiricaly/meteor-empirica-core/commit/a9985abf90bda695b9af4b00f7af418e6c75030b))
+* reset new batch assignment value [#178](https://github.com/empiricaly/meteor-empirica-core/issues/178) ([#181](https://github.com/empiricaly/meteor-empirica-core/issues/181)) ([b3b026c](https://github.com/empiricaly/meteor-empirica-core/commit/b3b026cb1666d38e3b577335b15bad716a5176ad))
+
+
 ## [1.10.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.9.0...v1.10.0) (2020-11-04)
 
 
