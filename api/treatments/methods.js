@@ -30,7 +30,10 @@ export const createTreatment = new ValidatedMethod({
     }
 
     // Validate the required factor types
-    const requiredFactorTypes = FactorTypes.find({ required: true }).fetch();
+    const requiredFactorTypes = FactorTypes.find({
+      required: true,
+      archivedAt: { $exists: false }
+    }).fetch();
 
     if (requiredFactorTypes.length > 0) {
       const createdFactors = Factors.find({
