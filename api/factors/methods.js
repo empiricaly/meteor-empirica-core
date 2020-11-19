@@ -4,6 +4,7 @@ import SimpleSchema from "simpl-schema";
 import { Factors } from "./factors.js";
 import { FactorTypes } from "../factor-types/factor-types.js";
 import { IdSchema } from "../default-schemas.js";
+import { handleFactorValueErrorMessage } from "../../lib/utils.js";
 
 export const createFactor = new ValidatedMethod({
   name: "Factors.methods.create",
@@ -19,10 +20,13 @@ export const createFactor = new ValidatedMethod({
     if (!factorType) {
       throw new Error("not found");
     }
-    // const errors = Factors.valueValidation(factorType, factor.value);
-    // if (errors) {
-    //   throw new Error(errors.map(e => e.type).join(", "));
-    // }
+
+    const errors = Factors.valueValidation(factorType, factor.value);
+    if (errors) {
+      throw new Error(
+        errors.map(e => handleFactorValueErrorMessage(e)).join("\n")
+      );
+    }
 
     Factors.insert(factor, { autoConvert: false });
   }
