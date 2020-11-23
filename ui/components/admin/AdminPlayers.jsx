@@ -23,7 +23,7 @@ export default class AdminPlayers extends React.Component {
   state = {
     retiredReason: exitStatuses[0],
     players: [],
-    searchParam: { id: "", createdAt: "", status: "" }
+    searchParam: { id: "", createdAt: "", status: "", exitStatus: "" }
   };
 
   componentDidMount() {
@@ -75,7 +75,7 @@ export default class AdminPlayers extends React.Component {
 
   filterPlayers = () => {
     const {
-      searchParam: { createdAt, id, status }
+      searchParam: { createdAt, id, status, exitStatus }
     } = this.state;
     const { players } = this.props;
 
@@ -117,6 +117,14 @@ export default class AdminPlayers extends React.Component {
 
           const fromNow = moment(p.createdAt).fromNow();
           return fromNow.includes(createdAt);
+        })
+        .filter(p => {
+          // Filter exitStatus
+          if (!exitStatus) {
+            return true;
+          }
+
+          return p.exitStatus ? p.exitStatus.includes(exitStatus) : false;
         })
     });
   };
@@ -167,6 +175,17 @@ export default class AdminPlayers extends React.Component {
                     }
                   />
                 </th>
+                <th>
+                  <input
+                    className={Classes.INPUT}
+                    value={searchParam.exitStatus}
+                    type="text"
+                    placeholder="Exit Status"
+                    onChange={e =>
+                      this.handleColumnHeaderChange(e, "exitStatus")
+                    }
+                  />
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -194,6 +213,7 @@ export default class AdminPlayers extends React.Component {
                   <td title={moment(player.createdAt).format()}>
                     {moment(player.createdAt).fromNow()}
                   </td>
+                  <td>{player.exitStatus}</td>
                 </tr>
               ))}
             </tbody>
@@ -244,8 +264,6 @@ export default class AdminPlayers extends React.Component {
             </FormGroup>
           </>
         )}
-
-        <NonIdealState icon={IconNames.BUILD} title="Under construction" />
       </div>
     );
   }
