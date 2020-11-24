@@ -14,7 +14,7 @@ export default withTracker(props => {
     retired,
     players: Players.find(
       {
-        archivedAt: { $exists: Boolean(retired) }
+        retiredAt: { $exists: Boolean(retired) }
       },
       { sort: { index: 1 } }
     ).fetch(),
