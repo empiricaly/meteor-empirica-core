@@ -91,6 +91,7 @@ export default class AdminBatches extends React.Component {
               <tr>
                 <th />
                 <th>#</th>
+                <th>Batch ID</th>
                 <th>Status</th>
                 <th>Game Count</th>
                 <th>Started At</th>

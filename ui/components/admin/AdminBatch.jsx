@@ -200,6 +200,7 @@ export default class AdminBatch extends React.Component {
             </svg>
           </td>
           <td>{batch.index}</td>
+          <td>{batch._id}</td>
           <td>
             <Tag intent={statusIntent} minimal={statusMinimal}>
               {batch.status}
