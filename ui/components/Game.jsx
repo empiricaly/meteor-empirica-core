@@ -28,6 +28,7 @@ export default class Game extends React.Component {
       treatment,
       Round,
       Breadcrumb,
+      Waiting,
       Lobby,
       exitSteps,
       introSteps,
@@ -107,7 +108,11 @@ export default class Game extends React.Component {
         content = <Loading />;
       }
 
-      content = <DelayedWaitingForServer />;
+      if (Waiting) {
+        content = <Waiting />;
+      } else {
+        content = <DelayedWaitingForServer />;
+      }
     } else {
       content = <Round {...rest} />;
     }

@@ -14,6 +14,9 @@ export default withTracker(({ stage, player, ...rest }) => {
   const timedOut = stage && player && !player.stage.submitted && ended;
   const roundOver = (stage && player && player.stage.submitted) || timedOut;
   const remainingSeconds = stage && endTimeAt.diff(now, "seconds");
+  if (remainingSeconds && remainingSeconds < 0) {
+    remainingSeconds = 0;
+  }
   const elapsedSeconds = stage && now.diff(startTimeAt, "seconds");
   return {
     timedOut,
