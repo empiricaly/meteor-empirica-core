@@ -23,7 +23,11 @@ export default class NoBatch extends React.Component {
             </p>
             {Meteor.isDevelopment ? (
               <p>
-                Go to <Link to="/admin">Admin</Link> to get started.
+                Go to{" "}
+                <a href="/admin" target="_blank">
+                  Admin
+                </a>{" "}
+                to get started.
               </p>
             ) : (
               ""

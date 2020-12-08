@@ -28,6 +28,7 @@ export default class Game extends React.Component {
       treatment,
       Round,
       Breadcrumb,
+      Waiting,
       Lobby,
       exitSteps,
       introSteps,
@@ -45,6 +46,7 @@ export default class Game extends React.Component {
           steps={exitSteps(game, player)}
           game={game}
           player={player}
+          {...rest}
           onSubmit={(stepName, data) => {
             const playerId = player._id;
             markPlayerExitStepDone.call({ playerId, stepName });
@@ -92,6 +94,7 @@ export default class Game extends React.Component {
           introSteps={introSteps}
           treatment={treatment}
           player={player}
+          {...rest}
           onDone={() => {
             playerReady.call({ _id: player._id });
           }}
@@ -107,7 +110,11 @@ export default class Game extends React.Component {
         content = <Loading />;
       }
 
-      content = <DelayedWaitingForServer />;
+      if (Waiting) {
+        content = <Waiting />;
+      } else {
+        content = <DelayedWaitingForServer />;
+      }
     } else {
       content = <Round {...rest} />;
     }

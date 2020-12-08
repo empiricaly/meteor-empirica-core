@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { isReactComponents } from "./lib/utils";
 import "./startup/client/index.js";
 import About from "./ui/components/About.jsx";
 import Admin from "./ui/components/Admin.jsx";
@@ -13,8 +14,6 @@ import { AlertToaster } from "./ui/components/Toasters.jsx";
 import AuthorizedContainer from "./ui/containers/AuthorizedContainer.jsx";
 import IdentifiedContainer from "./ui/containers/IdentifiedContainer.jsx";
 import PublicContainer from "./ui/containers/PublicContainer.jsx";
-
-import { isReactComponents } from "./lib/utils";
 
 const config = {
   exitSteps: () => [],
@@ -53,6 +52,10 @@ const Empirica = {
 
   breadcrumb(BreadcrumbComp) {
     config.Breadcrumb = BreadcrumbComp;
+  },
+
+  waiting(WaitingComp) {
+    config.Waiting = WaitingComp;
   },
 
   introSteps(func) {

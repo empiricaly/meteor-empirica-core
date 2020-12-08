@@ -1,3 +1,9 @@
+const showOpenAdmin = Meteor.isDevelopment;
+const showOpenAltPlayer =
+  Meteor.isDevelopment || Meteor.settings.public.debug_resetSession;
+const showReset =
+  Meteor.isDevelopment || Meteor.settings.public.public.debug_newPlayer;
+
 import {
   Button,
   Classes,
@@ -14,27 +20,43 @@ import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import GameContainer from "../containers/GameContainer.jsx";
 import { removePlayerId } from "../containers/IdentifiedContainer.jsx";
-import AboutOriginal from "./About.jsx";
-import NoBatchOriginal from "./NoBatch.jsx";
 import { CoreWrapper } from "./Helpers.jsx";
 import Loading from "./Loading.jsx";
 import NewPlayer from "./NewPlayer.jsx";
+import NoBatchOriginal from "./NoBatch.jsx";
 
 const loadDocTitle = document.title;
 
 export default class Public extends React.Component {
-  state = { isOpen: false };
+  state = { isAboutOpen: false };
 
-  handleToggleDialog = () => this.setState({ isOpen: !this.state.isOpen });
+  handleToggleAbout = () =>
+    this.setState({ isAboutOpen: !this.state.isAboutOpen });
+
+  handleOpenAdmin = event => {
+    event.preventDefault();
+
+    if (!showOpenAdmin) {
+      return;
+    }
+    window.open("/admin", "_blank");
+  };
 
   handleReset = event => {
     event.preventDefault();
+
+    if (!showOpenAltPlayer) {
+      return;
+    }
     removePlayerId();
-    this.setState({ isOpen: false });
   };
 
   handleOpenAltPlayer = event => {
     event.preventDefault();
+
+    if (!showReset) {
+      return;
+    }
 
     // check to see if a playerId is required
     const { playerIdParam, playerIdParamExclusive } = Meteor.settings.public;
@@ -71,9 +93,9 @@ export default class Public extends React.Component {
       ...rest
     } = this.props;
     const { player } = rest;
-    const AboutComp = About || AboutOriginal;
+    // const AboutComp = About || AboutOriginal;
+    const AboutComp = About || null;
     const NoBatchComp = NoBatch || NoBatchOriginal;
-    const NewPlayerComp = NewPlayer || NewPlayerOriginal;
 
     if (loading) {
       return <Loading />;
@@ -83,15 +105,30 @@ export default class Public extends React.Component {
       return <NoBatchComp />;
     }
 
+    const adminProps = {
+      showOpenAltPlayer: showOpenAltPlayer,
+      onOpenAltPlayer: this.handleOpenAltPlayer,
+      showReset: showReset,
+      onReset: this.handleReset,
+      showReset: showReset,
+      about: AboutComp,
+      showAbout: Boolean(AboutComp),
+      onToggleAbout: this.handleToggleAbout
+    };
+
     let content;
     if (!player) {
       content = (
         <CoreWrapper>
-          <NewPlayer {...rest} CustomNewPlayer={CustomNewPlayer} />
+          <NewPlayer
+            {...rest}
+            {...adminProps}
+            CustomNewPlayer={CustomNewPlayer}
+          />
         </CoreWrapper>
       );
     } else {
-      content = <GameContainer {...rest} />;
+      content = <GameContainer {...rest} {...adminProps} />;
     }
 
     let title = loadDocTitle;
@@ -106,7 +143,7 @@ export default class Public extends React.Component {
         </Helmet>
 
         {Header !== undefined ? (
-          <Header />
+          <Header {...adminProps} />
         ) : (
           <Navbar className={["header", Classes.DARK].join(" ")}>
             <NavbarGroup align="left">
@@ -126,8 +163,7 @@ export default class Public extends React.Component {
               </NavbarHeading>
             </NavbarGroup>
             <NavbarGroup align="right">
-              {Meteor.isDevelopment ||
-              Meteor.settings.public.debug_newPlayer ? (
+              {showOpenAltPlayer ? (
                 <Button
                   text="New Player"
                   minimal
@@ -137,8 +173,7 @@ export default class Public extends React.Component {
               ) : (
                 ""
               )}
-              {Meteor.isDevelopment ||
-              Meteor.settings.public.debug_resetSession ? (
+              {showReset ? (
                 <Button
                   text="Reset current session"
                   minimal
@@ -149,33 +184,48 @@ export default class Public extends React.Component {
                 ""
               )}
 
-              <Button
-                text="About"
-                minimal
-                icon={IconNames.info_sign}
-                onClick={this.handleToggleDialog}
-              />
+              {showOpenAdmin ? (
+                <Button
+                  text="Open Admin"
+                  minimal
+                  icon={IconNames.PLAY}
+                  onClick={this.handleOpenAdmin}
+                />
+              ) : (
+                ""
+              )}
 
-              <Dialog
-                icon={IconNames.INBOX}
-                isOpen={this.state.isOpen}
-                onClose={this.handleToggleDialog}
-                title="About"
-              >
-                <div className={Classes.DIALOG_BODY}>
-                  <AboutComp />
-                </div>
+              {AboutComp ? (
+                <>
+                  <Button
+                    text="About"
+                    minimal
+                    icon={IconNames.info_sign}
+                    onClick={this.handleToggleAbout}
+                  />
 
-                <div className={Classes.DIALOG_FOOTER}>
-                  <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-                    <Button
-                      text="Close"
-                      intent={Intent.PRIMARY}
-                      onClick={this.handleToggleDialog}
-                    />
-                  </div>
-                </div>
-              </Dialog>
+                  <Dialog
+                    icon={IconNames.INBOX}
+                    isOpen={this.state.isAboutOpen}
+                    onClose={this.handleToggleAbout}
+                    title="About"
+                  >
+                    <div className={Classes.DIALOG_BODY}>
+                      <AboutComp />
+                    </div>
+
+                    <div className={Classes.DIALOG_FOOTER}>
+                      <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+                        <Button
+                          text="Close"
+                          intent={Intent.PRIMARY}
+                          onClick={this.handleToggleAbout}
+                        />
+                      </div>
+                    </div>
+                  </Dialog>
+                </>
+              ) : null}
             </NavbarGroup>
           </Navbar>
         )}

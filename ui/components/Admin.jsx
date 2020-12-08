@@ -1,9 +1,32 @@
-import React from "react";
-import PropTypes from "prop-types";
+import {
+  Alert,
+  Button,
+  Classes,
+  Divider,
+  Intent,
+  Menu,
+  MenuItem,
+  Navbar,
+  NavbarDivider,
+  NavbarGroup,
+  NavbarHeading,
+  Popover
+} from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
 import moment from "moment";
-
-import { NavLink, Route, Switch } from "react-router-dom";
+import PropTypes from "prop-types";
+import React from "react";
 import { Helmet } from "react-helmet";
+import { NavLink, Route, Switch } from "react-router-dom";
+import AdminBatchesContainer from "../containers/admin/AdminBatchesContainer.jsx";
+import AdminFactorsContainer from "../containers/admin/AdminFactorsContainer.jsx";
+import AdminLobbyConfigsContainer from "../containers/admin/AdminLobbyConfigsContainer.jsx";
+import AdminPlayersContainer from "../containers/admin/AdminPlayersContainer.jsx";
+import AdminTreatmentsContainer from "../containers/admin/AdminTreatmentsContainer.jsx";
+import AdminExport from "./admin/AdminExport.jsx";
+import AdminGames from "./admin/AdminGames.jsx";
+import { withStaticProps } from "./Helpers.jsx";
+import { AlertToaster, SuccessToaster } from "./Toasters.jsx";
 
 const configurationPaths = [
   "/admin/treatments",
@@ -13,32 +36,6 @@ const configurationPaths = [
   "/admin/lobby-configurations",
   "/admin/lobby-configurations/archived"
 ];
-
-import {
-  Alert,
-  Button,
-  Classes,
-  Divider,
-  Navbar,
-  NavbarGroup,
-  NavbarHeading,
-  NavbarDivider,
-  Menu,
-  MenuItem,
-  Popover,
-  Intent
-} from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
-
-import AdminBatchesContainer from "../containers/admin/AdminBatchesContainer.jsx";
-import AdminFactorsContainer from "../containers/admin/AdminFactorsContainer.jsx";
-import AdminGames from "./admin/AdminGames.jsx";
-import AdminLobbyConfigsContainer from "../containers/admin/AdminLobbyConfigsContainer.jsx";
-import AdminExport from "./admin/AdminExport.jsx";
-import AdminPlayersContainer from "../containers/admin/AdminPlayersContainer.jsx";
-import AdminTreatmentsContainer from "../containers/admin/AdminTreatmentsContainer.jsx";
-import { AlertToaster, SuccessToaster } from "./Toasters.jsx";
-import { withStaticProps } from "./Helpers.jsx";
 
 const NavBarLink = ({ path, name, exact = false }) => (
   <NavLink
@@ -181,6 +178,10 @@ export default class Admin extends React.Component {
   resetDatabaseIsActived() {
     return Meteor.isDevelopment || Meteor.settings.public.debug_resetDatabase;
   }
+
+  handleOpenApp = () => {
+    window.open("/", "_blank");
+  };
 
   handleLogout = () => {
     Meteor.logout();
@@ -383,6 +384,13 @@ export default class Admin extends React.Component {
             ) : (
               ""
             )}
+            <NavbarDivider />{" "}
+            <Button
+              className={Classes.MINIMAL}
+              icon={IconNames.PLAY}
+              text="Open App"
+              onClick={this.handleOpenApp}
+            />
             <NavbarDivider />{" "}
             <Button
               className={Classes.MINIMAL}
