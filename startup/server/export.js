@@ -284,6 +284,7 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
 
   const batchFields = [
     "_id",
+    "index",
     "assignment",
     "full",
     "runningAt",
