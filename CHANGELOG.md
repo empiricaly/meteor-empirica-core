@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.11.1](https://github.com/empiricaly/meteor-empirica-core/compare/v1.11.0...v1.11.1) (2020-11-12)
+
+
+### Bug Fixes
+
+* fix empty id on newPlayerForm, fix requiredFactors exclude the archived ([c10168d](https://github.com/empiricaly/meteor-empirica-core/commit/c10168d884e26b3d04c605837a6f5d7c9cdb7437))
+
 
 ## [1.11.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.10.0...v1.11.0) (2020-11-09)
 
