@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+## [1.12.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.11.1...v1.12.0) (2020-12-09)
+
+
+### Features
+
+* add exit status of player in admin [#187](https://github.com/empiricaly/meteor-empirica-core/issues/187) ([#193](https://github.com/empiricaly/meteor-empirica-core/issues/193)) ([277a47b](https://github.com/empiricaly/meteor-empirica-core/commit/277a47bc8f984a57f7ae5934f019348abc25ee44))
+* added various quality of life improvements ([#199](https://github.com/empiricaly/meteor-empirica-core/issues/199)) ([8eec8f2](https://github.com/empiricaly/meteor-empirica-core/commit/8eec8f2ebedd7def7d059af0facadbd40f46a52e))
+* show batch index on exported batches [#186](https://github.com/empiricaly/meteor-empirica-core/issues/186) ([#201](https://github.com/empiricaly/meteor-empirica-core/issues/201)) ([a371dc3](https://github.com/empiricaly/meteor-empirica-core/commit/a371dc3fcbc9b7fccf39c4ba132e8a391e539067))
+
+
+### Bug Fixes
+
+* fix error message when add factor value [#191](https://github.com/empiricaly/meteor-empirica-core/issues/191) ([#192](https://github.com/empiricaly/meteor-empirica-core/issues/192)) ([ed041cd](https://github.com/empiricaly/meteor-empirica-core/commit/ed041cdcd47e870f3b2fbb0528dc3a5793e7fa88))
+
+
+
 ### [1.11.1](https://github.com/empiricaly/meteor-empirica-core/compare/v1.11.0...v1.11.1) (2020-11-12)
 
 
