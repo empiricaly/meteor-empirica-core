@@ -44,7 +44,7 @@ export default class Game extends React.Component {
       return (
         <ExitSteps
           steps={exitSteps(game, player)}
-          game={game}
+          game={game || gameLobby}
           player={player}
           {...rest}
           onSubmit={(stepName, data) => {
