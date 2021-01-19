@@ -4,8 +4,7 @@
 // movements...)
 
 import SimpleSchema from "simpl-schema";
-
-import { TimestampSchema, UserDataSchema, BelongsTo } from "../default-schemas";
+import { BelongsTo, TimestampSchema, UserDataSchema } from "../default-schemas";
 
 export const PlayerInputs = new Mongo.Collection("player_inputs");
 
@@ -13,6 +12,7 @@ PlayerInputs.schema = new SimpleSchema({});
 
 PlayerInputs.schema.extend(TimestampSchema);
 PlayerInputs.schema.extend(UserDataSchema);
-PlayerInputs.schema.extend(BelongsTo("Games"));
+PlayerInputs.schema.extend(BelongsTo("Games", false));
+PlayerInputs.schema.extend(BelongsTo("GameLobbies", false));
 PlayerInputs.schema.extend(BelongsTo("Players"));
 PlayerInputs.attachSchema(PlayerInputs.schema);
