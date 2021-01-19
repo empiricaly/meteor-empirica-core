@@ -43,7 +43,7 @@ export default class Game extends React.Component {
     if (player.exitAt) {
       return (
         <ExitSteps
-          steps={exitSteps(game, player)}
+          steps={exitSteps(game || gameLobby, player)}
           game={game || gameLobby}
           player={player}
           {...rest}
@@ -58,7 +58,8 @@ export default class Game extends React.Component {
                 addPlayerInput.call({
                   playerId,
                   data: encoded,
-                  gameId: game._id
+                  gameId: game && game._id,
+                  gameLobbyId: game ? null : gameLobby && gameLobby._id
                 });
               } catch (e) {
                 console.error("could not encode data returned by onSubmit", e);
