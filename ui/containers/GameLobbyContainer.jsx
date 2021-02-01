@@ -22,12 +22,19 @@ return withTracker(({ gameLobby, player, ...rest }) => {
   const startTimeAt = moment(startObj.timeoutStartedAt);
   const endTimeAt = startTimeAt.add(lobbyConfig.timeoutInSeconds, "seconds");
   const timedOut = now.isSameOrAfter(endTimeAt);
+  const remainingSeconds = endTimeAt.diff(now, "seconds");
+  if (remainingSeconds && remainingSeconds < 0) {
+    remainingSeconds = 0;
+  }
+  const elapsedSeconds = now.diff(startTimeAt, "seconds");
 
   return {
     lobbyConfig,
     gameLobby,
     player,
     timedOut,
+    remainingSeconds,
+    elapsedSeconds,
     // endTimeAt,
     ...rest
   };
