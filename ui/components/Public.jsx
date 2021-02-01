@@ -2,7 +2,7 @@ const showOpenAdmin = Meteor.isDevelopment;
 const showOpenAltPlayer =
   Meteor.isDevelopment || Meteor.settings.public.debug_resetSession;
 const showReset =
-  Meteor.isDevelopment || Meteor.settings.public.public.debug_newPlayer;
+  Meteor.isDevelopment || Meteor.settings.public.debug_newPlayer;
 
 import {
   Button,
