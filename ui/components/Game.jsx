@@ -105,14 +105,10 @@ export default class Game extends React.Component {
 
     let content;
     if (timedOut || !started) {
-      // If there's only one player, don't say waiting on other players,
-      // just show the loading screen.
-      if (treatment.factor("playerCount").value === 1) {
-        content = <Loading />;
-      }
-
       if (Waiting) {
         content = <Waiting />;
+      } else if (treatment.factor("playerCount").value === 1) {
+        content = <Loading />;
       } else {
         content = <DelayedWaitingForServer />;
       }
