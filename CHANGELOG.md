@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.14.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.13.0...v1.14.0) (2021-02-01)
+
+### Features
+
+* add remaining seconds in gameLobby [#210](https://github.com/empiricaly/meteor-empirica-core/issues/210) ([#214](https://github.com/empiricaly/meteor-empirica-core/issues/214)) ([c137673](https://github.com/empiricaly/meteor-empirica-core/commit/c13767323efdb55c2f5e892d393f98c1a466aa16))
+* add cancel game from admin UI [#110](https://github.com/empiricaly/meteor-empirica-core/issues/196) ([#216](https://github.com/empiricaly/meteor-empirica-core/issues/216)) ([0266d8c](https://github.com/empiricaly/meteor-empirica-core/commit/0266d8ce9b3001872a4dee7323cb07549f0e0cb5))
+
+
+### Bug Fixes
+
+* override single player to waiting screen [#204](https://github.com/empiricaly/meteor-empirica-core/issues/204) ([#212](https://github.com/empiricaly/meteor-empirica-core/issues/212)) ([67764bf](https://github.com/empiricaly/meteor-empirica-core/commit/67764bf1c99f176677e8c93a7e24bfee0fd1193f))
+* fix double public on debug_newPlayer [#205](https://github.com/empiricaly/meteor-empirica-core/issues/205) ([#213](https://github.com/empiricaly/meteor-empirica-core/issues/213)) ([5ea9430](https://github.com/empiricaly/meteor-empirica-core/commit/5ea9430c28c782832cbb843c41274fed49fada0a))
+* remove game helpers [#211](https://github.com/empiricaly/meteor-empirica-core/issues/211) ([#215](https://github.com/empiricaly/meteor-empirica-core/issues/215)) ([1217991](https://github.com/empiricaly/meteor-empirica-core/commit/1217991da363e68881cf3e02fdb51995388946e9))
+
+
 ## [1.13.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.12.0...v1.13.0) (2021-01-20)
 
 
