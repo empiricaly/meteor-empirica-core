@@ -6,6 +6,7 @@ import { Games } from "./games.js";
 import { GameLobbies } from "../game-lobbies/game-lobbies.js";
 import { Players } from "../players/players.js";
 import { Stages } from "../stages/stages.js";
+import { Batches } from "../batches/batches.js";
 
 export const updateGameData = new ValidatedMethod({
   name: "Games.methods.updateData",
@@ -130,5 +131,23 @@ export const earlyExitGame = new ValidatedMethod({
         }
       })
     );
+
+    const batch = Batches.findOne(game.batchId);
+    const availableLobby = GameLobbies.findOne({
+      $and: [
+        {
+          _id: { $in: batch.gameLobbyIds }
+        },
+        { status: { $in: ["init", "running"] } }
+      ]
+    });
+
+    // End batch if there is no available game
+    if (!availableLobby) {
+      Batches.update(
+        { gameLobbyIds: gameId },
+        { $set: { status: status, finishedAt: new Date() } }
+      );
+    }
   }
 });

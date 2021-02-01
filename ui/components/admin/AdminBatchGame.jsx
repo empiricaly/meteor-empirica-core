@@ -1,9 +1,32 @@
-import { Icon, Intent, Tag } from "@blueprintjs/core";
+import { Icon, Intent, Tag, Button } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import moment from "moment";
 import React from "react";
+import { earlyExitGameLobby } from "../../../api/game-lobbies/methods";
+import { earlyExitGame } from "../../../api/games/methods";
 
 export default class AdminBatchGame extends React.Component {
+  handleStatusChange = (status, event) => {
+    event.preventDefault();
+    const { game, lobby } = this.props;
+    const endReason = "adminCancelled";
+
+    if (game !== undefined && game._id) {
+      earlyExitGame.call({
+        gameId: game._id,
+        endReason,
+        status: status
+      });
+      return;
+    }
+
+    earlyExitGameLobby.call({
+      exitReason: endReason,
+      gameLobbyId: lobby._id,
+      status: status
+    });
+  };
+
   render() {
     const { batch, lobby, game, rounds, stages, treatment } = this.props;
 
@@ -42,10 +65,19 @@ export default class AdminBatchGame extends React.Component {
     let statusMsg;
     let statusIntent;
     let statusMinimal = false;
-    if (game && game.finishedAt) {
+    let showCancelButton = false;
+    if (game && game.status === "cancelled") {
+      statusIntent = Intent.DANGER;
+      statusMinimal = true;
+      statusMsg = "game cancelled";
+    } else if (game && game.finishedAt) {
       statusIntent = Intent.SUCCESS;
       statusMinimal = true;
       statusMsg = "finished";
+    } else if (lobby.status === "cancelled") {
+      statusIntent = Intent.DANGER;
+      statusMinimal = true;
+      statusMsg = "lobby cancelled";
     } else if (batch.status === "cancelled") {
       statusIntent = Intent.DANGER;
       statusMinimal = true;
@@ -61,12 +93,14 @@ export default class AdminBatchGame extends React.Component {
     } else if (game) {
       statusIntent = Intent.SUCCESS;
       statusMsg = "running";
+      showCancelButton = true;
     } else {
       if (lobby.timedOutAt) {
         statusIntent = Intent.DANGER;
         statusMinimal = true;
         statusMsg = "lobby timeout";
       } else if (players.length === 0) {
+        showCancelButton = true;
         if (notReadyPlayers.length === 0) {
           statusMsg = "empty";
           statusMinimal = true;
@@ -76,6 +110,7 @@ export default class AdminBatchGame extends React.Component {
           statusMinimal = true;
         }
       } else {
+        showCancelButton = true;
         statusIntent = Intent.WARNING;
         statusMsg = "lobby";
       }
@@ -201,6 +236,16 @@ export default class AdminBatchGame extends React.Component {
             </span>
           ) : (
             ""
+          )}
+        </td>
+        <td>
+          {showCancelButton && (
+            <Button
+              text="Cancel"
+              icon={IconNames.STOP}
+              key="cancel"
+              onClick={this.handleStatusChange.bind(this, "cancelled")}
+            />
           )}
         </td>
       </tr>

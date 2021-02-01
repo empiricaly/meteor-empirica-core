@@ -32,7 +32,7 @@ export const augmentGameObject = ({
           gamePlayers = Players.find({ _id: { $in: game.playerIds } }).fetch();
 
           if (firstRoundId) {
-            round = Rounds.findOne(firstRoundId).fetch();
+            round = Rounds.findOne(firstRoundId);
             stage = round.stages.find(s => s._id === currentStageId);
           }
 
