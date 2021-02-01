@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.12.0...v1.13.0) (2021-01-20)
+
+
+### Features
+
+* add gameLobby in place of game for exit steps if player exited ([#208](https://github.com/empiricaly/meteor-empirica-core/issues/208)) ([d9b82fa](https://github.com/empiricaly/meteor-empirica-core/commit/d9b82fad916e8266da276a563c12cf8abd9ba90e))
+
 
 ## [1.12.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.11.1...v1.12.0) (2020-12-09)
 
