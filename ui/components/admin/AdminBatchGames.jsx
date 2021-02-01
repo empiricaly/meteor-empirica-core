@@ -36,6 +36,7 @@ export default class AdminBatchGames extends React.Component {
                 <th>Current State</th>
                 <th>Player Count</th>
                 <th>Players</th>
+                <th />
               </tr>
             </thead>
 

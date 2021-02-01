@@ -75,15 +75,22 @@ export const earlyExitGameLobby = new ValidatedMethod({
     gameLobbyId: {
       type: String,
       regEx: SimpleSchema.RegEx.Id
+    },
+    status: {
+      label: "Status for lobby after exit",
+      type: String,
+      regEx: /[a-zA-Z0-9_]+/,
+      optional: true
     }
   }).validator(),
 
-  run({ exitReason, gameLobbyId }) {
+  run({ exitReason, gameLobbyId, status }) {
     if (!Meteor.isServer) {
       return;
     }
 
     const gameLobby = GameLobbies.findOne(gameLobbyId);
+    const exitStatus = status || "failed";
     if (!gameLobby) {
       throw new Error("gameLobby not found");
     }
@@ -93,7 +100,7 @@ export const earlyExitGameLobby = new ValidatedMethod({
       {
         $set: {
           exitAt: new Date(),
-          exitStatus: "failed",
+          exitStatus: exitStatus,
           exitReason
         }
       }
@@ -101,19 +108,27 @@ export const earlyExitGameLobby = new ValidatedMethod({
 
     GameLobbies.update(gameLobbyId, {
       $set: {
-        status: "failed",
+        status: exitStatus,
         endReason: exitReason
       }
     });
 
-    Batches.update(
-      { gameLobbyIds: gameLobbyId },
-      {
-        $set: {
-          status: "failed",
-          finishedAt: new Date()
-        }
-      }
-    );
+    const batch = Batches.findOne(gameLobby.batchId);
+    const availableLobby = GameLobbies.findOne({
+      $and: [
+        {
+          _id: { $in: batch.gameLobbyIds }
+        },
+        { status: { $in: ["init", "running"] } }
+      ]
+    });
+
+    // End batch if there is no available lobby
+    if (!availableLobby) {
+      Batches.update(
+        { gameLobbyIds: gameLobbyId },
+        { $set: { status: exitStatus, finishedAt: new Date() } }
+      );
+    }
   }
 });
