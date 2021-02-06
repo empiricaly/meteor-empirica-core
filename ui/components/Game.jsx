@@ -73,6 +73,7 @@ export default class Game extends React.Component {
     if (!game) {
       if (player.readyAt) {
         const gameLobbyProps = {
+          ...rest,
           gameLobby,
           game: gameLobby,
           treatment,
