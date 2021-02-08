@@ -43,10 +43,10 @@ export default class Game extends React.Component {
     if (player.exitAt) {
       return (
         <ExitSteps
+          {...rest}
           steps={exitSteps(game || gameLobby, player)}
           game={game || gameLobby}
           player={player}
-          {...rest}
           onSubmit={(stepName, data) => {
             const playerId = player._id;
             markPlayerExitStepDone.call({ playerId, stepName });
@@ -93,10 +93,10 @@ export default class Game extends React.Component {
 
       return (
         <InstructionSteps
+          {...rest}
           introSteps={introSteps}
           treatment={treatment}
           player={player}
-          {...rest}
           onDone={() => {
             playerReady.call({ _id: player._id });
           }}
