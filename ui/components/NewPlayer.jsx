@@ -1,11 +1,10 @@
 import React from "react";
-
-import { AlertToaster } from "./Toasters.jsx";
 import { createPlayer } from "../../api/players/methods";
 import { setPlayerId } from "../containers/IdentifiedContainer.jsx";
-import NewPlayerForm from "./NewPlayerForm.jsx";
-
 import Loading from "./Loading.jsx";
+import NewPlayerForm from "./NewPlayerForm.jsx";
+import { AlertToaster } from "./Toasters.jsx";
+
 const { playerIdParam } = Meteor.settings.public;
 
 export const ConsentButtonContext = React.createContext(null);
@@ -103,7 +102,7 @@ export default class NewPlayer extends React.Component {
     if (!consented && Consent) {
       return (
         <ConsentButtonContext.Provider value={this.handleConsent}>
-          <Consent onConsent={this.handleConsent} />
+          <Consent {...this.props} onConsent={this.handleConsent} />
         </ConsentButtonContext.Provider>
       );
     }
