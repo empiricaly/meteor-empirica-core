@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+
+## [1.15.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.14.0...v1.15.0) (2021-02-08)
+
+### Features
+
+* add admin debug params to consent, intro steps and lobby ([#218](https://github.com/empiricaly/meteor-empirica-core/issues/218)) ([934f238](https://github.com/empiricaly/meteor-empirica-core/commit/934f2383b1b4df89d7db5766083c7d87a16141e3))
+
+
+### Bug Fixes
+
+* fix remainingSeconds const ([a80ca1](https://github.com/empiricaly/meteor-empirica-core/commit/a80ca1e75575b3820610be70fe795b4e7d0b4de7))
+
+
 ## [1.14.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.13.0...v1.14.0) (2021-02-01)
 
 ### Features
