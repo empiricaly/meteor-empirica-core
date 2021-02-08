@@ -48,13 +48,13 @@ export default class InstructionSteps extends React.Component {
     return (
       <div className="introduction-steps">
         <Step
+          {...rest}
           hasPrev={hasPrev}
           hasNext={hasNext}
           onPrev={this.onPrev}
           onNext={this.onNext}
           treatment={conds}
           game={{ treatment: conds }}
-          {...rest}
         />
       </div>
     );
