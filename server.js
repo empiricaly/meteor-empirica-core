@@ -1,15 +1,14 @@
-import "./startup/server/index.js";
-
 import SimpleSchema from "simpl-schema";
-SimpleSchema.debug = true;
-
-import { playerIdForConn } from "./startup/server/connections.js";
+import { Games } from "./api/games/games.js";
+import { earlyExitGame } from "./api/games/methods.js";
 import { callOnChange } from "./api/server/onchange.js";
 import { callOnSubmit } from "./api/server/onsubmit.js";
-import { earlyExitGame } from "./api/games/methods.js";
-import shared from "./shared";
 import { getFunctionParameters } from "./lib/utils";
-import { Games } from "./api/games/games.js";
+import shared from "./shared";
+import { playerIdForConn } from "./startup/server/connections.js";
+import "./startup/server/index.js";
+
+SimpleSchema.debug = true;
 
 const safeCallback = function(name, func, arguments) {
   try {
@@ -81,6 +80,11 @@ const handleCallbackFuncParameters = func => {
 const config = { bots: {} };
 
 const Empirica = {
+  // Before new game, check if ready to start game
+  beforeGameInit(func) {
+    config.beforeGameInit = func;
+  },
+
   // New name for init: gameInit
   gameInit(func) {
     config.gameInit = func;

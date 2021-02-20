@@ -1,15 +1,14 @@
 import { ValidatedMethod } from "meteor/mdg:validated-method";
 import SimpleSchema from "simpl-schema";
-
-import { Batches } from "../batches/batches.js";
-import { GameLobbies } from "../game-lobbies/game-lobbies";
-import { IdSchema } from "../default-schemas.js";
-import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
-import { Games } from "../games/games.js";
-import { Players } from "./players";
-import { exitStatuses } from "./players.js";
 import { weightedRandom } from "../../lib/utils.js";
 import shared from "../../shared.js";
+import { Batches } from "../batches/batches.js";
+import { IdSchema } from "../default-schemas.js";
+import { GameLobbies } from "../game-lobbies/game-lobbies";
+import { Games } from "../games/games.js";
+import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
+import { Players } from "./players";
+import { exitStatuses } from "./players.js";
 
 export const createPlayer = new ValidatedMethod({
   name: "Players.methods.create",
@@ -174,8 +173,9 @@ export const playerReady = new ValidatedMethod({
           throw `unknown lobby for ready player: ${_id}`;
         }
 
-        // Game is Full, bail the player
-        if (lobby.playerIds.length === lobby.availableCount) {
+        // Game has started, bail the player
+        if (lobby.gameId) {
+          // if (lobby.playerIds.length === lobby.availableCount) {
           // User already ready, something happened out of order
           if (lobby.playerIds.includes(_id)) {
             return;

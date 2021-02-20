@@ -1,10 +1,11 @@
+import { config } from "../../server";
 import { GameLobbies } from "../game-lobbies/game-lobbies";
-import { Games } from "../games/games";
-import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
-import { Players } from "../players/players.js";
 import { createGameFromLobby } from "../games/create";
-
+import { Games } from "../games/games";
 import { checkBatchFull, checkForBatchFinished } from "../games/hooks.js";
+import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
+import { earlyExitPlayerLobby } from "../players/methods";
+import { Players } from "../players/players.js";
 
 // Check if batch is full or the game finished if this lobby timed out
 GameLobbies.after.update(function(
@@ -82,8 +83,91 @@ GameLobbies.after.update(
       return;
     }
 
+    let selectedPlayers;
+    if (config.beforeGameInit) {
+      selectedPlayers = runBeforeGame(gameLobby);
+
+      if (!selectedPlayers) {
+        return;
+      }
+    }
+
     // Create Game
-    createGameFromLobby(gameLobby);
+    createGameFromLobby(gameLobby, selectedPlayers);
   },
   { fetchPrevious: false }
 );
+
+function runBeforeGame(gameLobby) {
+  const players = gameLobby.players();
+  players.forEach(player => {
+    player.dataDidChange = false;
+    player.data = player.data || {};
+    player.set = (key, value) => {
+      player.data[key] = value;
+      player.dataDidChange = true;
+    };
+    player.get = key => {
+      return player.data[key];
+    };
+    player.exit = reason =>
+      earlyExitPlayerLobby.call({
+        playerId: player._id,
+        exitReason: reason,
+        gameLobbyId: gameLobby._id
+      });
+  });
+
+  const treatment = gameLobby.treatment();
+  const factors = treatment.factorsObject();
+
+  let selectedPlayers;
+  const data = { ...gameLobby.data };
+  const dataDidChange = false;
+
+  var gameCollector = {
+    players,
+    treatment: factors,
+
+    get(k) {
+      return data[k];
+    },
+
+    set(k, v) {
+      data[k] = v;
+      dataDidChange = true;
+    },
+
+    start(_players) {
+      selectedPlayers = _players;
+    }
+  };
+
+  try {
+    config.beforeGameInit(gameCollector);
+  } catch (error) {
+    console.error("beforeGameInit failed with the following error:");
+    console.error(error);
+    console.error("failed beforeGameInit: cancelling game");
+
+    earlyExitGameLobby.call({
+      exitReason: "beforeGameInitFailed",
+      gameLobbyId: gameLobby._id,
+      status: "failed"
+    });
+
+    return;
+  }
+
+  players.forEach(player => {
+    if (player.dataDidChange) {
+      Players.update(player._id, { $set: { data: player.data } });
+    }
+  });
+
+  if (dataDidChange) {
+    GameLobbies.update(gameLobby._id, { $set: data });
+  }
+
+  return selectedPlayers;
+}

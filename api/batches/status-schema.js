@@ -1,4 +1,5 @@
 import SimpleSchema from "simpl-schema";
+import "../schema-helpers.js";
 
 export const statusSchema = new SimpleSchema({
   status: {

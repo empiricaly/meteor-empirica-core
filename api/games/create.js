@@ -1,24 +1,20 @@
 // create.js
 
 import moment from "moment";
-
+import log from "../../lib/log.js";
+import { weightedRandom } from "../../lib/utils.js";
+import { config } from "../../server";
 import { Batches } from "../batches/batches.js";
 import { GameLobbies } from "../game-lobbies/game-lobbies.js";
-import { Games } from "./games";
+import { earlyExitGameLobby } from "../game-lobbies/methods";
+import { augmentGameObject } from "../games/augment.js";
 import { PlayerRounds } from "../player-rounds/player-rounds";
+import { augmentGameStageRound } from "../player-stages/augment.js";
 import { PlayerStages } from "../player-stages/player-stages";
 import { Players } from "../players/players";
 import { Rounds } from "../rounds/rounds";
 import { Stages } from "../stages/stages";
-import { earlyExitGameLobby } from "../game-lobbies/methods";
-import {
-  augmentPlayerStageRound,
-  augmentGameStageRound
-} from "../player-stages/augment.js";
-import { augmentGameObject } from "../games/augment.js";
-import { config } from "../../server";
-import { weightedRandom } from "../../lib/utils.js";
-import log from "../../lib/log.js";
+import { Games } from "./games";
 
 const addStageErrMsg = `"round.addStage()" requires an argument object with 3 properties:
 - name: internal name you'll use to write conditional logic in your experiment.
@@ -33,12 +29,12 @@ e.g.: round.addStage({
 
 `;
 
-export const createGameFromLobby = gameLobby => {
+export const createGameFromLobby = (gameLobby, selectedPlayers = null) => {
   if (Games.find({ gameLobbyId: gameLobby._id }).count() > 0) {
     return;
   }
 
-  const players = gameLobby.players();
+  const players = selectedPlayers || gameLobby.players();
 
   const batch = gameLobby.batch();
   const treatment = gameLobby.treatment();
@@ -376,10 +372,35 @@ export const createGameFromLobby = gameLobby => {
   //
 
   // Overbooked players that did not finish the intro and won't be in this game
-  const failedPlayerIds = _.difference(
-    gameLobby.queuedPlayerIds,
-    gameLobby.playerIds
-  );
+  let remainingPlayerIds = [];
+  if (selectedPlayers) {
+    for (let i = 0; i < gameLobby.queuedPlayerIds.length; i++) {
+      const playerID = gameLobby.queuedPlayerIds[i];
+      let found = false;
+      for (let j = 0; j < selectedPlayers.length; j++) {
+        if (selectedPlayers[j]._id === playerID) {
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        remainingPlayerIds.push(playerID);
+      }
+    }
+  } else {
+    remainingPlayerIds = _.difference(
+      gameLobby.queuedPlayerIds,
+      gameLobby.playerIds
+    );
+  }
+
+  // Do not try to reassign or exit players that are already exited.
+  const remainingPlayers = Players.find({
+    _id: { $in: remainingPlayerIds },
+    exitStatus: { $exists: false }
+  }).fetch();
+  const failedPlayerIds = remainingPlayers.map(p => p._id);
 
   // Find other lobbies that are not full yet with the same treatment
   const runningBatches = Batches.find(

@@ -3,12 +3,6 @@ import { Counter } from "../../lib/counters";
 import { statusSchema } from "../batches/status-schema";
 import { BelongsTo, HasManyByRef, TimestampSchema } from "../default-schemas";
 import { DebugModeSchema, UserDataSchema } from "../default-schemas.js";
-import { GameLobbies } from "../game-lobbies/game-lobbies";
-import { Treatments } from "../treatments/treatments";
-import { Batches } from "../batches/batches";
-import { Players } from "../players/players";
-import { Stages } from "../stages/stages";
-import { Rounds } from "../rounds/rounds";
 
 class GamesCollection extends Mongo.Collection {
   insert(doc, callback) {
