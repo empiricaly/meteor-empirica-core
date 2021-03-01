@@ -202,10 +202,6 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
         case "csv":
           const out = [];
           keys.forEach(k => {
-            if (k === "urlParams" || k === "lastLogin") {
-              console.log(k);
-              console.log(data[k]);
-            }
             out.push(data[k]);
           });
           dataKeys.forEach(k => {
