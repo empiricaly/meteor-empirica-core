@@ -62,9 +62,9 @@ export const encodeCells = line => {
   for (var i = 0, len = row.length; i < len; i++) {
     row[i] = cast(row[i]);
     if (row[i].indexOf(quoteMark) !== -1) {
-      row[i] = row[i].replace(quoteRegex, doubleQuoteMark);
-    }
-    if (row[i].indexOf(",") !== -1 || row[i].indexOf("\\n") !== -1) {
+      row[i] =
+        quoteMark + row[i].replace(quoteRegex, doubleQuoteMark) + quoteMark;
+    } else if (row[i].indexOf(",") !== -1 || row[i].indexOf("\\n") !== -1) {
       row[i] = quoteMark + row[i] + quoteMark;
     }
   }
@@ -348,6 +348,7 @@ WebApp.connectHandlers.use("/admin/export", (req, res, next) => {
     "exitStepsDone",
     "exitAt",
     "exitStatus",
+    "exitReason",
     "retiredAt",
     "retiredReason",
     "createdAt"
