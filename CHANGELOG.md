@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+### [1.15.2](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.1...v1.15.2) (2021-03-03)
+
+### Bug Fixes
+
+* add exitReason and fix CSV import [#223](https://github.com/empiricaly/meteor-empirica-core/issues/223) ([#226](https://github.com/empiricaly/meteor-empirica-core/issues/226)) ([7264f0f](https://github.com/empiricaly/meteor-empirica-core/commit/7264f0ff2625ea096bc3f47af90153d82bc88da9))
+
+
 ### [1.15.1](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.0...v1.15.1) (2021-02-08)
 
 ### Bug Fixes
