@@ -140,6 +140,9 @@ function runBeforeGame(gameLobby) {
 
     start(_players) {
       selectedPlayers = _players;
+      GameLobbies.update(gameLobby._id, {
+        $set: { gameReady: true }
+      });
     }
   };
 

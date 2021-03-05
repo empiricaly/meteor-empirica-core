@@ -52,6 +52,12 @@ GameLobbies.schema = new SimpleSchema({
     index: 1
   },
 
+  gameReady: {
+    label: "Mark the game ready on lobby",
+    type: Boolean,
+    optional: true
+  },
+
   endReason: {
     label: "Ended Reason",
     type: String,
