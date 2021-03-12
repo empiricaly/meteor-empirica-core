@@ -1,13 +1,17 @@
 import React from "react";
 import Loading from "./Loading.jsx";
-import { addState, findState } from "../../lib/globals";
 
 export default class InstructionSteps extends React.Component {
   state = { current: 0 };
 
   componentDidMount() {
     const { player } = this.props;
-    this.setState({ current: findState(player._id) });
+    if (!window.currentIntroStep) {
+      window.currentIntroStep = {};
+      return;
+    }
+
+    this.setState({ current: window.currentIntroStep[player._id] });
   }
 
   componentWillMount() {
@@ -34,7 +38,7 @@ export default class InstructionSteps extends React.Component {
       return;
     }
     this.setState({ current });
-    addState(player._id, current);
+    window.currentIntroStep[player._id] = current;
   };
 
   onPrev = () => {
@@ -42,11 +46,22 @@ export default class InstructionSteps extends React.Component {
     let current = this.state.current - 1;
 
     this.setState({ current });
-    addState(player._id, current);
+    window.currentIntroStep[player._id] = current;
+  };
+
+  resetIntroSteps = () => {
+    const { player } = this.props;
+    this.setState({ current: 0 });
+
+    if (!window.currentIntroStep || window.currentIntroStep[player._id]) {
+      return;
+    }
+
+    window.currentIntroStep[player._id] = 0;
   };
 
   render() {
-    const { treatment, ...rest } = this.props;
+    const { treatment, player, ...rest } = this.props;
     const { steps, current, noInstruction } = this.state;
 
     if (noInstruction) {
@@ -57,6 +72,8 @@ export default class InstructionSteps extends React.Component {
     const hasNext = steps.length - 1 > current;
     const hasPrev = current > 0;
     const conds = treatment.factorsObject();
+    const introPlayer = { ...player, resetIntroSteps: this.resetIntroSteps };
+
     return (
       <div className="introduction-steps">
         <Step
@@ -65,6 +82,7 @@ export default class InstructionSteps extends React.Component {
           hasNext={hasNext}
           onPrev={this.onPrev}
           onNext={this.onNext}
+          player={introPlayer}
           treatment={conds}
           game={{ treatment: conds }}
         />
