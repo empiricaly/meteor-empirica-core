@@ -5,13 +5,22 @@ export default class InstructionSteps extends React.Component {
   state = { current: 0 };
 
   componentDidMount() {
+    this.setIntroStepIndex();
+  }
+
+  setIntroStepIndex() {
     const { player } = this.props;
     if (!window.currentIntroStep) {
       window.currentIntroStep = {};
       return;
     }
 
-    this.setState({ current: window.currentIntroStep[player._id] });
+    const currentIntroStep = window.currentIntroStep[player._id];
+    if (!currentIntroStep) {
+      return;
+    }
+
+    this.setState({ current: currentIntroStep });
   }
 
   componentWillMount() {
@@ -53,7 +62,11 @@ export default class InstructionSteps extends React.Component {
     const { player } = this.props;
     this.setState({ current: 0 });
 
-    if (!window.currentIntroStep || window.currentIntroStep[player._id]) {
+    if (!window.currentIntroStep) {
+      return;
+    }
+
+    if (!window.currentIntroStep[player._id]) {
       return;
     }
 
