@@ -1,8 +1,15 @@
 import React from "react";
 import Loading from "./Loading.jsx";
+import { addState, findState } from "../../lib/globals";
 
 export default class InstructionSteps extends React.Component {
   state = { current: 0 };
+
+  componentDidMount() {
+    const { player } = this.props;
+    this.setState({ current: findState(player._id) });
+  }
+
   componentWillMount() {
     const { introSteps, treatment, onDone } = this.props;
 
@@ -19,7 +26,7 @@ export default class InstructionSteps extends React.Component {
   }
 
   onNext = () => {
-    let { onDone } = this.props;
+    let { onDone, player } = this.props;
     let { steps, current } = this.state;
     current = current + 1;
     if (current >= steps.length) {
@@ -27,10 +34,15 @@ export default class InstructionSteps extends React.Component {
       return;
     }
     this.setState({ current });
+    addState(player._id, current);
   };
 
   onPrev = () => {
-    this.setState({ current: this.state.current - 1 });
+    const { player } = this.props;
+    let current = this.state.current - 1;
+
+    this.setState({ current });
+    addState(player._id, current);
   };
 
   render() {
