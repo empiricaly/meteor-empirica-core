@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+### [1.15.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.2...v1.15.3) (2021-03-16)
+
+### Bug Fixes
+
+* save intro states of each player [#230](https://github.com/empiricaly/meteor-empirica-core/issues/230) ([#231](https://github.com/empiricaly/meteor-empirica-core/issues/231)) ([0b55c98](https://github.com/empiricaly/meteor-empirica-core/commit/0b55c986200b798164398470e9d0b5e46e58f7c7))
+
+
 ### [1.15.2](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.1...v1.15.2) (2021-03-03)
 
 ### Bug Fixes
