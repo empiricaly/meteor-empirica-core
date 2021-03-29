@@ -1,5 +1,6 @@
 import { config } from "../../server";
 import { GameLobbies } from "../game-lobbies/game-lobbies";
+import { sendPlayersToNextBatches } from "../games/create";
 import { Games } from "../games/games";
 import { Players } from "../players/players.js";
 import { Treatments } from "../treatments/treatments";
@@ -99,30 +100,33 @@ Batches.after.update(
     [Games, GameLobbies].forEach(coll => {
       coll.update({ batchId }, { $set: { status } }, { multi: true });
     });
-  },
-  { fetchPrevious: false }
-);
 
-// If batch cancelled, add exit info to players
-Batches.after.update(
-  function(userId, { _id: batchId, status }, fieldNames, modifier, options) {
-    if (!fieldNames.includes("status")) {
+    if (status !== "cancelled") {
       return;
     }
 
-    if (status === "cancelled") {
-      const games = Games.find({ batchId }).fetch();
-      const gameLobbies = GameLobbies.find({ batchId }).fetch();
-      const gplayerIds = _.flatten(_.pluck(games, "playerIds"));
-      const glplayerIds = _.flatten(_.pluck(gameLobbies, "playerIds"));
-      const glqplayerIds = _.flatten(_.pluck(gameLobbies, "queuedPlayerIds"));
-      const playerIds = _.union(gplayerIds, glplayerIds, glqplayerIds);
-      Players.update(
-        { _id: { $in: playerIds } },
-        { $set: { exitStatus: "gameCancelled", exitAt: new Date() } },
-        { multi: true }
-      );
-    }
+    const games = Games.find({ batchId, status: "running" }).fetch();
+    const gplayerIds = _.flatten(_.pluck(games, "playerIds"));
+
+    Players.update(
+      { _id: { $in: gplayerIds }, exitAt: { $exists: false } },
+      { $set: { exitStatus: "gameCancelled", exitAt: new Date() } },
+      { multi: true }
+    );
+
+    const gameLobbies = GameLobbies.find({
+      batchId,
+      gameId: { $exists: false }
+    }).fetch();
+    const glplayerIds = _.flatten(_.pluck(gameLobbies, "queuedPlayerIds"));
+    const players = Players.find({
+      _id: { $in: glplayerIds },
+      exitAt: { $exists: false }
+    }).fetch();
+
+    const playerIds = _.pluck(players, "_id");
+
+    sendPlayersToNextBatches(playerIds);
   },
   { fetchPrevious: false }
 );
