@@ -61,7 +61,7 @@ Batches.after.insert(function(userId, batch) {
       if (botsCount === l.availableCount) {
         //throw "Creating a game with only bots...";
         //Would be good to display a message "Are you sure you want to create a game with only bots?"
-        console.log("Warning: Creating a game with only bots!")
+        console.log("Warning: Creating a game with only bots!");
       }
       const botNames = config.bots && _.keys(config.bots);
       if (!config.bots || botNames.length === 0) {
@@ -115,7 +115,8 @@ Batches.after.update(
       const gameLobbies = GameLobbies.find({ batchId }).fetch();
       const gplayerIds = _.flatten(_.pluck(games, "playerIds"));
       const glplayerIds = _.flatten(_.pluck(gameLobbies, "playerIds"));
-      const playerIds = _.union(gplayerIds, glplayerIds);
+      const glqplayerIds = _.flatten(_.pluck(gameLobbies, "queuedPlayerIds"));
+      const playerIds = _.union(gplayerIds, glplayerIds, glqplayerIds);
       Players.update(
         { _id: { $in: playerIds } },
         { $set: { exitStatus: "gameCancelled", exitAt: new Date() } },
