@@ -381,7 +381,7 @@ export const createGameFromLobby = gameLobby => {
     gameLobby.playerIds
   );
 
-  sendPlayersToNextBatches(failedPlayerIds);
+  sendPlayersToNextBatches(failedPlayerIds, batchId, gameLobby);
 
   //
   // Call the callbacks
@@ -431,12 +431,13 @@ export const createGameFromLobby = gameLobby => {
   });
 };
 
-export function sendPlayersToNextBatches(playerIds) {
+export function sendPlayersToNextBatches(playerIds, batchId, gameLobby) {
   // Find other lobbies that are not full yet with the same treatment
   const runningBatches = Batches.find(
     { _id: { $ne: batchId }, status: "running" },
     { sort: { runningAt: 1 } }
   );
+  const { treatmentId } = gameLobby;
   const lobbiesGroups = runningBatches.map(() => []);
   const runningBatcheIds = runningBatches.map(b => b._id);
   lobbiesGroups.push([]);
@@ -492,9 +493,7 @@ export function sendPlayersToNextBatches(playerIds) {
         if (gameLobby.playerIds.includes(playerId)) {
           $addToSet.playerIds = playerId;
         }
-        GameLobbies.update(lobby._id, {
-          $addToSet
-        });
+        GameLobbies.update(lobby._id, { $addToSet });
 
         Players.update(playerId, {
           $set: {

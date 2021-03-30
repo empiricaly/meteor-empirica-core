@@ -105,7 +105,7 @@ Batches.after.update(
       return;
     }
 
-    const games = Games.find({ batchId, status: "running" }).fetch();
+    const games = Games.find({ batchId }).fetch();
     const gplayerIds = _.flatten(_.pluck(games, "playerIds"));
 
     Players.update(
@@ -118,6 +118,11 @@ Batches.after.update(
       batchId,
       gameId: { $exists: false }
     }).fetch();
+
+    if (gameLobbies.length === 0) {
+      return;
+    }
+
     const glplayerIds = _.flatten(_.pluck(gameLobbies, "queuedPlayerIds"));
     const players = Players.find({
       _id: { $in: glplayerIds },
@@ -126,7 +131,7 @@ Batches.after.update(
 
     const playerIds = _.pluck(players, "_id");
 
-    sendPlayersToNextBatches(playerIds);
+    sendPlayersToNextBatches(playerIds, batchId, gameLobbies[0]);
   },
   { fetchPrevious: false }
 );
