@@ -11,7 +11,19 @@ import { Rounds } from "../rounds/rounds.js";
 import { Treatments } from "../treatments/treatments.js";
 import { Stages } from "./stages.js";
 
+// endOfStage should only ever run once per stageId. If one of the callback
+// (or the execution of endOfStage itself) takes too much time, a second
+// trigger could try to run endOfStage again (e.g. all players submitted +
+// cron). The lock ensures endOfStage can only run once.
+const lock = {};
+
 export const endOfStage = stageId => {
+  if (lock[stageId]) {
+    return;
+  }
+
+  lock[stageId] = true;
+
   const stage = Stages.findOne(stageId);
   const { index, gameId, roundId } = stage;
   const game = Games.findOne(gameId);
@@ -84,4 +96,6 @@ export const endOfStage = stageId => {
       $set: { finishedAt: new Date() }
     });
   }
+
+  delete lock[stageId];
 };
