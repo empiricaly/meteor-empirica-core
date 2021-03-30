@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+### [1.15.4](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.3...v1.15.4) (2021-03-30)
+
+### Bug Fixes
+
+* send queued players to exit when batch is cancelled [#233](https://github.com/empiricaly/meteor-empirica-core/issues/233) ([#235](https://github.com/empiricaly/meteor-empirica-core/issues/235)) ([269d870](https://github.com/empiricaly/meteor-empirica-core/commit/269d870175acfce5063ae1cd529c64f4b93443a6))
+* fix callback being called twice [#234](https://github.com/empiricaly/meteor-empirica-core/issues/234) ([#236](https://github.com/empiricaly/meteor-empirica-core/issues/236)) ([8e99245](https://github.com/empiricaly/meteor-empirica-core/commit/8e99245b39e0b5b8c2972e39057a580dbf64524c))
+
+
 ### [1.15.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.2...v1.15.3) (2021-03-16)
 
 ### Bug Fixes
