@@ -381,82 +381,7 @@ export const createGameFromLobby = gameLobby => {
     gameLobby.playerIds
   );
 
-  // Find other lobbies that are not full yet with the same treatment
-  const runningBatches = Batches.find(
-    {
-      _id: { $ne: batchId },
-      status: "running"
-    },
-    { sort: { runningAt: 1 } }
-  );
-  const lobbiesGroups = runningBatches.map(() => []);
-  const runningBatcheIds = runningBatches.map(b => b._id);
-  lobbiesGroups.push([]);
-  const possibleLobbies = GameLobbies.find({
-    _id: { $ne: gameLobby._id },
-    status: "running",
-    timedOutAt: { $exists: false },
-    gameId: { $exists: false },
-    treatmentId
-  }).fetch();
-  possibleLobbies.forEach(lobby => {
-    if (lobby.batchId === batchId) {
-      lobbiesGroups[0].push(lobby);
-    } else {
-      lobbiesGroups[runningBatcheIds.indexOf(lobby.batchId) + 1].push(lobby);
-    }
-  });
-
-  // If no lobbies left, lead players to exit
-  if (possibleLobbies.length === 0) {
-    Players.update(
-      { _id: { $in: failedPlayerIds } },
-      {
-        $set: {
-          exitAt: new Date(),
-          exitStatus: "gameFull"
-        }
-      },
-      { multi: true }
-    );
-  } else {
-    for (let i = 0; i < lobbiesGroups.length; i++) {
-      const lobbies = lobbiesGroups[i];
-
-      if (lobbies.length === 0) {
-        continue;
-      }
-
-      // If there are lobbies remaining, distribute them across the lobbies
-      // proportinally to the initial playerCount
-      const weigthedLobbyPool = weightedRandom(
-        lobbies.map(lobby => {
-          return {
-            value: lobby,
-            weight: lobby.availableCount
-          };
-        })
-      );
-
-      for (let i = 0; i < failedPlayerIds.length; i++) {
-        const playerId = failedPlayerIds[i];
-        const lobby = weigthedLobbyPool();
-
-        // Adding the player to specified lobby queue
-        const $addToSet = { queuedPlayerIds: playerId };
-        if (gameLobby.playerIds.includes(playerId)) {
-          $addToSet.playerIds = playerId;
-        }
-        GameLobbies.update(lobby._id, {
-          $addToSet
-        });
-
-        Players.update(playerId, { $set: { gameLobbyId: lobby._id } });
-      }
-
-      break;
-    }
-  }
+  sendPlayersToNextBatches(failedPlayerIds, batchId, gameLobby);
 
   //
   // Call the callbacks
@@ -505,3 +430,79 @@ export const createGameFromLobby = gameLobby => {
     }
   });
 };
+
+export function sendPlayersToNextBatches(playerIds, batchId, gameLobby) {
+  // Find other lobbies that are not full yet with the same treatment
+  const runningBatches = Batches.find(
+    { _id: { $ne: batchId }, status: "running" },
+    { sort: { runningAt: 1 } }
+  );
+  const { treatmentId } = gameLobby;
+  const lobbiesGroups = runningBatches.map(() => []);
+  const runningBatcheIds = runningBatches.map(b => b._id);
+  lobbiesGroups.push([]);
+  const possibleLobbies = GameLobbies.find({
+    _id: { $ne: gameLobby._id },
+    status: "running",
+    timedOutAt: {
+      $exists: false
+    },
+    gameId: { $exists: false },
+    treatmentId
+  }).fetch();
+  possibleLobbies.forEach(lobby => {
+    if (lobby.batchId === batchId) {
+      lobbiesGroups[0].push(lobby);
+    } else {
+      lobbiesGroups[runningBatcheIds.indexOf(lobby.batchId) + 1].push(lobby);
+    }
+  });
+
+  // If no lobbies left, lead players to exit
+  if (possibleLobbies.length === 0) {
+    Players.update(
+      { _id: { $in: playerIds } },
+      { $set: { exitAt: new Date(), exitStatus: "gameFull" } },
+      { multi: true }
+    );
+  } else {
+    for (let i = 0; i < lobbiesGroups.length; i++) {
+      const lobbies = lobbiesGroups[i];
+
+      if (lobbies.length === 0) {
+        continue;
+      }
+
+      // If there are lobbies remaining, distribute them across the lobbies
+      // proportinally to the initial playerCount
+      const weigthedLobbyPool = weightedRandom(
+        lobbies.map(lobby => {
+          return {
+            value: lobby,
+            weight: lobby.availableCount
+          };
+        })
+      );
+
+      for (let i = 0; i < playerIds.length; i++) {
+        const playerId = playerIds[i];
+        const lobby = weigthedLobbyPool();
+
+        // Adding the player to specified lobby queue
+        const $addToSet = { queuedPlayerIds: playerId };
+        if (gameLobby.playerIds.includes(playerId)) {
+          $addToSet.playerIds = playerId;
+        }
+        GameLobbies.update(lobby._id, { $addToSet });
+
+        Players.update(playerId, {
+          $set: {
+            gameLobbyId: lobby._id
+          }
+        });
+      }
+
+      break;
+    }
+  }
+}
