@@ -496,6 +496,48 @@ export const earlyExitPlayerLobby = new ValidatedMethod({
   }
 });
 
+export const retireSinglePlayer = new ValidatedMethod({
+  name: "Players.methods.admin.retireSingle",
+
+  validate: new SimpleSchema({
+    playerId: {
+      type: String,
+      regEx: SimpleSchema.RegEx.Id
+    }
+  }).validator(),
+
+  run({ playerId }) {
+    if (!playerId) {
+      throw new Error("empty playerId");
+    }
+
+    if (!this.userId) {
+      throw new Error("unauthorized");
+    }
+
+    const player = Players.findOne({
+      _id: playerId,
+      retiredAt: { $exists: false }
+    });
+
+    if (!player) {
+      throw new Error("Player not found");
+    }
+
+    const timestamp = new Date().toISOString();
+
+    Players.update(playerId, {
+      $set: {
+        id: `${player.id} (Retired custom at ${timestamp})`,
+        retiredAt: new Date(),
+        retiredReason: "custom"
+      }
+    });
+
+    return player;
+  }
+});
+
 export const retireGameFullPlayers = new ValidatedMethod({
   name: "Players.methods.admin.retireGameFull",
 
