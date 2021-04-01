@@ -93,7 +93,7 @@ export const endOfStage = stageId => {
       { multi: true }
     );
     Games.update(gameId, {
-      $set: { finishedAt: new Date() }
+      $set: { finishedAt: new Date(), status: "finished" }
     });
   }
 

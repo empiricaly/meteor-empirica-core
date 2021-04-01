@@ -97,9 +97,25 @@ Batches.after.update(
       return;
     }
 
-    [Games, GameLobbies].forEach(coll => {
-      coll.update({ batchId }, { $set: { status } }, { multi: true });
-    });
+    const unfinishedGames = Games.find({
+      batchId,
+      finishedAt: { $exists: false }
+    }).fetch();
+
+    if (unfinishedGames.length > 0) {
+      const unfinishedGameIds = _.pluck(unfinishedGames, "_id");
+
+      Games.update(
+        { batchId, _id: { $in: unfinishedGameIds } },
+        { $set: { status } },
+        { multi: true }
+      );
+      GameLobbies.update(
+        { batchId, gameId: { $in: unfinishedGameIds } },
+        { $set: { status } },
+        { multi: true }
+      );
+    }
 
     if (status !== "cancelled") {
       return;
