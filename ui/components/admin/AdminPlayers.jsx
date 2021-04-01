@@ -16,7 +16,10 @@ import { IconNames } from "@blueprintjs/icons";
 
 import { AdminPageHeader } from "./AdminHeading.jsx";
 import { AlertToaster, SuccessToaster } from "../Toasters.jsx";
-import { retireGameFullPlayers } from "../../../api/players/methods";
+import {
+  retireGameFullPlayers,
+  retireSinglePlayer
+} from "../../../api/players/methods";
 import { exitStatuses } from "../../../api/players/players.js";
 
 export default class AdminPlayers extends React.Component {
@@ -58,6 +61,19 @@ export default class AdminPlayers extends React.Component {
         AlertToaster.show({ message: `Failed to retire players: ${err}` });
       } else {
         SuccessToaster.show({ message: `${playersAffected} players affected` });
+      }
+    });
+  };
+
+  handleRetireSinglePlayer = (event, playerId) => {
+    event.preventDefault();
+    retireSinglePlayer.call({ playerId }, (err, _) => {
+      if (err) {
+        AlertToaster.show({ message: `Failed to retire player: ${err}` });
+      } else {
+        SuccessToaster.show({
+          message: `Succeed to retire player`
+        });
       }
     });
   };
@@ -186,6 +202,7 @@ export default class AdminPlayers extends React.Component {
                     }
                   />
                 </th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -214,6 +231,20 @@ export default class AdminPlayers extends React.Component {
                     {moment(player.createdAt).fromNow()}
                   </td>
                   <td>{player.exitStatus}</td>
+                  <td>
+                    {!player.retireAt && (
+                      <Button
+                        text={"Retire"}
+                        className={Classes.SMALL}
+                        minimal
+                        icon={IconNames.LOG_OUT}
+                        intent={Intent.DANGER}
+                        onClick={e =>
+                          this.handleRetireSinglePlayer(e, player._id)
+                        }
+                      />
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
