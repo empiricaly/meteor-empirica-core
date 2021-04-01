@@ -24,7 +24,7 @@ const checkLobbyTimeout = (log, lobby, lobbyConfig) => {
   switch (lobbyConfig.timeoutStrategy) {
     case "fail":
       GameLobbies.update(lobby._id, {
-        $set: { timedOutAt: new Date() }
+        $set: { timedOutAt: new Date(), status: "failed" }
       });
       Players.update(
         { _id: { $in: lobby.queuedPlayerIds } },
