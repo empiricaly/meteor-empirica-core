@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
 
+## [1.16.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.4...v1.16.0) (2021-04-01)
+
+### Features
+
+* retire single player [#239](https://github.com/empiricaly/meteor-empirica-core/issues/239) ([#243](https://github.com/empiricaly/meteor-empirica-core/issues/243)) ([e17d8e7](https://github.com/empiricaly/meteor-empirica-core/commit/e17d8e75aaad01955129d72e7a096485914f2725))
+
+### Bug Fixes
+
+* fix game status on cancelled batch [#241](https://github.com/empiricaly/meteor-empirica-core/issues/241) ([#242](https://github.com/empiricaly/meteor-empirica-core/issues/242)) ([4e2e67f](https://github.com/empiricaly/meteor-empirica-core/commit/4e2e67fcc8890efee1c560469d2668f67572c9e7))
+* fix new player form hangs [#225](https://github.com/empiricaly/meteor-empirica-core/issues/225) ([#242](https://github.com/empiricaly/meteor-empirica-core/issues/242)) ([4e2e67f](https://github.com/empiricaly/meteor-empirica-core/commit/4e2e67fcc8890efee1c560469d2668f67572c9e7))
+
+
+
 ### [1.15.4](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.3...v1.15.4) (2021-03-30)
 
 ### Bug Fixes
