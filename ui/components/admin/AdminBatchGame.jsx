@@ -74,6 +74,10 @@ export default class AdminBatchGame extends React.Component {
       statusIntent = Intent.SUCCESS;
       statusMinimal = true;
       statusMsg = "finished";
+    } else if (lobby.timedOutAt) {
+      statusIntent = Intent.DANGER;
+      statusMinimal = true;
+      statusMsg = "lobby timeout";
     } else if (lobby.status === "cancelled") {
       statusIntent = Intent.DANGER;
       statusMinimal = true;
@@ -95,11 +99,7 @@ export default class AdminBatchGame extends React.Component {
       statusMsg = "running";
       showCancelButton = true;
     } else {
-      if (lobby.timedOutAt) {
-        statusIntent = Intent.DANGER;
-        statusMinimal = true;
-        statusMsg = "lobby timeout";
-      } else if (players.length === 0) {
+      if (players.length === 0) {
         showCancelButton = true;
         if (notReadyPlayers.length === 0) {
           statusMsg = "empty";

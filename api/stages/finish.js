@@ -10,6 +10,7 @@ import { Players } from "../players/players.js";
 import { Rounds } from "../rounds/rounds.js";
 import { Treatments } from "../treatments/treatments.js";
 import { Stages } from "./stages.js";
+import { GameLobbies } from "../game-lobbies/game-lobbies";
 
 // endOfStage should only ever run once per stageId. If one of the callback
 // (or the execution of endOfStage itself) takes too much time, a second
@@ -93,8 +94,14 @@ export const endOfStage = stageId => {
       { multi: true }
     );
     Games.update(gameId, {
-      $set: { finishedAt: new Date() }
+      $set: { finishedAt: new Date(), status: "finished" }
     });
+    GameLobbies.update(
+      { gameId },
+      {
+        $set: { status: "finished" }
+      }
+    );
   }
 
   delete lock[stageId];

@@ -135,6 +135,11 @@ export const updateBatchStatus = new ValidatedMethod({
 
     if (status === "running") {
       $set.runningAt = new Date();
+      GameLobbies.update(
+        { batchId: _id },
+        { $set: { status: "running" } },
+        { multi: true }
+      );
     }
 
     Batches.update(_id, { $set });

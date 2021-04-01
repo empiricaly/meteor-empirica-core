@@ -98,7 +98,14 @@ Batches.after.update(
     }
 
     [Games, GameLobbies].forEach(coll => {
-      coll.update({ batchId }, { $set: { status } }, { multi: true });
+      coll.update(
+        {
+          batchId,
+          status: { $nin: ["finished", "cancelled", "failed", "custom"] }
+        },
+        { $set: { status } },
+        { multi: true }
+      );
     });
 
     if (status !== "cancelled") {
