@@ -10,8 +10,20 @@ import { bootstrap } from "../../startup/server/bootstrap.js";
 import log from "../../lib/log.js";
 
 const userColls = ["meteor_accounts_loginServiceConfiguration", "users"];
-const keep = [].concat(userColls);
 const keepPartial = ["treatments", "factors", "factor_types", "lobby_configs"];
+const deleteColls = [
+  "game_lobbies",
+  "player_inputs",
+  "batches",
+  "rounds",
+  "counters",
+  "games",
+  "player_rounds",
+  "players",
+  "player_stages",
+  "player_logs",
+  "stages"
+].concat(keepPartial);
 
 const localTypeForImported = data => {
   return factorTypeId => {
@@ -58,8 +70,8 @@ const archivedUpdate = (archivedAt, existingArchivedAt) =>
   !!archivedAt === !!existingArchivedAt
     ? null
     : archivedAt
-      ? { $set: { archivedAt: new Date() } }
-      : { $unset: { archivedAt: true, archivedById: true } };
+    ? { $set: { archivedAt: new Date() } }
+    : { $unset: { archivedAt: true, archivedById: true } };
 
 Meteor.methods({
   adminImportConfiguration({ text }) {
@@ -231,7 +243,7 @@ if (Meteor.isDevelopment || Meteor.settings.public.debug_resetDatabase) {
           }
           colls = _.sortBy(colls, c => (c.name === "players" ? 0 : 1));
           colls.forEach(collection => {
-            if (keep.includes(collection.name)) {
+            if (!deleteColls.includes(collection.name)) {
               return;
             }
             if (partial && keepPartial.includes(collection.name)) {
