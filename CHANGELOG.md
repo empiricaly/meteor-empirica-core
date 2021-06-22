@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.1](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.0...v1.16.1) (2021-06-17)
+
+### Bug Fixes
+
+* fix reset games and entire app delete entire custom collections [#251](https://github.com/empiricaly/meteor-empirica-core/issues/251) ([#253](https://github.com/empiricaly/meteor-empirica-core/issues/253)) ([887455b](https://github.com/empiricaly/meteor-empirica-core/commit/887455b6376fb5bd8b4ba1ce9aaba107c017fb04))
+
 
 ## [1.16.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.15.4...v1.16.0) (2021-04-01)
 
