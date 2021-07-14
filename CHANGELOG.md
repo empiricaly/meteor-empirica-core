@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.2](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.1...v1.16.2) (2021-07-14)
+
+### Bug Fixes
+
+* lock gameInit to avoid gameFull status on player [#255](https://github.com/empiricaly/meteor-empirica-core/issues/255) ([#257](https://github.com/empiricaly/meteor-empirica-core/issues/257)) ([993693e](https://github.com/empiricaly/meteor-empirica-core/commit/993693e0686e96336e542cf0502d08c89445b091))
+
+
 ### [1.16.1](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.0...v1.16.1) (2021-06-17)
 
 ### Bug Fixes
