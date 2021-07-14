@@ -19,6 +19,7 @@ import { augmentGameObject } from "../games/augment.js";
 import { config } from "../../server";
 import { weightedRandom } from "../../lib/utils.js";
 import log from "../../lib/log.js";
+import gameLobbyLock from "../../gameLobby-lock.js";
 
 const addStageErrMsg = `"round.addStage()" requires an argument object with 3 properties:
 - name: internal name you'll use to write conditional logic in your experiment.
@@ -134,6 +135,7 @@ export const createGameFromLobby = gameLobby => {
   };
 
   try {
+    gameLobbyLock[gameLobby._id] = true;
     config.gameInit(gameCollector, factors);
   } catch (err) {
     console.error(`fatal error encounter calling Empirica.gameInit:`);
@@ -142,6 +144,7 @@ export const createGameFromLobby = gameLobby => {
       exitReason: "gameError",
       gameLobbyId: gameLobby._id
     });
+    return;
   }
 
   if (!params.rounds || params.rounds.length === 0) {
@@ -429,6 +432,8 @@ export const createGameFromLobby = gameLobby => {
       startTimeAt
     }
   });
+
+  delete gameLobbyLock[gameLobby._id];
 };
 
 export function sendPlayersToNextBatches(playerIds, batchId, gameLobby) {
@@ -460,49 +465,53 @@ export function sendPlayersToNextBatches(playerIds, batchId, gameLobby) {
 
   // If no lobbies left, lead players to exit
   if (possibleLobbies.length === 0) {
-    Players.update(
-      { _id: { $in: playerIds } },
-      { $set: { exitAt: new Date(), exitStatus: "gameFull" } },
-      { multi: true }
-    );
-  } else {
-    for (let i = 0; i < lobbiesGroups.length; i++) {
-      const lobbies = lobbiesGroups[i];
-
-      if (lobbies.length === 0) {
-        continue;
-      }
-
-      // If there are lobbies remaining, distribute them across the lobbies
-      // proportinally to the initial playerCount
-      const weigthedLobbyPool = weightedRandom(
-        lobbies.map(lobby => {
-          return {
-            value: lobby,
-            weight: lobby.availableCount
-          };
-        })
+    if (playerIds.length > 0) {
+      Players.update(
+        { _id: { $in: playerIds } },
+        { $set: { exitAt: new Date(), exitStatus: "gameFull" } },
+        { multi: true }
       );
-
-      for (let i = 0; i < playerIds.length; i++) {
-        const playerId = playerIds[i];
-        const lobby = weigthedLobbyPool();
-
-        // Adding the player to specified lobby queue
-        const $addToSet = { queuedPlayerIds: playerId };
-        if (gameLobby.playerIds.includes(playerId)) {
-          $addToSet.playerIds = playerId;
-        }
-        GameLobbies.update(lobby._id, { $addToSet });
-
-        Players.update(playerId, {
-          $set: {
-            gameLobbyId: lobby._id
-          }
-        });
-      }
-
-      break;
     }
+
+    return;
+  }
+
+  for (let i = 0; i < lobbiesGroups.length; i++) {
+    const lobbies = lobbiesGroups[i];
+
+    if (lobbies.length === 0) {
+      continue;
+    }
+
+    // If there are lobbies remaining, distribute them across the lobbies
+    // proportinally to the initial playerCount
+    const weigthedLobbyPool = weightedRandom(
+      lobbies.map(lobby => {
+        return {
+          value: lobby,
+          weight: lobby.availableCount
+        };
+      })
+    );
+
+    for (let i = 0; i < playerIds.length; i++) {
+      const playerId = playerIds[i];
+      const lobby = weigthedLobbyPool();
+
+      // Adding the player to specified lobby queue
+      const $addToSet = { queuedPlayerIds: playerId };
+      if (gameLobby.playerIds.includes(playerId)) {
+        $addToSet.playerIds = playerId;
+      }
+      GameLobbies.update(lobby._id, { $addToSet });
+
+      Players.update(playerId, {
+        $set: {
+          gameLobbyId: lobby._id
+        }
+      });
+    }
+
+    break;
   }
 }
