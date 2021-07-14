@@ -8,8 +8,9 @@ import { LobbyConfigs } from "../lobby-configs/lobby-configs.js";
 import { Games } from "../games/games.js";
 import { Players } from "./players";
 import { exitStatuses } from "./players.js";
-import { weightedRandom } from "../../lib/utils.js";
+import { sleep, weightedRandom } from "../../lib/utils.js";
 import shared from "../../shared.js";
+import gameLobbyLock from "../../gameLobby-lock.js";
 
 export const createPlayer = new ValidatedMethod({
   name: "Players.methods.create",
@@ -139,95 +140,104 @@ export const playerReady = new ValidatedMethod({
 
   validate: IdSchema.validator(),
 
-  run({ _id }) {
+  async run({ _id }) {
+    if (!Meteor.isServer) {
+      return;
+    }
+
     try {
-      // TODO: MAYBE, add verification that the user is not current connected
-      // elsewhere and this is not a flagrant impersonation. Note that is
-      // extremely difficult to guaranty. Could also add verification of user's
-      // id with email verication for example. For now the assumption is that
-      // there is no immediate reason or long-term motiviation for people to hack
-      // each other's player account.
-
-      const player = Players.findOne(_id);
-
-      if (!player) {
-        throw `unknown ready player: ${_id}`;
-      }
-      const { readyAt, gameLobbyId } = player;
-
-      if (readyAt) {
-        // Already ready
-        return;
-      }
-
-      // Loop while trying to book a spot on lobby
-      // We need to make sure the booking of slots on the game are not above
-      // the number of available slots, so we try to add the user with a known
-      // playerIds value. If the update does not happen, the playerIds was
-      // changed by another server instance and we should try again until
-      // there are no slots left.
-      // If no slots are left, we marked the player's attempt to participate as
-      // failed, with a reason why. They will be led to the exit steps.
-      while (true) {
-        const lobby = GameLobbies.findOne(gameLobbyId);
-        if (!lobby) {
-          throw `unknown lobby for ready player: ${_id}`;
-        }
-
-        // Game is Full, bail the player
-        if (lobby.playerIds.length === lobby.availableCount) {
-          // User already ready, something happened out of order
-          if (lobby.playerIds.includes(_id)) {
-            return;
-          }
-
-          // Mark the player's participation attemp as failed
-          Players.update(_id, {
-            $set: {
-              exitAt: new Date(),
-              exitStatus: "gameFull"
-            }
-          });
-
-          return;
-        }
-
-        // Try to update the GameLobby with the playerIds we just queried.
-        GameLobbies.update(
-          { _id: gameLobbyId, playerIds: lobby.playerIds },
-          {
-            $addToSet: { playerIds: _id }
-          }
-        );
-
-        // If the playerId insert succeeded (playerId WAS added to playerIds),
-        // mark the user record as ready and potentially start the individual
-        // lobby timer.
-        const lobbyUpdated = GameLobbies.findOne(gameLobbyId);
-        if (lobbyUpdated.playerIds.includes(_id)) {
-          // If it did work, mark player as ready
-          $set = { readyAt: new Date() };
-
-          // If it's an individual lobby timeout, mark the first timer as started.
-          const lobbyConfig = LobbyConfigs.findOne(lobbyUpdated.lobbyConfigId);
-          if (lobbyConfig.timeoutType === "individual") {
-            $set.timeoutStartedAt = new Date();
-            $set.timeoutWaitCount = 1;
-          }
-
-          Players.update(_id, { $set });
-          return;
-        }
-
-        // If the playerId insert failed (playerId NOT added to playerIds), the
-        // playerIds has changed since it was queried and the lobby might not
-        // have any available slots left, loop and retry.
+      // Lobby might be locked if game is currently being created.
+      // We retry until lobby is unlocked.
+      while (!assignToLobby(_id)) {
+        await sleep(1000);
       }
     } catch (error) {
       console.error("Players.methods.ready", error);
     }
   }
 });
+
+function assignToLobby(_id) {
+  const player = Players.findOne(_id);
+
+  if (!player) {
+    throw `unknown ready player: ${_id}`;
+  }
+  const { readyAt, gameLobbyId } = player;
+
+  if (readyAt) {
+    // Already ready
+    return true;
+  }
+
+  const lobby = GameLobbies.findOne(gameLobbyId);
+
+  if (!lobby) {
+    throw `unknown lobby for ready player: ${_id}`;
+  }
+
+  // GameLobby is locked.
+  if (gameLobbyLock[gameLobbyId]) {
+    return false;
+  }
+
+  // Game is Full, bail the player
+  if (lobby.playerIds.length === lobby.availableCount) {
+    // User already ready, something happened out of order
+    if (lobby.playerIds.includes(_id)) {
+      return true;
+    }
+
+    // Mark the player's participation attemp as failed if
+    // not already marked exited
+    Players.update(
+      {
+        _id,
+        exitAt: { $exists: false }
+      },
+      {
+        $set: {
+          exitAt: new Date(),
+          exitStatus: "gameFull"
+        }
+      }
+    );
+
+    return true;
+  }
+
+  // Try to update the GameLobby with the playerIds we just queried.
+  GameLobbies.update(
+    { _id: gameLobbyId, playerIds: lobby.playerIds },
+    {
+      $addToSet: { playerIds: _id }
+    }
+  );
+
+  // If the playerId insert succeeded (playerId WAS added to playerIds),
+  // mark the user record as ready and potentially start the individual
+  // lobby timer.
+  const lobbyUpdated = GameLobbies.findOne(gameLobbyId);
+  if (lobbyUpdated.playerIds.includes(_id)) {
+    // If it did work, mark player as ready
+    $set = { readyAt: new Date() };
+
+    // If it's an individual lobby timeout, mark the first timer as started.
+    const lobbyConfig = LobbyConfigs.findOne(lobbyUpdated.lobbyConfigId);
+    if (lobbyConfig.timeoutType === "individual") {
+      $set.timeoutStartedAt = new Date();
+      $set.timeoutWaitCount = 1;
+    }
+
+    Players.update(_id, { $set });
+    return true;
+  }
+
+  // If the playerId insert failed (playerId NOT added to playerIds), the
+  // playerIds has changed since it was queried and the lobby might not
+  // have any available slots left, loop and retry.
+  return false;
+}
 
 export const updatePlayerData = new ValidatedMethod({
   name: "Players.methods.updateData",

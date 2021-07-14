@@ -16,6 +16,8 @@ import WaitingForServer from "./WaitingForServer.jsx";
 const DelayedWaitingForServer = DelayedDisplay(WaitingForServer, 250);
 const DelayedGameLobby = DelayedDisplay(GameLobby, 250);
 
+let playerReadyClicked = false;
+
 export default class Game extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     return !_.isEqual(this.props, nextProps);
@@ -71,6 +73,10 @@ export default class Game extends React.Component {
     }
 
     if (!game) {
+      if (playerReadyClicked) {
+        return <Loading />;
+      }
+
       if (player.readyAt) {
         const gameLobbyProps = {
           ...rest,
@@ -98,7 +104,10 @@ export default class Game extends React.Component {
           treatment={treatment}
           player={player}
           onDone={() => {
-            playerReady.call({ _id: player._id });
+            playerReadyClicked = true;
+            playerReady.call({ _id: player._id }, () => {
+              playerReadyClicked = false;
+            });
           }}
         />
       );
