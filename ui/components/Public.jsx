@@ -145,8 +145,8 @@ export default class Public extends React.Component {
         {Header !== undefined ? (
           <Header {...adminProps} />
         ) : (
-          <Navbar className={["header", Classes.DARK].join(" ")}>
-            <NavbarGroup align="left">
+          <div className="header navbar">
+            <div className="navbarGroup">
               <NavbarHeading>
                 <Link
                   className={[
@@ -161,8 +161,9 @@ export default class Public extends React.Component {
                   <span className={Classes.BUTTON_TEXT}>Empirica</span>
                 </Link>
               </NavbarHeading>
-            </NavbarGroup>
-            <NavbarGroup align="right">
+            </div>
+
+            <div className="navbarGroup">
               {showOpenAltPlayer ? (
                 <Button
                   text="New Player"
@@ -226,8 +227,8 @@ export default class Public extends React.Component {
                   </Dialog>
                 </>
               ) : null}
-            </NavbarGroup>
-          </Navbar>
+            </div>
+          </div>
         )}
 
         <main>{content}</main>
