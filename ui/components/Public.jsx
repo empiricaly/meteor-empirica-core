@@ -10,8 +10,6 @@ import {
   Dialog,
   Icon,
   Intent,
-  Navbar,
-  NavbarGroup,
   NavbarHeading
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
