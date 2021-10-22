@@ -128,15 +128,17 @@ For more information on how to contribute please take a look at our
 ## Citing Empirica
 If you use Empirica in a scientific publication, we would appreciate citing the following:
 
-Almaatouq, A., Becker, J., Houghton, J. P., Paton, N., Watts, D. J., & Whiting, M. E. (2020). Empirica: a virtual lab for high-throughput macro-level experiments. arXiv preprint arXiv:2006.11398.
+Almaatouq, A., Becker, J., Houghton, J. P., Paton, N., Watts, D. J., & Whiting, M. E. (2021). Empirica: a virtual lab for high-throughput macro-level experiments. Behavior Research Methods, 1-14.
 
 ### Bibtex entry:
 ```
-@article{almaatouq2020empirica,
+@article{almaatouq2021empirica,
   title={Empirica: a virtual lab for high-throughput macro-level experiments},
   author={Almaatouq, Abdullah and Becker, Joshua and Houghton, James P and Paton, Nicolas and Watts, Duncan J and Whiting, Mark E},
-  journal={arXiv preprint arXiv:2006.11398},
-  year={2020}
+  journal={Behavior Research Methods},
+  pages={1--14},
+  year={2021},
+  publisher={Springer}
 }
 ```
 
