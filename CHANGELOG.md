@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.2...v1.16.3) (2021-11-25)
+
+### Bug Fixes
+
+* check for early exit player on submit stage [#261](https://github.com/empiricaly/meteor-empirica-core/issues/261) ([#262](https://github.com/empiricaly/meteor-empirica-core/issues/262)) ([71bc5dd](https://github.com/empiricaly/meteor-empirica-core/commit/71bc5dd503ca90a64ec2582bf6ceea217c449f39))
+
+
 ### [1.16.2](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.1...v1.16.2) (2021-07-14)
 
 ### Bug Fixes
