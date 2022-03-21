@@ -175,6 +175,7 @@ export const augmentPlayerStageRound = (
       }
     });
     stage.submitted = Boolean(playerStage.submittedAt);
+    stage.submittedAt = playerStage.submittedAt;
   }
 
   if (round) {
