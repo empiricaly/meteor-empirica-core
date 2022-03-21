@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.17.0](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.3...v1.17.0) (2022-03-21)
+
+### Features
+
+* make submittedAt available on stage ([#266](https://github.com/empiricaly/meteor-empirica-core/issues/266)) ([00a5485](https://github.com/empiricaly/meteor-empirica-core/commit/00a54852e1e3f79bd6e8e4a6fdca2f1fccae3fed))
+
+
+
 ### [1.16.3](https://github.com/empiricaly/meteor-empirica-core/compare/v1.16.2...v1.16.3) (2021-11-25)
 
 ### Bug Fixes
